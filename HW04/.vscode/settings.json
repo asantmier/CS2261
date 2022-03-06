@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "time.h": "c",
-        "hw3lib.h": "c"
+        "hw3lib.h": "c",
+        "images.h": "c"
     }
 }

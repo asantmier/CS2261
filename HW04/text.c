@@ -53,3 +53,31 @@ void drawString4(int col, int row, char *str, unsigned char colorIndex) {
         str++;
     }
 }
+
+// Draws a number in mode 3.
+// If the number has fewer digits than 'digits', then it will be left-padded with 0s.
+// If it has more digits than the left side of the number will be cut off.
+void drawInt3(int col, int row, int digits, int num, unsigned short color) {
+    // By the power of some magic math, this draws the score
+	int charOffset = digits - 1;
+    int denominator = 1;
+    for (int i = 0; i < digits; i++) {
+        drawChar3(col + STRINGWIDTH(charOffset), row, (char) ('0' + ((num % (10 * denominator)) / denominator)), color);
+        denominator *= 10;
+        charOffset--;
+    }
+}
+
+// Draws a number in mode 4.
+// If the number has fewer digits than 'digits', then it will be left-padded with 0s.
+// If it has more digits than the left side of the number will be cut off.
+void drawInt4(int col, int row, int digits, int num, unsigned char colorIndex) {
+    // By the power of some magic math, this draws the score
+    int charOffset = digits - 1;
+    int denominator = 1;
+    for (int i = 0; i < digits; i++) {
+        drawChar4(col + STRINGWIDTH(charOffset), row, (char) ('0' + ((num % (10 * denominator)) / denominator)), colorIndex);
+        denominator *= 10;
+        charOffset--;
+    }
+}

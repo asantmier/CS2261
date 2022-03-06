@@ -6,6 +6,12 @@ unsigned short *videoBuffer = (unsigned short *)0x6000000;
 // The start of DMA registers
 DMA *dma = (DMA *)0x40000B0;
 
+// Array of colors for use in code in mode 4
+u16 colors[] = { BLACK, WHITE, GRAY, RED, GREEN, BLUE, CYAN, MAGENTA,
+                 YELLOW, PORTAGE, CADILLAC, ROGUE, VIORED, HOTPINK, LAVPINK, TURQUOISE,
+                 PERSIAN, TEAL };
+int numColors = 18;
+
 // Set a pixel on the screen in Mode 3
 void setPixel3(int col, int row, unsigned short color) {
 	videoBuffer[OFFSET(col, row, SCREENWIDTH)] = color;

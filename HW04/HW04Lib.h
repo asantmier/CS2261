@@ -3,6 +3,7 @@
 
 // Common Typedefs
 typedef unsigned short u16;
+typedef unsigned char u8;
 
 // Common Macros
 #define OFFSET(c, r, rowlen) ((r)*(rowlen)+(c))
@@ -52,6 +53,31 @@ extern unsigned short *videoBuffer;
 #define TURQUOISE COLOR(5,26,25)
 #define PERSIAN COLOR(0,21,20)
 #define TEAL COLOR(0,16,16)
+
+// Subpalette for colors in code
+extern u16 colors[];
+// This enum gives us the color indicides for the colors array
+enum {
+  BLACK_IDX = 208,
+  WHITE_IDX,
+  GRAY_IDX,
+  RED_IDX,
+  GREEN_IDX,
+  BLUE_IDX,
+  CYAN_IDX,
+  MAGENTA_IDX,
+  YELLOW_IDX,
+  PORTAGE_IDX,
+  CADILLAC_IDX,
+  ROGUE_IDX,
+  VIORED_IDX,
+  HOTPINK_IDX,
+  LAVPINK_IDX,
+  TURQUOISE_IDX,
+  PERSIAN_IDX,
+  TEAL_IDX
+} COLORINDEX;
+extern int numColors;
 
 // Mode 3 Drawing Functions
 void setPixel3(int col, int row, unsigned short color);
