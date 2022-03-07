@@ -16,18 +16,18 @@ int score;
 int stage;
 int hiscore = 0;
 int aliensRemaining;
-int lastLives;
-int lastScore;
-int lastStage;
+int lastLives; // keeps track of how many lives we had last frame
+int lastScore; // same idea
+int lastStage; // ditto
 int gameOver;
-int gameOverDelay;
+int gameOverDelay; // delay before aliens move off screen on loss
 int victory;
-int victoryDelay;
-int startUpDelay;
+int victoryDelay; // delay before the player moves off screen on victory
+int startUpDelay; // delay at stage start
 
-// Initialize the game
+// Initialize the game based on the stage. This lets us initialize everything on the first stage, and only necesasry components on subsequent stages
 void initGame(int setStage) {
-	// Player and aliens need their values reset
+	// Player and aliens alwys need their values reset
 	initPlayer();
 	initAliens();
 	aliensRemaining = NUM_ROWS * ALIENS_PER_ROW;
@@ -49,6 +49,7 @@ void initGame(int setStage) {
 		gameOver = 0;
 		gameOverDelay = 60;
 	} else {
+		// Because the player just got reset, set their image here (its a lot of work to do this in initPlayer)
 		switch(lives) {
 			case 3:
 				player.bodyImage = spaceship_body_1Bitmap;
@@ -68,6 +69,7 @@ void initGame(int setStage) {
 
 // Updates the game each frame
 void updateGame() {
+	// Do nothing if we're in the startup period
 	if (startUpDelay) {
 		startUpDelay--;
 		return;
@@ -113,6 +115,7 @@ void updateGame() {
 					updateExplosion(&explosions[i]);
 				}
 			}
+			// Wait a bit before continuting; and yes, this is unoptimized
 			victoryDelay--;
 			if (victoryDelay <= 0) {
 				// Play victory animation
@@ -136,6 +139,7 @@ void updateGame() {
 				updateExplosion(&explosions[i]);
 			}
 		}
+		// Wait a bit before continuting; and yes, this is unoptimized
 		gameOverDelay--;
 		if (gameOverDelay <= 0) {
 			// Play outro animation
@@ -259,7 +263,7 @@ void initAliens() {
 		alienRows[i].rdel = 0;
 		alienRows[i].space = 4;
 		alienRows[i].height = IMAGE_SIZE;
-		alienRows[i].width = alienRows[i].space * (ALIENS_PER_ROW - 1) + IMAGE_SIZE * ALIENS_PER_ROW;
+		alienRows[i].width = alienRows[i].space * (ALIENS_PER_ROW - 1) + IMAGE_SIZE * ALIENS_PER_ROW; // how wide is this row?
 		alienRows[i].col = (SCREENWIDTH - alienRows[i].width) / 2;
 		for (int j = 0; j < ALIENS_PER_ROW; j++) {
 			alienRows[i].aliens[j].alive = 1;
@@ -268,6 +272,7 @@ void initAliens() {
 			alienRows[i].aliens[j].col = alienRows[i].col + (j * IMAGE_SIZE) + (j * alienRows[i].space);
 			alienRows[i].aliens[j].row = alienRows[i].row;
 			alienRows[i].aliens[j].cooldown = 30; // give the player a little grace period
+			// What kind of alien is this?
 			switch (i)
 			{
 			case 0:
@@ -344,10 +349,12 @@ void updatePlayer() {
 
 // Updates a player's bullet
 void updatePlayerBullet(BULLET* bullet) {
+	// Move bullet
 	bullet->row += bullet->rdel;
 	if (bullet->row < HUD_HEIGHT) {
 		bullet->active = 0;
 	}
+	// Check for collision
 	for (int i = 0; i < NUM_ROWS; i++) {
 		for (int j = 0; j < ALIENS_PER_ROW; j++) {
 			ALIEN* alien = &(alienRows[i].aliens[j]);
@@ -367,6 +374,9 @@ void updatePlayerBullet(BULLET* bullet) {
 						break;
 					}
 				}
+				// play sound
+				REG_SND2CNT = DMG_DUTY_75 | DMG_STEP_TIME(1) | DMG_DIRECTION_DECR | DMG_ENV_VOL(15);
+				REG_SND2FREQ = NOTE_E2 | SND_RESET | DMG_FREQ_TIMED;
 				break;
 			}
 		}
@@ -375,14 +385,17 @@ void updatePlayerBullet(BULLET* bullet) {
 
 // Updates an alien's bullet
 void updateAlienBullet(BULLET* bullet) {
+	// Move bullet
 	bullet->row += bullet->rdel;
 	if (bullet->row >= SCREENHEIGHT) {
 		bullet->active = 0;
 	}
+	// Check for collision
 	if (!player.iframes && collision(bullet->col, bullet->row, bullet->width, bullet->height,
 									 player.col, player.row, player.bodyWidth, player.bodyHeight)) {
 		lives--;
 		bullet->active = 0;
+		// Update player image
 		switch(lives) {
 			case 2:
 				player.bodyImage = spaceship_body_2Bitmap;
@@ -396,6 +409,9 @@ void updateAlienBullet(BULLET* bullet) {
 				player.bodyImage = spaceship_body_4Bitmap;
 				break;
 		}
+		// play sound
+		REG_SND2CNT = DMG_DUTY_12 | DMG_STEP_TIME(1) | DMG_DIRECTION_DECR | DMG_ENV_VOL(15);
+		REG_SND2FREQ = NOTE_D2 | SND_RESET | DMG_FREQ_TIMED;
 	}
 }
 
@@ -411,14 +427,6 @@ void updateAlienRow(ALIENROW* alienRow) {
 		alienRow->col = SCREENWIDTH - alienRow->width;
 		alienRow->cdel *= -1;
 	}
-	alienRow->row += alienRow->rdel;
-	// if (alienRow->row < HUD_HEIGHT) {
-	// 	alienRow->row = HUD_HEIGHT;
-	// }
-	// if (alienRow->row + alienRow->height - 1 >= SCREENHEIGHT) {
-	// 	alienRow->row = SCREENHEIGHT - alienRow->height;
-	// 	// LOSE CONDITION 
-	// }
 
 	// Update position of aliens in row
 	for (int j = 0; j < ALIENS_PER_ROW; j++) {
@@ -426,7 +434,8 @@ void updateAlienRow(ALIENROW* alienRow) {
 		alienRow->aliens[j].row = alienRow->row;
 		// Try shooting
 		if (alienRow->aliens[j].alive && alienRow->aliens[j].cooldown <= 0) {
-			if (rand() % 500 == 0) {
+			// Modify the fire rate based on how many aliens are left to try and keep up the difficulty
+			if (rand() % (25 * aliensRemaining) == 0) {
 				fireAlienBullet(&(alienRow->aliens[j]));
 				alienRow->aliens[j].cooldown = ALIEN_BULLET_COOLDOWN;
 			}
@@ -438,10 +447,12 @@ void updateAlienRow(ALIENROW* alienRow) {
 
 // Updates an explosion
 void updateExplosion(EXPLOSION* explosion) {
+	// Every few frames, change the image used
 	if (explosion->animTimer == 0) {
 		explosion->animFrame++;
 		explosion->animTimer = EXPLOSION_ANIM_LENGTH;
 		if (explosion->animFrame > 3) {
+			// If it finished animating, reset it for the pool
 			explosion->animFrame = 1;
 			explosion->active = 0;
 		}
@@ -457,6 +468,10 @@ void firePlayerBullet() {
 			playerBullets[i].active = 1;
 			playerBullets[i].col = player.col + (player.bodyWidth / 2);
 			playerBullets[i].row = player.row - playerBullets[i].height;
+			// play sound
+			REG_SND1SWEEP = DMG_SWEEP_NUM(5) | DMG_SWEEP_DOWN | DMG_SWEEP_STEPTIME(2);
+			REG_SND1CNT = DMG_DUTY_12 | DMG_STEP_TIME(3) | DMG_DIRECTION_DECR | DMG_ENV_VOL(15);
+			REG_SND1FREQ = NOTE_A4 | SND_RESET | DMG_FREQ_TIMED;
 			break;
 		}
 	}
@@ -483,6 +498,7 @@ void drawHUD() {
 	static int updateLifeNextPage = 0;
 	static int updateStageNextPage = 0;
 	static int updateScoreNextPage = 0;
+	// Draw lives
 	if (lastLives != lives || updateLifeNextPage) {
 		drawRect4(1 + STRINGWIDTH(6 + lives), 1, 6, 8, HUD_COLOR);
 		if (lastLives != lives) {
@@ -492,6 +508,7 @@ void drawHUD() {
 			updateLifeNextPage = 0;
 		}
 	}
+	// Draw stage
 	if (lastStage != stage || updateStageNextPage) {
 		drawRect4(((SCREENWIDTH - STRINGWIDTH(8)) / 2) + STRINGWIDTH(6), 1, STRINGWIDTH(2), 8, HUD_COLOR);
         drawInt4(((SCREENWIDTH - STRINGWIDTH(8)) / 2) + STRINGWIDTH(6), 1, 2, stage, WHITE_IDX);
@@ -502,6 +519,7 @@ void drawHUD() {
 			updateStageNextPage = 0;
 		}
 	}
+	// Draw score
 	if (lastScore != score || updateScoreNextPage) {
 		drawRect4(SCREENWIDTH - 1 - STRINGWIDTH(6), 1, STRINGWIDTH(6), 8, HUD_COLOR);
 		drawInt4(SCREENWIDTH - 1 - STRINGWIDTH(6), 1, 6, score, WHITE_IDX);
@@ -516,16 +534,12 @@ void drawHUD() {
 
 // Draw the player
 void drawPlayer() {
+	// We check if the images are above the hud so that we can avoid drawing over it when doing the win animation
 	// Draw body
 	if (player.row >= HUD_HEIGHT) {
 		// Every 4 frames the player will toggle between visible and invivisible
 		if (!(player.iframes && player.iframes % 8 < 4)) {
 			drawImage4(player.col, player.row, player.bodyWidth, player.bodyHeight, player.bodyImage);
-			if (player.jetFrame == 1) {
-				drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage1);
-			} else {
-				drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage2);
-			}
 		}
 	} else {
 		// This part is used for the victory animation. This also means iframe code is irrelevant
@@ -571,6 +585,7 @@ void drawBullet(BULLET* b) {
 
 // Draw an alien
 void drawAlien(ALIEN* a) {
+	// We check if the image is above the hud so that we can avoid drawing over it when doing the lose animation
 	if (a->row >= HUD_HEIGHT) {
 		drawImage4(a->col, a->row, a->width, a->height, a->image);
 	} else {
@@ -585,6 +600,7 @@ void drawAlien(ALIEN* a) {
 
 // Draw an explosion
 void drawExplosion(EXPLOSION* e) {
+	// Set this variable based on which frame of the animation we're on
 	const unsigned short* image = NULL;
 	switch (e->animFrame)
 	{

@@ -824,6 +824,7 @@ typedef unsigned char u8;
 extern unsigned short *videoBuffer;
 # 60 "HW04Lib.h"
 extern u16 colors[];
+extern int numColors;
 
 enum {
   BLACK_IDX = 208,
@@ -847,7 +848,6 @@ enum {
   DARKGREEN_IDX,
   DARKRED_IDX
 } COLORINDEX;
-extern int numColors;
 
 
 void setPixel3(int col, int row, unsigned short color);
@@ -1170,7 +1170,6 @@ void goToLose();
 void start();
 void game();
 void pause();
-void win();
 void lose();
 
 
@@ -1210,9 +1209,6 @@ int main() {
         case PAUSE:
             pause();
             break;
-        case WIN:
-            win();
-            break;
         case LOSE:
             lose();
             break;
@@ -1222,6 +1218,10 @@ int main() {
 
 void initialize() {
     (*(unsigned short *)0x4000000) = 4 | (1<<10) | (1<<4);
+
+    *(volatile u16*)0x04000084 = (1<<7);
+    *(volatile u16*)0x04000080 = (((3) & 7) << 0) | (((3) & 7) << 4) | (1 << 8) | (1 << 12) | (1 << 9) | (1 << 13);
+    *(volatile u16*)0x04000082 = ((2) % 3);
 
 
     const u16* palettes[] = { alien_1Pal, alien_2Pal, alien_3Pal, backgroundPal,
@@ -1233,6 +1233,7 @@ void initialize() {
             gamePal[(i * 16) + j] = *(palettes[i] + ((i * 16 ) + j));
         }
     }
+    seed = 0;
 
     goToStart();
 }
@@ -1251,6 +1252,7 @@ void game() {
     drawGame();
     waitForVBlank();
     flipPage();
+
     if (victory) {
         score += 10000;
         initGame(++stage);
@@ -1273,14 +1275,6 @@ void pause() {
     }
 }
 
-void win() {
-    waitForVBlank();
-
-    if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-        goToStart();
-    }
-}
-
 void lose() {
     waitForVBlank();
     if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
@@ -1294,53 +1288,47 @@ void lose() {
 }
 
 void goToStart() {
-
     DMANow(3, img_titlePal, ((unsigned short *)0x5000000), 256);
     DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
+
     drawFullscreenImage4(img_titleBitmap);
+
 
     drawString4(((240 - (6 * (15))) / 2) + 1, 60, "GALAXY DEFENDER", 17);
     drawString4(((240 - (6 * (15))) / 2), 60, "GALAXY DEFENDER", 32);
     drawString4(((240 - (6 * (20))) / 2), 80, "press SELECT to play", WHITE_IDX);
     waitForVBlank();
     flipPage();
-    seed = 0;
     state = START;
+}
+
+
+void drawInitialGameScreen() {
+
+        drawFullscreenImage4(backgroundBitmap);
+
+        drawRect4(0, 0, 240, 10, GRAY_IDX);
+        drawString4(1, 1, "Lives:", WHITE_IDX);
+  for (int i = 0; i < 3; i++) {
+   drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
+  }
+        drawString4((240 - (6 * (8))) / 2, 1, "STAGE ", WHITE_IDX);
+        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, 1, WHITE_IDX);
+        drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
+        drawInt4(240 - 1 - (6 * (6)), 1, 6, 0, WHITE_IDX);
 }
 
 void goToGame() {
     if (state == START || state == LOSE) {
-        DMANow(3, gamePal, ((unsigned short *)0x5000000), 256);
-        DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
-
-        drawFullscreenImage4(backgroundBitmap);
-
-        drawRect4(0, 0, 240, 10, GRAY_IDX);
-        drawString4(1, 1, "Lives:", WHITE_IDX);
-  for (int i = 0; i < 3; i++) {
-   drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
-  }
-        drawString4((240 - (6 * (8))) / 2, 1, "STAGE ", WHITE_IDX);
-        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, 1, WHITE_IDX);
-        drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
-        drawInt4(240 - 1 - (6 * (6)), 1, 6, 0, WHITE_IDX);
-
+        drawInitialGameScreen();
 
         waitForVBlank();
         flipPage();
 
+        DMANow(3, gamePal, ((unsigned short *)0x5000000), 256);
+        DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
 
-        drawFullscreenImage4(backgroundBitmap);
-
-        drawRect4(0, 0, 240, 10, GRAY_IDX);
-        drawString4(1, 1, "Lives:", WHITE_IDX);
-  for (int i = 0; i < 3; i++) {
-   drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
-  }
-        drawString4((240 - (6 * (8))) / 2, 1, "STAGE ", WHITE_IDX);
-        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, 1, WHITE_IDX);
-        drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
-        drawInt4(240 - 1 - (6 * (6)), 1, 6, 0, WHITE_IDX);
+        drawInitialGameScreen();
     }
     state = GAME;
 }
@@ -1355,18 +1343,12 @@ void goToPause() {
     state = PAUSE;
 }
 
-void goToWin() {
-    drawString4(((240 - (6 * (7))) / 2), 60, "VICTORY", GREEN_IDX);
-    drawString4(((240 - (6 * (37))) / 2), 100, "press START to go to the start screen", WHITE_IDX);
-    waitForVBlank();
-    flipPage();
-    state = WIN;
-}
-
 void goToLose() {
+
     drawString4((240 - (6 * (13 + 6))) / 2, 18, "Final Score: ", WHITE_IDX);
     if (score > hiscore) {
         hiscore = score;
+
         drawInt4((240 - (6 * (13 + 6))) / 2 + (6 * (13)), 18, 6, score, GREEN_IDX);
         drawString4(1 + ((240 - (6 * (15))) / 2), 1 + 30, "NEW HIGH SCORE!", DARKGREEN_IDX);
         drawString4(((240 - (6 * (15))) / 2), 30, "NEW HIGH SCORE!", GREEN_IDX);

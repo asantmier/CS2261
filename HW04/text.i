@@ -13,6 +13,7 @@ typedef unsigned char u8;
 extern unsigned short *videoBuffer;
 # 60 "HW04Lib.h"
 extern u16 colors[];
+extern int numColors;
 
 enum {
   BLACK_IDX = 208,
@@ -36,7 +37,6 @@ enum {
   DARKGREEN_IDX,
   DARKRED_IDX
 } COLORINDEX;
-extern int numColors;
 
 
 void setPixel3(int col, int row, unsigned short color);

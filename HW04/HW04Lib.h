@@ -58,6 +58,7 @@ extern unsigned short *videoBuffer;
 
 // Subpalette for colors in code
 extern u16 colors[];
+extern int numColors;
 // This enum gives us the color indicides for the colors array
 enum {
   BLACK_IDX = 208,
@@ -81,7 +82,6 @@ enum {
   DARKGREEN_IDX,
   DARKRED_IDX
 } COLORINDEX;
-extern int numColors;
 
 // Mode 3 Drawing Functions
 void setPixel3(int col, int row, unsigned short color);

@@ -871,6 +871,7 @@ typedef unsigned char u8;
 extern unsigned short *videoBuffer;
 # 60 "HW04Lib.h"
 extern u16 colors[];
+extern int numColors;
 
 enum {
   BLACK_IDX = 208,
@@ -894,7 +895,6 @@ enum {
   DARKGREEN_IDX,
   DARKRED_IDX
 } COLORINDEX;
-extern int numColors;
 
 
 void setPixel3(int col, int row, unsigned short color);
@@ -1241,6 +1241,7 @@ void initGame(int setStage) {
   gameOver = 0;
   gameOverDelay = 60;
  } else {
+
   switch(lives) {
    case 3:
     player.bodyImage = spaceship_body_1Bitmap;
@@ -1260,6 +1261,7 @@ void initGame(int setStage) {
 
 
 void updateGame() {
+
  if (startUpDelay) {
   startUpDelay--;
   return;
@@ -1305,6 +1307,7 @@ void updateGame() {
      updateExplosion(&explosions[i]);
     }
    }
+
    victoryDelay--;
    if (victoryDelay <= 0) {
 
@@ -1328,6 +1331,7 @@ void updateGame() {
     updateExplosion(&explosions[i]);
    }
   }
+
   gameOverDelay--;
   if (gameOverDelay <= 0) {
 
@@ -1460,6 +1464,7 @@ void initAliens() {
    alienRows[i].aliens[j].col = alienRows[i].col + (j * 24) + (j * alienRows[i].space);
    alienRows[i].aliens[j].row = alienRows[i].row;
    alienRows[i].aliens[j].cooldown = 30;
+
    switch (i)
    {
    case 0:
@@ -1536,10 +1541,12 @@ void updatePlayer() {
 
 
 void updatePlayerBullet(BULLET* bullet) {
+
  bullet->row += bullet->rdel;
  if (bullet->row < 10) {
   bullet->active = 0;
  }
+
  for (int i = 0; i < 3; i++) {
   for (int j = 0; j < 5; j++) {
    ALIEN* alien = &(alienRows[i].aliens[j]);
@@ -1559,6 +1566,9 @@ void updatePlayerBullet(BULLET* bullet) {
       break;
      }
     }
+
+    *(volatile u16*)0x04000068 = (3 << 6) | (((1) & 7) << 8) | (0 << 11) | (((15) & 15) << 12);
+    *(volatile u16*)0x0400006C = NOTE_E2 | (1<<15) | (1<<14);
     break;
    }
   }
@@ -1567,14 +1577,17 @@ void updatePlayerBullet(BULLET* bullet) {
 
 
 void updateAlienBullet(BULLET* bullet) {
+
  bullet->row += bullet->rdel;
  if (bullet->row >= 160) {
   bullet->active = 0;
  }
+
  if (!player.iframes && collision(bullet->col, bullet->row, bullet->width, bullet->height,
           player.col, player.row, player.bodyWidth, player.bodyHeight)) {
   lives--;
   bullet->active = 0;
+
   switch(lives) {
    case 2:
     player.bodyImage = spaceship_body_2Bitmap;
@@ -1588,6 +1601,9 @@ void updateAlienBullet(BULLET* bullet) {
     player.bodyImage = spaceship_body_4Bitmap;
     break;
   }
+
+  *(volatile u16*)0x04000068 = (0 << 6) | (((1) & 7) << 8) | (0 << 11) | (((15) & 15) << 12);
+  *(volatile u16*)0x0400006C = NOTE_D2 | (1<<15) | (1<<14);
  }
 }
 
@@ -1603,14 +1619,15 @@ void updateAlienRow(ALIENROW* alienRow) {
   alienRow->col = 240 - alienRow->width;
   alienRow->cdel *= -1;
  }
- alienRow->row += alienRow->rdel;
-# 424 "game.c"
+
+
  for (int j = 0; j < 5; j++) {
   alienRow->aliens[j].col = alienRow->col + (j * 24) + (j * alienRow->space);
   alienRow->aliens[j].row = alienRow->row;
 
   if (alienRow->aliens[j].alive && alienRow->aliens[j].cooldown <= 0) {
-   if (rand() % 500 == 0) {
+
+   if (rand() % (25 * aliensRemaining) == 0) {
     fireAlienBullet(&(alienRow->aliens[j]));
     alienRow->aliens[j].cooldown = 10;
    }
@@ -1622,10 +1639,12 @@ void updateAlienRow(ALIENROW* alienRow) {
 
 
 void updateExplosion(EXPLOSION* explosion) {
+
  if (explosion->animTimer == 0) {
   explosion->animFrame++;
   explosion->animTimer = 4;
   if (explosion->animFrame > 3) {
+
    explosion->animFrame = 1;
    explosion->active = 0;
   }
@@ -1641,6 +1660,10 @@ void firePlayerBullet() {
    playerBullets[i].active = 1;
    playerBullets[i].col = player.col + (player.bodyWidth / 2);
    playerBullets[i].row = player.row - playerBullets[i].height;
+
+   *(volatile u16*)0x04000060 = ((5) & 7) | (1 << 3) | (((2) & 7) << 4);
+   *(volatile u16*)0x04000062 = (0 << 6) | (((3) & 7) << 8) | (0 << 11) | (((15) & 15) << 12);
+   *(volatile u16*)0x04000064 = NOTE_A4 | (1<<15) | (1<<14);
    break;
   }
  }
@@ -1667,6 +1690,7 @@ void drawHUD() {
  static int updateLifeNextPage = 0;
  static int updateStageNextPage = 0;
  static int updateScoreNextPage = 0;
+
  if (lastLives != lives || updateLifeNextPage) {
   drawRect4(1 + (6 * (6 + lives)), 1, 6, 8, GRAY_IDX);
   if (lastLives != lives) {
@@ -1676,6 +1700,7 @@ void drawHUD() {
    updateLifeNextPage = 0;
   }
  }
+
  if (lastStage != stage || updateStageNextPage) {
   drawRect4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, (6 * (2)), 8, GRAY_IDX);
         drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, stage, WHITE_IDX);
@@ -1686,6 +1711,7 @@ void drawHUD() {
    updateStageNextPage = 0;
   }
  }
+
  if (lastScore != score || updateScoreNextPage) {
   drawRect4(240 - 1 - (6 * (6)), 1, (6 * (6)), 8, GRAY_IDX);
   drawInt4(240 - 1 - (6 * (6)), 1, 6, score, WHITE_IDX);
@@ -1701,15 +1727,11 @@ void drawHUD() {
 
 void drawPlayer() {
 
+
  if (player.row >= 10) {
 
   if (!(player.iframes && player.iframes % 8 < 4)) {
    drawImage4(player.col, player.row, player.bodyWidth, player.bodyHeight, player.bodyImage);
-   if (player.jetFrame == 1) {
-    drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage1);
-   } else {
-    drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage2);
-   }
   }
  } else {
 
@@ -1755,6 +1777,7 @@ void drawBullet(BULLET* b) {
 
 
 void drawAlien(ALIEN* a) {
+
  if (a->row >= 10) {
   drawImage4(a->col, a->row, a->width, a->height, a->image);
  } else {
@@ -1769,10 +1792,11 @@ void drawAlien(ALIEN* a) {
 
 
 void drawExplosion(EXPLOSION* e) {
+
  const unsigned short* image = 
-# 588 "game.c" 3 4
+# 604 "game.c" 3 4
                               ((void *)0)
-# 588 "game.c"
+# 604 "game.c"
                                   ;
  switch (e->animFrame)
  {
