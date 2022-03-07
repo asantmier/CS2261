@@ -1666,134 +1666,134 @@ spaceship_body_3Bitmap:
 	.size	spaceship_body_2Pal, 512
 spaceship_body_2Pal:
 	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	32396
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
 	.short	21
 	.short	17969
 	.short	3968
@@ -1941,8 +1941,8 @@ spaceship_body_2Bitmap:
 	.short	0
 	.short	143
 	.short	-29952
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
 	.short	139
 	.short	-28928
 	.short	0
@@ -1952,10 +1952,10 @@ spaceship_body_2Bitmap:
 	.short	0
 	.short	0
 	.short	133
-	.short	395
-	.short	257
-	.short	257
-	.short	-29951
+	.short	-32629
+	.short	-32640
+	.short	-32640
+	.short	-29824
 	.short	-31488
 	.short	0
 	.short	0
@@ -1964,10 +1964,10 @@ spaceship_body_2Bitmap:
 	.short	0
 	.short	0
 	.short	-29819
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
 	.short	-31349
 	.short	0
 	.short	0
@@ -1975,132 +1975,132 @@ spaceship_body_2Bitmap:
 	.short	0
 	.short	0
 	.short	143
-	.short	395
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	-29951
+	.short	-32629
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-29824
 	.short	-28928
 	.short	0
 	.short	0
 	.short	0
 	.short	0
 	.short	-29819
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
 	.short	-31349
 	.short	0
 	.short	0
 	.short	0
 	.short	0
 	.short	-29819
-	.short	257
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
+	.short	-32640
 	.short	-31612
-	.short	388
-	.short	257
+	.short	-32636
+	.short	-32640
 	.short	-31349
 	.short	0
 	.short	0
 	.short	0
 	.short	0
-	.short	395
-	.short	257
-	.short	257
-	.short	-31743
+	.short	-32629
+	.short	-32640
+	.short	-32640
+	.short	-31616
 	.short	-31612
 	.short	-31612
-	.short	257
-	.short	-29951
+	.short	-32640
+	.short	-29824
 	.short	0
 	.short	0
 	.short	0
 	.short	0
-	.short	395
-	.short	257
-	.short	257
-	.short	-31743
+	.short	-32629
+	.short	-32640
+	.short	-32640
+	.short	-31616
 	.short	-31612
 	.short	-31612
-	.short	257
-	.short	-29951
+	.short	-32640
+	.short	-29824
 	.short	0
 	.short	0
 	.short	0
 	.short	-29184
-	.short	257
-	.short	257
-	.short	257
-	.short	-31743
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-31616
 	.short	-31612
 	.short	-31612
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
 	.short	142
 	.short	0
 	.short	0
 	.short	-30578
-	.short	257
-	.short	394
-	.short	257
-	.short	-31743
+	.short	-32640
+	.short	-32630
+	.short	-32640
+	.short	-31616
 	.short	-31612
 	.short	-31612
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
 	.short	-29048
 	.short	0
 	.short	-29184
 	.short	-29817
 	.short	-30078
-	.short	-30207
-	.short	-30207
-	.short	257
+	.short	-30080
+	.short	-30080
+	.short	-32640
 	.short	-31612
-	.short	388
-	.short	257
-	.short	-32255
+	.short	-32636
+	.short	-32640
+	.short	-32128
 	.short	-30837
 	.short	142
 	.short	-29184
 	.short	-29817
-	.short	386
-	.short	-30207
-	.short	394
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	-32255
+	.short	-32638
+	.short	-30080
+	.short	-32630
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32128
 	.short	-30837
 	.short	142
 	.short	-30834
 	.short	-29817
 	.short	-32116
-	.short	394
-	.short	-30207
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	-32630
+	.short	-30080
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
 	.short	-29310
 	.short	-30837
 	.short	-29049
 	.short	-30834
 	.short	-29817
 	.short	-29567
-	.short	386
-	.short	-30207
-	.short	257
-	.short	257
-	.short	257
-	.short	-32255
+	.short	-32638
+	.short	-30080
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32128
 	.short	-31859
 	.short	-30837
 	.short	-29049
@@ -2108,10 +2108,10 @@ spaceship_body_2Bitmap:
 	.short	-29810
 	.short	-32372
 	.short	-32116
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
+	.short	-32640
+	.short	-32640
 	.short	-29310
 	.short	-29309
 	.short	-29045
@@ -2121,8 +2121,8 @@ spaceship_body_2Bitmap:
 	.short	-29557
 	.short	-29567
 	.short	-32126
-	.short	257
-	.short	257
+	.short	-32640
+	.short	-32640
 	.short	-32126
 	.short	-31859
 	.short	-29811

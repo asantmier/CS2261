@@ -90,7 +90,7 @@ void start() {
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         srand(seed);
         goToGame();
-        initGame();
+        initGame(1);
     }
 }
 
@@ -99,7 +99,11 @@ void game() {
     drawGame();
     waitForVBlank();
     flipPage();
-    if (lives == 0) {
+    if (victory) {
+        score += SCORE_STAGE;
+        initGame(++stage);
+    }
+    if (gameOver) {
         goToLose();
     }
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
@@ -120,16 +124,17 @@ void pause() {
 void win() {
     waitForVBlank();
 
-    if (BUTTON_PRESSED(BUTTON_START))
+    if (BUTTON_PRESSED(BUTTON_START)) {
         goToStart();
+    }
 }
 
 void lose() {
     waitForVBlank();
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
-        goToGame();
         srand(seed);
-        initGame();
+        goToGame();
+        initGame(1);
     }
     if (BUTTON_PRESSED(BUTTON_START)) {
         goToStart();
@@ -137,6 +142,7 @@ void lose() {
 }
 
 void goToStart() {
+    // TODO highscore on the main menu
     DMANow(3, img_titlePal, PALETTE, 256);
     DMANow(3, colors, PALETTE + BLACK_IDX, numColors);
     drawFullscreenImage4(img_titleBitmap);
@@ -151,51 +157,75 @@ void goToStart() {
 }
 
 void goToGame() {
-    if (state == START) {
+    if (state == START || state == LOSE) {
         DMANow(3, gamePal, PALETTE, 256);
         DMANow(3, colors, PALETTE + BLACK_IDX, numColors);
+        // background
         drawFullscreenImage4(backgroundBitmap);
+        // HUD
+        drawRect4(0, 0, SCREENWIDTH, HUD_HEIGHT, HUD_COLOR);
+        drawString4(1, 1, "Lives:", WHITE_IDX);
+		for (int i = 0; i < LIFEMAX; i++) {
+			drawChar4(1 + STRINGWIDTH(6 + i), 1, 3, WHITE_IDX);
+		}
+        drawString4((SCREENWIDTH - STRINGWIDTH(8)) / 2, 1, "STAGE ", WHITE_IDX);
+        drawInt4(((SCREENWIDTH - STRINGWIDTH(8)) / 2) + STRINGWIDTH(6), 1, 2, 1, WHITE_IDX);
+        drawString4(SCREENWIDTH - 1 - STRINGWIDTH(12), 1, "Score:", WHITE_IDX);
+        drawInt4(SCREENWIDTH - 1 - STRINGWIDTH(6), 1, 6, 0, WHITE_IDX);
+        
+        // Now let's do it on the next page as well. We make the player wait another 16ms to start our game, it's ok.
+        waitForVBlank();
+        flipPage();
+        
+        // background
+        drawFullscreenImage4(backgroundBitmap);
+        // HUD
+        drawRect4(0, 0, SCREENWIDTH, HUD_HEIGHT, HUD_COLOR);
+        drawString4(1, 1, "Lives:", WHITE_IDX);
+		for (int i = 0; i < LIFEMAX; i++) {
+			drawChar4(1 + STRINGWIDTH(6 + i), 1, 3, WHITE_IDX);
+		}
+        drawString4((SCREENWIDTH - STRINGWIDTH(8)) / 2, 1, "STAGE ", WHITE_IDX);
+        drawInt4(((SCREENWIDTH - STRINGWIDTH(8)) / 2) + STRINGWIDTH(6), 1, 2, 1, WHITE_IDX);
+        drawString4(SCREENWIDTH - 1 - STRINGWIDTH(12), 1, "Score:", WHITE_IDX);
+        drawInt4(SCREENWIDTH - 1 - STRINGWIDTH(6), 1, 6, 0, WHITE_IDX);
     }
-
-    // Draw HUD bar at top of the screen
-    //drawRect4(0, 0, SCREENWIDTH, 10, 0);
-    // Set up life and score counters
-    // drawString4(1, 1, "Lives:", WHITE_IDX);
-    // drawString4(SCREENWIDTH - 1 - STRINGWIDTH(12), 1, "Score:", WHITE_IDX);
-    //drawString4(SCREENWIDTH - 1 - 6 * 15, 1, "Hi-Score:", 1); // 15 letters + 1 spacer
-	//drawInt4(SCREENWIDTH - STRINGWIDTH(6) - 1, 1, 6, hiscore, WHITE_IDX);
-    // waitForVBlank();
-    // flipPage();
     state = GAME;
 }
 
 void goToPause() {
+    // All of this text is on the gameplay part of the screen so it'll get wiped by drawGame()
     drawString4(((SCREENWIDTH - STRINGWIDTH(6)) / 2), 60, "PAUSED", WHITE_IDX);
     drawString4(((SCREENWIDTH - STRINGWIDTH(23)) / 2), 90, "press SELECT to unpause", WHITE_IDX);
-    drawString4(((SCREENWIDTH - STRINGWIDTH(34)) / 2), 100, "press START to go to start screen", WHITE_IDX);
+    drawString4(((SCREENWIDTH - STRINGWIDTH(37)) / 2), 100, "press START to go to the start screen", WHITE_IDX);
+    waitForVBlank();
+    flipPage();
     state = PAUSE;
 }
 
 void goToWin() {
-    // This should probably be made similar to go to lose
-    // fillScreen4(PERSIANID);
-    // drawString4(120-9, 80-3, "Win", WHITEID);
-
+    drawString4(((SCREENWIDTH - STRINGWIDTH(7)) / 2), 60, "VICTORY", GREEN_IDX);
+    drawString4(((SCREENWIDTH - STRINGWIDTH(37)) / 2), 100, "press START to go to the start screen", WHITE_IDX);
     waitForVBlank();
     flipPage();
-
-
     state = WIN;
 }
 
 void goToLose() {
+    drawString4((SCREENWIDTH - STRINGWIDTH(13 + 6)) / 2, 18, "Final Score: ", WHITE_IDX);
     if (score > hiscore) { // show new high score text
         hiscore = score;
-        drawString4(1 + ((SCREENWIDTH - STRINGWIDTH(15)) / 2), 1 + 20, "NEW HIGH SCORE!", WHITE_IDX); // shadow
-        drawString4(((SCREENWIDTH - STRINGWIDTH(15)) / 2), 20, "NEW HIGH SCORE!", GREEN_IDX);
+        drawInt4((SCREENWIDTH - STRINGWIDTH(13 + 6)) / 2 + STRINGWIDTH(13), 18, 6, score, GREEN_IDX);
+        drawString4(1 + ((SCREENWIDTH - STRINGWIDTH(15)) / 2), 1 + 30, "NEW HIGH SCORE!", DARKGREEN_IDX); // shadow
+        drawString4(((SCREENWIDTH - STRINGWIDTH(15)) / 2), 30, "NEW HIGH SCORE!", GREEN_IDX);
+    } else {
+        drawInt4((SCREENWIDTH - STRINGWIDTH(13 + 6)) / 2 + STRINGWIDTH(13), 18, 6, score, WHITE_IDX);
     }
-    drawString4(1 + ((SCREENWIDTH - STRINGWIDTH(8)) / 2), 1 + 80, "YOU LOST", WHITE_IDX); // shadow
-    drawString4(((SCREENWIDTH - STRINGWIDTH(8)) / 2), 80, "YOU LOST", RED_IDX);
+    drawString4(1 + ((SCREENWIDTH - STRINGWIDTH(9)) / 2), 1 + 80, "GAME OVER", DARKRED_IDX); // shadow
+    drawString4(((SCREENWIDTH - STRINGWIDTH(9)) / 2), 80, "GAME OVER", RED_IDX);
     drawString4(((SCREENWIDTH - STRINGWIDTH(25)) / 2), 100, "press SELECT to try again", WHITE_IDX);
+    drawString4(((SCREENWIDTH - STRINGWIDTH(37)) / 2), 110, "press START to go to the start screen", WHITE_IDX);
+    waitForVBlank();
+    flipPage();
     state = LOSE;
 }

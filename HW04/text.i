@@ -11,7 +11,7 @@ typedef unsigned short u16;
 typedef unsigned char u8;
 # 28 "HW04Lib.h"
 extern unsigned short *videoBuffer;
-# 58 "HW04Lib.h"
+# 60 "HW04Lib.h"
 extern u16 colors[];
 
 enum {
@@ -32,7 +32,9 @@ enum {
   LAVPINK_IDX,
   TURQUOISE_IDX,
   PERSIAN_IDX,
-  TEAL_IDX
+  TEAL_IDX,
+  DARKGREEN_IDX,
+  DARKRED_IDX
 } COLORINDEX;
 extern int numColors;
 
@@ -53,10 +55,10 @@ void drawFullscreenImage4(const unsigned short *image);
 
 void waitForVBlank();
 void flipPage();
-# 119 "HW04Lib.h"
+# 123 "HW04Lib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 130 "HW04Lib.h"
+# 134 "HW04Lib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -65,9 +67,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 170 "HW04Lib.h"
+# 174 "HW04Lib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 248 "HW04Lib.h"
+# 252 "HW04Lib.h"
 enum {
   REST = 0,
   NOTE_C2 =44,

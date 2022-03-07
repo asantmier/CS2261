@@ -869,7 +869,7 @@ typedef unsigned short u16;
 typedef unsigned char u8;
 # 28 "HW04Lib.h"
 extern unsigned short *videoBuffer;
-# 58 "HW04Lib.h"
+# 60 "HW04Lib.h"
 extern u16 colors[];
 
 enum {
@@ -890,7 +890,9 @@ enum {
   LAVPINK_IDX,
   TURQUOISE_IDX,
   PERSIAN_IDX,
-  TEAL_IDX
+  TEAL_IDX,
+  DARKGREEN_IDX,
+  DARKRED_IDX
 } COLORINDEX;
 extern int numColors;
 
@@ -911,10 +913,10 @@ void drawFullscreenImage4(const unsigned short *image);
 
 void waitForVBlank();
 void flipPage();
-# 119 "HW04Lib.h"
+# 123 "HW04Lib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 130 "HW04Lib.h"
+# 134 "HW04Lib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -923,9 +925,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 170 "HW04Lib.h"
+# 174 "HW04Lib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 248 "HW04Lib.h"
+# 252 "HW04Lib.h"
 enum {
   REST = 0,
   NOTE_C2 =44,
@@ -1009,91 +1011,110 @@ enum {
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 4 "game.c" 2
 # 1 "game.h" 1
-
-
-
-
+# 25 "game.h"
 typedef struct {
  int row;
  int col;
  int rdel;
  int cdel;
- int height;
- int width;
- int active;
- int erased;
- const unsigned short* image;
-
+ int bodyHeight;
+ int bodyWidth;
+ const unsigned short* bodyImage;
+ int jetHeight;
+ int jetWidth;
+ const unsigned short* jetImage1;
+ const unsigned short* jetImage2;
+ int jetFrame;
+ int jetTimer;
  int cooldown;
- int hOrient;
  int iframes;
- int invis;
 } PLAYER;
 
 
 typedef struct {
  int row;
  int col;
- int oldRow;
- int oldCol;
  int rdel;
  int cdel;
  int height;
  int width;
- unsigned short color;
+ u8 colorIndex;
  int active;
- int erased;
-} TORPEDO;
-
+} BULLET;
 
 
 typedef struct {
  int row;
  int col;
- int oldRow;
- int oldCol;
- int rdel;
- int cdel;
  int height;
  int width;
- int active;
- int erased;
- int slowframe;
- int dir;
  const unsigned short* image;
-} ENEMY;
-# 69 "game.h"
-enum { NEUTRAL = 0, LEFT, RIGHT, UP, DOWN };
+ int alive;
+ int cooldown;
+ int score;
+ u8 bulletColor;
+} ALIEN;
 
 
-extern PLAYER ship;
-extern TORPEDO torpedoes[6];
-extern ENEMY enemies[5];
-extern ENEMY smallEnemies[10];
-extern u8 bgColor;
+typedef struct {
+ int row;
+ int col;
+ int rdel;
+ int cdel;
+ int space;
+ int height;
+ int width;
+ ALIEN aliens[5];
+} ALIENROW;
+
+
+typedef struct {
+ int row;
+ int col;
+ int height;
+ int width;
+ const unsigned short* image1;
+ const unsigned short* image2;
+ const unsigned short* image3;
+ int animFrame;
+ int animTimer;
+ int active;
+} EXPLOSION;
+
+
+extern PLAYER player;
+extern BULLET playerBullets[3];
+extern BULLET alienBullets[10];
+extern ALIENROW alienRows[3];
+extern EXPLOSION explosions[5];
 extern int lives;
-extern int spawnDelay;
 extern int score;
+extern int stage;
 extern int hiscore;
-extern int timer;
+extern int aliensRemaining;
+extern int gameOver;
+extern int victory;
 
 
-void initGame();
-void initShip();
-void initTorpedoes();
-void initEnemies();
+void initGame(int setStage);
+void initPlayer();
+void initBullets();
+void initAliens();
+void initExplosions();
 void updateGame();
-void updateShip();
-void updateTorpedo(TORPEDO*);
-void updateEnemy(ENEMY*, int);
+void updatePlayer();
+void updatePlayerBullet(BULLET* bullet);
+void updateAlienBullet(BULLET* bullet);
+void updateAlienRow(ALIENROW* alienRow);
+void updateExplosion(EXPLOSION* explosion);
 void drawGame();
 void drawHUD();
-void drawShip();
-void drawTorpedo(TORPEDO*);
-void drawEnemy(ENEMY*);
-void fireTorpedo();
-void spawnEnemy();
-void spawnSmallEnemies(ENEMY*);
+void drawPlayer();
+void drawBullet(BULLET* b);
+void drawAlien(ALIEN* a);
+void drawExplosion(EXPLOSION* e);
+void firePlayerBullet();
+void fireAlienBullet(ALIEN* a);
 # 5 "game.c" 2
 # 1 "text.h" 1
 
@@ -1177,132 +1198,464 @@ extern const unsigned short spaceship_jet_2Pal[256];
 # 7 "game.c" 2
 
 
-
-PLAYER ship;
-TORPEDO torpedoes[6];
-ENEMY enemies[5];
-ENEMY smallEnemies[10];
-u8 bgColor = 0;
+PLAYER player;
+BULLET playerBullets[3];
+BULLET alienBullets[10];
+ALIENROW alienRows[3];
+EXPLOSION explosions[5];
 int lives;
-int spawnDelay;
 int score;
+int stage;
 int hiscore = 0;
-int timer;
+int aliensRemaining;
+int lastLives;
+int lastScore;
+int lastStage;
+int gameOver;
+int gameOverDelay;
+int victory;
+int victoryDelay;
+int startUpDelay;
 
 
-void initGame() {
- initShip();
- initTorpedoes();
- initEnemies();
- lives = 3;
+void initGame(int setStage) {
 
- spawnDelay = 50 + rand() % 50;
- score = 0;
- timer = 60;
+ initPlayer();
+ initAliens();
+ aliensRemaining = 3 * 5;
+ victory = 0;
+ victoryDelay = 60;
+ stage = setStage;
+ startUpDelay = 100;
+
+ if (setStage == 1) {
+
+  initBullets();
+  initExplosions();
+  lives = 3;
+  lastLives = lives;
+  score = 0;
+  lastScore = score;
+  stage = 1;
+  lastStage = stage;
+  gameOver = 0;
+  gameOverDelay = 60;
+ } else {
+  switch(lives) {
+   case 3:
+    player.bodyImage = spaceship_body_1Bitmap;
+    break;
+   case 2:
+    player.bodyImage = spaceship_body_2Bitmap;
+    break;
+   case 1:
+    player.bodyImage = spaceship_body_3Bitmap;
+    break;
+   case 0:
+    player.bodyImage = spaceship_body_4Bitmap;
+    break;
+  }
+ }
 }
 
 
 void updateGame() {
- if (timer <= 0) {
-  score += 10;
-  timer = 60;
+ if (startUpDelay) {
+  startUpDelay--;
+  return;
  }
- timer--;
+ if (lives) {
+  if (aliensRemaining) {
 
+   updatePlayer();
 
- if (spawnDelay <= 0) {
-  spawnEnemy();
+   for (int i = 0; i < 3; i++) {
+    if (playerBullets[i].active) {
+     updatePlayerBullet(&playerBullets[i]);
+    }
+   }
+   for (int i = 0; i < 10; i++) {
+    if (alienBullets[i].active) {
+     updateAlienBullet(&alienBullets[i]);
+    }
+   }
+
+   for (int i = 0; i < 3; i++) {
+    updateAlienRow(&alienRows[i]);
+   }
+
+   for (int i = 0; i < 5; i++) {
+    if(explosions[i].active) {
+     updateExplosion(&explosions[i]);
+    }
+   }
+  } else {
+
+   player.iframes = 0;
+
+   for (int i = 0; i < 3; i++) {
+    playerBullets[i].active = 0;
+   }
+   for (int i = 0; i < 10; i++) {
+    alienBullets[i].active = 0;
+   }
+
+   for (int i = 0; i < 5; i++) {
+    if(explosions[i].active) {
+     updateExplosion(&explosions[i]);
+    }
+   }
+   victoryDelay--;
+   if (victoryDelay <= 0) {
+
+    player.row -= 1;
+    if (player.row + 24 < 0) {
+     victory = 1;
+    }
+   }
+  }
  } else {
-  spawnDelay--;
+
+  for (int i = 0; i < 3; i++) {
+   playerBullets[i].active = 0;
+  }
+  for (int i = 0; i < 10; i++) {
+   alienBullets[i].active = 0;
+  }
+
+  for (int i = 0; i < 5; i++) {
+   if(explosions[i].active) {
+    updateExplosion(&explosions[i]);
+   }
+  }
+  gameOverDelay--;
+  if (gameOverDelay <= 0) {
+
+   for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 5; j++) {
+     alienRows[i].aliens[j].row -= 1;
+    }
+   }
+   if (alienRows[0].aliens[0].row + 24 < 0) {
+    gameOver = 1;
+   }
+  }
  }
 
- updateShip();
-
- for (int i = 0; i < 6; i++) {
-  updateTorpedo(&torpedoes[i]);
- }
-
- for (int i = 0; i < 5; i++) {
-  updateEnemy(&enemies[i], 0);
- }
-
- for (int i = 0; i < 10; i++) {
-  updateEnemy(&smallEnemies[i], 1);
- }
 }
 
 
 void drawGame() {
 
- DMANow(3, backgroundBitmap, videoBuffer, (240 * 160) / 2);
+ drawImage4(0, 10, 240, 160 - 10,
+    backgroundBitmap + ((10)*(240)+(0)) / 2);
 
  drawHUD();
 
- drawShip();
+ drawPlayer();
 
- for (int i = 0; i < 6; i++) {
-  drawTorpedo(&torpedoes[i]);
+ for (int i = 0; i < 3; i++) {
+  for (int j = 0; j < 5; j++) {
+   if (alienRows[i].aliens[j].alive) {
+    drawAlien(&(alienRows[i].aliens[j]));
+   }
+  }
  }
 
  for (int i = 0; i < 5; i++) {
-  drawEnemy(&enemies[i]);
+  if(explosions[i].active) {
+   drawExplosion(&explosions[i]);
+  }
  }
 
+ for (int i = 0; i < 3; i++) {
+  if (playerBullets[i].active) {
+   drawBullet(&playerBullets[i]);
+  }
+ }
  for (int i = 0; i < 10; i++) {
-  drawEnemy(&smallEnemies[i]);
+  if (alienBullets[i].active) {
+   drawBullet(&alienBullets[i]);
+  }
+ }
+
+ if (startUpDelay) {
+
+
+
+  drawString4((240 - (6 * (5))) / 2, 94, "READY", WHITE_IDX);
+  if (startUpDelay <= 30) {
+   drawString4((240 - (6 * (2))) / 2, 94 + 15, "GO", WHITE_IDX);
+  }
  }
 }
 
 
-void initShip() {
-# 103 "game.c"
+void initPlayer() {
+ player.row = 160 - 24 - 3;
+ player.col = (240 - 24) / 2;
+ player.rdel = 0;
+ player.cdel = 2;
+ player.bodyHeight = 21;
+ player.bodyWidth = 24;
+ player.bodyImage = spaceship_body_1Bitmap;
+ player.jetHeight = 3;
+ player.jetWidth = 24;
+ player.jetImage1 = spaceship_jet_1Bitmap;
+ player.jetImage2 = spaceship_jet_2Bitmap;
+ player.jetFrame = 1;
+ player.jetTimer = 3;
+ player.cooldown = 0;
+ player.iframes = 0;
 }
 
 
-void initTorpedoes() {
-# 119 "game.c"
+void initBullets() {
+
+ for (int i = 0; i < 3; i++) {
+  playerBullets[i].rdel = -2;
+  playerBullets[i].cdel = 0;
+  playerBullets[i].height = 2;
+  playerBullets[i].width = 1;
+  playerBullets[i].colorIndex = BLUE_IDX;
+  playerBullets[i].active = 0;
+ }
+ for (int i = 0; i < 10; i++) {
+  alienBullets[i].rdel = 1;
+  alienBullets[i].cdel = 0;
+  alienBullets[i].height = 2;
+  alienBullets[i].width = 1;
+
+  alienBullets[i].active = 0;
+ }
 }
 
 
-void initEnemies() {
-# 151 "game.c"
+void initAliens() {
+ for (int i = 0; i < 3; i++) {
+  switch (i)
+  {
+  case 0:
+   alienRows[i].row = 67;
+   alienRows[i].cdel = -1;
+   break;
+  case 1:
+   alienRows[i].row = 39;
+   alienRows[i].cdel = 1;
+   break;
+  case 2:
+   alienRows[i].row = 11;
+   alienRows[i].cdel = -1;
+   break;
+  }
+  alienRows[i].rdel = 0;
+  alienRows[i].space = 4;
+  alienRows[i].height = 24;
+  alienRows[i].width = alienRows[i].space * (5 - 1) + 24 * 5;
+  alienRows[i].col = (240 - alienRows[i].width) / 2;
+  for (int j = 0; j < 5; j++) {
+   alienRows[i].aliens[j].alive = 1;
+   alienRows[i].aliens[j].height = 24;
+   alienRows[i].aliens[j].width = 24;
+   alienRows[i].aliens[j].col = alienRows[i].col + (j * 24) + (j * alienRows[i].space);
+   alienRows[i].aliens[j].row = alienRows[i].row;
+   alienRows[i].aliens[j].cooldown = 30;
+   switch (i)
+   {
+   case 0:
+    alienRows[i].aliens[j].image = alien_1Bitmap;
+    alienRows[i].aliens[j].bulletColor = GREEN_IDX;
+    alienRows[i].aliens[j].score = 100;
+    break;
+   case 1:
+    alienRows[i].aliens[j].image = alien_2Bitmap;
+    alienRows[i].aliens[j].bulletColor = YELLOW_IDX;
+    alienRows[i].aliens[j].score = 250;
+    break;
+   case 2:
+    alienRows[i].aliens[j].image = alien_3Bitmap;
+    alienRows[i].aliens[j].bulletColor = RED_IDX;
+    alienRows[i].aliens[j].score = 500;
+    break;
+   }
+  }
+ }
 }
 
 
-void spawnEnemy() {
-# 180 "game.c"
+void initExplosions() {
+
+ for (int i = 0; i < 5; i++) {
+  explosions[i].height = 24;
+  explosions[i].width = 24;
+  explosions[i].image1 = explosion_1Bitmap;
+  explosions[i].image2 = explosion_2Bitmap;
+  explosions[i].image3 = explosion_3Bitmap;
+  explosions[i].animFrame = 1;
+  explosions[i].animTimer = 4;
+  explosions[i].active = 0;
+ }
 }
 
 
-void spawnSmallEnemies(ENEMY* parent) {
-# 216 "game.c"
+void updatePlayer() {
+
+ if (player.jetTimer == 0) {
+  player.jetFrame = player.jetFrame ? 0 : 1;
+  player.jetTimer = 3;
+ } else {
+  player.jetTimer--;
+ }
+
+
+ if ((~((*(volatile unsigned short *)0x04000130)) & ((1<<5)))) {
+  player.col -= player.cdel;
+  if (player.col < 0) {
+   player.col = 0;
+  }
+ } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1<<4)))) {
+  player.col += player.cdel;
+  if (player.col + player.bodyWidth - 1 >= 240) {
+   player.col = 240 - player.bodyWidth;
+  }
+ }
+
+
+ if ((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1)))) && player.cooldown <= 0) {
+   firePlayerBullet();
+  player.cooldown = 20;
+ } else {
+  player.cooldown--;
+ }
+
+
+ if (player.iframes > 0) {
+  player.iframes--;
+ }
 }
 
 
-void updateShip() {
-# 297 "game.c"
+void updatePlayerBullet(BULLET* bullet) {
+ bullet->row += bullet->rdel;
+ if (bullet->row < 10) {
+  bullet->active = 0;
+ }
+ for (int i = 0; i < 3; i++) {
+  for (int j = 0; j < 5; j++) {
+   ALIEN* alien = &(alienRows[i].aliens[j]);
+   int collided = collision(bullet->col, bullet->row, bullet->width, bullet->height,
+          alien->col, alien->row, alien->width, alien->height);
+   if (alien->alive && collided) {
+    alien->alive = 0;
+    aliensRemaining--;
+    bullet->active = 0;
+    score += alien->score;
+    for (int k = 0; k < 5; k++) {
+     if (!explosions[k].active) {
+      explosions[k].active = 1;
+      explosions[k].col = alien->col;
+      explosions[k].row = alien->row;
+
+      break;
+     }
+    }
+    break;
+   }
+  }
+ }
 }
 
 
-void fireTorpedo() {
-# 319 "game.c"
+void updateAlienBullet(BULLET* bullet) {
+ bullet->row += bullet->rdel;
+ if (bullet->row >= 160) {
+  bullet->active = 0;
+ }
+ if (!player.iframes && collision(bullet->col, bullet->row, bullet->width, bullet->height,
+          player.col, player.row, player.bodyWidth, player.bodyHeight)) {
+  lives--;
+  bullet->active = 0;
+  switch(lives) {
+   case 2:
+    player.bodyImage = spaceship_body_2Bitmap;
+    player.iframes = 88;
+    break;
+   case 1:
+    player.bodyImage = spaceship_body_3Bitmap;
+    player.iframes = 88;
+    break;
+   case 0:
+    player.bodyImage = spaceship_body_4Bitmap;
+    break;
+  }
+ }
 }
 
 
-void updateTorpedo(TORPEDO* b) {
+void updateAlienRow(ALIENROW* alienRow) {
 
+ alienRow->col += alienRow->cdel;
+ if (alienRow->col < 0) {
+  alienRow->col = 0;
+  alienRow->cdel *= -1;
+ }
+ if (alienRow->col + alienRow->width - 1 >= 240) {
+  alienRow->col = 240 - alienRow->width;
+  alienRow->cdel *= -1;
+ }
+ alienRow->row += alienRow->rdel;
+# 424 "game.c"
+ for (int j = 0; j < 5; j++) {
+  alienRow->aliens[j].col = alienRow->col + (j * 24) + (j * alienRow->space);
+  alienRow->aliens[j].row = alienRow->row;
 
-
-
-
-
+  if (alienRow->aliens[j].alive && alienRow->aliens[j].cooldown <= 0) {
+   if (rand() % 500 == 0) {
+    fireAlienBullet(&(alienRow->aliens[j]));
+    alienRow->aliens[j].cooldown = 10;
+   }
+  } else {
+   alienRow->aliens[j].cooldown--;
+  }
+ }
 }
 
 
-void updateEnemy(ENEMY* b, int small) {
+void updateExplosion(EXPLOSION* explosion) {
+ if (explosion->animTimer == 0) {
+  explosion->animFrame++;
+  explosion->animTimer = 4;
+  if (explosion->animFrame > 3) {
+   explosion->animFrame = 1;
+   explosion->active = 0;
+  }
+ } else {
+  explosion->animTimer--;
+ }
+}
 
- if (b->active) {
-# 419 "game.c"
+
+void firePlayerBullet() {
+ for (int i = 0; i < 3; i++) {
+  if (!playerBullets[i].active) {
+   playerBullets[i].active = 1;
+   playerBullets[i].col = player.col + (player.bodyWidth / 2);
+   playerBullets[i].row = player.row - playerBullets[i].height;
+   break;
+  }
+ }
+}
+
+
+void fireAlienBullet(ALIEN* a) {
+ for (int i = 0; i < 10; i++) {
+  if (!alienBullets[i].active) {
+   alienBullets[i].active = 1;
+   alienBullets[i].col = a->col + (a->width / 2);
+   alienBullets[i].row = a->row + a->height;
+   alienBullets[i].colorIndex = a->bulletColor;
+   break;
+  }
  }
 }
 
@@ -1311,31 +1664,127 @@ void drawHUD() {
 
 
 
+ static int updateLifeNextPage = 0;
+ static int updateStageNextPage = 0;
+ static int updateScoreNextPage = 0;
+ if (lastLives != lives || updateLifeNextPage) {
+  drawRect4(1 + (6 * (6 + lives)), 1, 6, 8, GRAY_IDX);
+  if (lastLives != lives) {
+   lastLives = lives;
+   updateLifeNextPage = 1;
+  } else if (updateLifeNextPage) {
+   updateLifeNextPage = 0;
+  }
+ }
+ if (lastStage != stage || updateStageNextPage) {
+  drawRect4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, (6 * (2)), 8, GRAY_IDX);
+        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, stage, WHITE_IDX);
+  if (lastStage != stage) {
+   lastStage = stage;
+   updateStageNextPage = 1;
+  } else if (updateStageNextPage) {
+   updateStageNextPage = 0;
+  }
+ }
+ if (lastScore != score || updateScoreNextPage) {
+  drawRect4(240 - 1 - (6 * (6)), 1, (6 * (6)), 8, GRAY_IDX);
+  drawInt4(240 - 1 - (6 * (6)), 1, 6, score, WHITE_IDX);
+  if (lastScore != score) {
+   lastScore = score;
+   updateScoreNextPage = 1;
+  } else if (updateScoreNextPage) {
+   updateScoreNextPage = 0;
+  }
+ }
+}
 
 
- drawString4(1, 1, "Lives:", WHITE_IDX);
-    drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
- for (int i = 0; i < lives; i++) {
-  drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
+void drawPlayer() {
+
+ if (player.row >= 10) {
+
+  if (!(player.iframes && player.iframes % 8 < 4)) {
+   drawImage4(player.col, player.row, player.bodyWidth, player.bodyHeight, player.bodyImage);
+   if (player.jetFrame == 1) {
+    drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage1);
+   } else {
+    drawImage4(player.col, player.row + player.bodyHeight, player.jetWidth, player.jetHeight, player.jetImage2);
+   }
+  }
+ } else {
+
+  drawImage4(player.col,
+     player.row + (10 - player.row),
+     player.bodyWidth,
+     player.bodyHeight - (10 - player.row),
+     player.bodyImage + (((10 - player.row))*(player.bodyWidth)+(0)) / 2);
  }
 
+ int jetRow = player.row + player.bodyHeight;
+ if (jetRow >= 10) {
 
+  if (!(player.iframes && player.iframes % 8 < 4)) {
+   if (player.jetFrame == 1) {
+    drawImage4(player.col, jetRow, player.jetWidth, player.jetHeight, player.jetImage1);
+   } else {
+    drawImage4(player.col, jetRow, player.jetWidth, player.jetHeight, player.jetImage2);
+   }
+  }
+ } else {
 
-
-
+  if (player.jetFrame == 1) {
+   drawImage4(player.col,
+      jetRow + (10 - jetRow),
+      player.jetWidth,
+      player.jetHeight - (10 - jetRow),
+      player.jetImage1 + (((10 - jetRow))*(player.jetWidth)+(0)) / 2);
+  } else {
+   drawImage4(player.col,
+      jetRow + (10 - jetRow),
+      player.jetWidth,
+      player.jetHeight - (10 - jetRow),
+      player.jetImage2 + (((10 - jetRow))*(player.jetWidth)+(0)) / 2);
+  }
+ }
 }
 
 
-void drawShip() {
-# 453 "game.c"
+void drawBullet(BULLET* b) {
+ drawRect4(b->col, b->row, b->width, b->height, b->colorIndex);
 }
 
 
-void drawTorpedo(TORPEDO* b) {
-# 466 "game.c"
+void drawAlien(ALIEN* a) {
+ if (a->row >= 10) {
+  drawImage4(a->col, a->row, a->width, a->height, a->image);
+ } else {
+
+  drawImage4(a->col,
+     a->row + (10 - a->row),
+      a->width,
+     a->height - (10 - a->row),
+       a->image + (((10 - a->row))*(a->width)+(0)) / 2);
+ }
 }
 
 
-void drawEnemy(ENEMY* b) {
-# 483 "game.c"
+void drawExplosion(EXPLOSION* e) {
+ const unsigned short* image = 
+# 588 "game.c" 3 4
+                              ((void *)0)
+# 588 "game.c"
+                                  ;
+ switch (e->animFrame)
+ {
+ case 1:
+  image = e->image1;
+  break;
+ case 2:
+  image = e->image2;
+  break;
+ case 3:
+  image = e->image3;
+  break;
+ }
+ drawImage4(e->col, e->row, e->width, e->height, image);
 }

@@ -613,9 +613,9 @@ dma:
 	.type	numColors, %object
 	.size	numColors, 4
 numColors:
-	.word	18
+	.word	20
 	.type	colors, %object
-	.size	colors, 36
+	.size	colors, 40
 colors:
 	.short	0
 	.short	32767
@@ -635,4 +635,6 @@ colors:
 	.short	26437
 	.short	21152
 	.short	16896
+	.short	544
+	.short	17
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

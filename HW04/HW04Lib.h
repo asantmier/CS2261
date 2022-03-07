@@ -53,6 +53,8 @@ extern unsigned short *videoBuffer;
 #define TURQUOISE COLOR(5,26,25)
 #define PERSIAN COLOR(0,21,20)
 #define TEAL COLOR(0,16,16)
+#define DARKGREEN COLOR(0,17,0)
+#define DARKRED COLOR(17,0,0)
 
 // Subpalette for colors in code
 extern u16 colors[];
@@ -75,7 +77,9 @@ enum {
   LAVPINK_IDX,
   TURQUOISE_IDX,
   PERSIAN_IDX,
-  TEAL_IDX
+  TEAL_IDX,
+  DARKGREEN_IDX,
+  DARKRED_IDX
 } COLORINDEX;
 extern int numColors;
 

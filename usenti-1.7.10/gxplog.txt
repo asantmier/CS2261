@@ -1,12 +1,12 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-03-05, 20:55:31
+STATUS: Started run at: 2022-03-06, 20:54:58
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
-STATUS: Work-DIB creation complete: 24x3@8.
+STATUS: Work-DIB creation complete: 24x21@8.
 STATUS: Tile preparation.
 STATUS: Tile preparation complete.
 STATUS: Graphics preparation.
@@ -14,5 +14,5 @@ STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: spaceship_jet_2 into C:\Users\Allen\Documents\CS2261\HW04\images.c .
+STATUS: Export to C: spaceship_body_2 into C:\Users\Allen\Documents\CS2261\HW04\spaceship_body_2.c .
 STATUS: Run completed :).

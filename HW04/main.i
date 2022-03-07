@@ -822,7 +822,7 @@ typedef unsigned short u16;
 typedef unsigned char u8;
 # 28 "HW04Lib.h"
 extern unsigned short *videoBuffer;
-# 58 "HW04Lib.h"
+# 60 "HW04Lib.h"
 extern u16 colors[];
 
 enum {
@@ -843,7 +843,9 @@ enum {
   LAVPINK_IDX,
   TURQUOISE_IDX,
   PERSIAN_IDX,
-  TEAL_IDX
+  TEAL_IDX,
+  DARKGREEN_IDX,
+  DARKRED_IDX
 } COLORINDEX;
 extern int numColors;
 
@@ -864,10 +866,10 @@ void drawFullscreenImage4(const unsigned short *image);
 
 void waitForVBlank();
 void flipPage();
-# 119 "HW04Lib.h"
+# 123 "HW04Lib.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-# 130 "HW04Lib.h"
+# 134 "HW04Lib.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -876,9 +878,9 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 170 "HW04Lib.h"
+# 174 "HW04Lib.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-# 248 "HW04Lib.h"
+# 252 "HW04Lib.h"
 enum {
   REST = 0,
   NOTE_C2 =44,
@@ -962,91 +964,110 @@ enum {
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 3 "main.c" 2
 # 1 "game.h" 1
-
-
-
-
+# 25 "game.h"
 typedef struct {
  int row;
  int col;
  int rdel;
  int cdel;
- int height;
- int width;
- int active;
- int erased;
- const unsigned short* image;
-
+ int bodyHeight;
+ int bodyWidth;
+ const unsigned short* bodyImage;
+ int jetHeight;
+ int jetWidth;
+ const unsigned short* jetImage1;
+ const unsigned short* jetImage2;
+ int jetFrame;
+ int jetTimer;
  int cooldown;
- int hOrient;
  int iframes;
- int invis;
 } PLAYER;
 
 
 typedef struct {
  int row;
  int col;
- int oldRow;
- int oldCol;
  int rdel;
  int cdel;
  int height;
  int width;
- unsigned short color;
+ u8 colorIndex;
  int active;
- int erased;
-} TORPEDO;
-
+} BULLET;
 
 
 typedef struct {
  int row;
  int col;
- int oldRow;
- int oldCol;
- int rdel;
- int cdel;
  int height;
  int width;
- int active;
- int erased;
- int slowframe;
- int dir;
  const unsigned short* image;
-} ENEMY;
-# 69 "game.h"
-enum { NEUTRAL = 0, LEFT, RIGHT, UP, DOWN };
+ int alive;
+ int cooldown;
+ int score;
+ u8 bulletColor;
+} ALIEN;
 
 
-extern PLAYER ship;
-extern TORPEDO torpedoes[6];
-extern ENEMY enemies[5];
-extern ENEMY smallEnemies[10];
-extern u8 bgColor;
+typedef struct {
+ int row;
+ int col;
+ int rdel;
+ int cdel;
+ int space;
+ int height;
+ int width;
+ ALIEN aliens[5];
+} ALIENROW;
+
+
+typedef struct {
+ int row;
+ int col;
+ int height;
+ int width;
+ const unsigned short* image1;
+ const unsigned short* image2;
+ const unsigned short* image3;
+ int animFrame;
+ int animTimer;
+ int active;
+} EXPLOSION;
+
+
+extern PLAYER player;
+extern BULLET playerBullets[3];
+extern BULLET alienBullets[10];
+extern ALIENROW alienRows[3];
+extern EXPLOSION explosions[5];
 extern int lives;
-extern int spawnDelay;
 extern int score;
+extern int stage;
 extern int hiscore;
-extern int timer;
+extern int aliensRemaining;
+extern int gameOver;
+extern int victory;
 
 
-void initGame();
-void initShip();
-void initTorpedoes();
-void initEnemies();
+void initGame(int setStage);
+void initPlayer();
+void initBullets();
+void initAliens();
+void initExplosions();
 void updateGame();
-void updateShip();
-void updateTorpedo(TORPEDO*);
-void updateEnemy(ENEMY*, int);
+void updatePlayer();
+void updatePlayerBullet(BULLET* bullet);
+void updateAlienBullet(BULLET* bullet);
+void updateAlienRow(ALIENROW* alienRow);
+void updateExplosion(EXPLOSION* explosion);
 void drawGame();
 void drawHUD();
-void drawShip();
-void drawTorpedo(TORPEDO*);
-void drawEnemy(ENEMY*);
-void fireTorpedo();
-void spawnEnemy();
-void spawnSmallEnemies(ENEMY*);
+void drawPlayer();
+void drawBullet(BULLET* b);
+void drawAlien(ALIEN* a);
+void drawExplosion(EXPLOSION* e);
+void firePlayerBullet();
+void fireAlienBullet(ALIEN* a);
 # 4 "main.c" 2
 # 1 "text.h" 1
 
@@ -1151,7 +1172,6 @@ void game();
 void pause();
 void win();
 void lose();
-void goToGameFromPause();
 
 
 enum {START, GAME, PAUSE, WIN, LOSE};
@@ -1203,6 +1223,7 @@ int main() {
 void initialize() {
     (*(unsigned short *)0x4000000) = 4 | (1<<10) | (1<<4);
 
+
     const u16* palettes[] = { alien_1Pal, alien_2Pal, alien_3Pal, backgroundPal,
                           explosion_1Pal, explosion_2Pal, explosion_3Pal, spaceship_body_1Pal,
                           spaceship_body_2Pal, spaceship_body_3Pal, spaceship_body_4Pal,
@@ -1221,7 +1242,7 @@ void start() {
     if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
         srand(seed);
         goToGame();
-        initGame();
+        initGame(1);
     }
 }
 
@@ -1230,19 +1251,22 @@ void game() {
     drawGame();
     waitForVBlank();
     flipPage();
-    if (lives == 0) {
+    if (victory) {
+        score += 10000;
+        initGame(++stage);
+    }
+    if (gameOver) {
         goToLose();
     }
     if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
         goToPause();
     }
-
 }
 
 void pause() {
     waitForVBlank();
     if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
-        goToGameFromPause();
+        goToGame();
     }
     if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         goToStart();
@@ -1252,16 +1276,17 @@ void pause() {
 void win() {
     waitForVBlank();
 
-    if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3)))))
+    if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         goToStart();
+    }
 }
 
 void lose() {
     waitForVBlank();
     if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
-        goToGame();
         srand(seed);
-        initGame();
+        goToGame();
+        initGame(1);
     }
     if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         goToStart();
@@ -1269,10 +1294,10 @@ void lose() {
 }
 
 void goToStart() {
-    state = START;
+
     DMANow(3, img_titlePal, ((unsigned short *)0x5000000), 256);
     DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
-    DMANow(3, img_titleBitmap, videoBuffer, (240 * 160) / 2);
+    drawFullscreenImage4(img_titleBitmap);
 
     drawString4(((240 - (6 * (15))) / 2) + 1, 60, "GALAXY DEFENDER", 17);
     drawString4(((240 - (6 * (15))) / 2), 60, "GALAXY DEFENDER", 32);
@@ -1280,58 +1305,79 @@ void goToStart() {
     waitForVBlank();
     flipPage();
     seed = 0;
+    state = START;
 }
 
 void goToGame() {
+    if (state == START || state == LOSE) {
+        DMANow(3, gamePal, ((unsigned short *)0x5000000), 256);
+        DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
+
+        drawFullscreenImage4(backgroundBitmap);
+
+        drawRect4(0, 0, 240, 10, GRAY_IDX);
+        drawString4(1, 1, "Lives:", WHITE_IDX);
+  for (int i = 0; i < 3; i++) {
+   drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
+  }
+        drawString4((240 - (6 * (8))) / 2, 1, "STAGE ", WHITE_IDX);
+        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, 1, WHITE_IDX);
+        drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
+        drawInt4(240 - 1 - (6 * (6)), 1, 6, 0, WHITE_IDX);
+
+
+        waitForVBlank();
+        flipPage();
+
+
+        drawFullscreenImage4(backgroundBitmap);
+
+        drawRect4(0, 0, 240, 10, GRAY_IDX);
+        drawString4(1, 1, "Lives:", WHITE_IDX);
+  for (int i = 0; i < 3; i++) {
+   drawChar4(1 + (6 * (6 + i)), 1, 3, WHITE_IDX);
+  }
+        drawString4((240 - (6 * (8))) / 2, 1, "STAGE ", WHITE_IDX);
+        drawInt4(((240 - (6 * (8))) / 2) + (6 * (6)), 1, 2, 1, WHITE_IDX);
+        drawString4(240 - 1 - (6 * (12)), 1, "Score:", WHITE_IDX);
+        drawInt4(240 - 1 - (6 * (6)), 1, 6, 0, WHITE_IDX);
+    }
     state = GAME;
-# 170 "main.c"
-    DMANow(3, gamePal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, colors, ((unsigned short *)0x5000000) + BLACK_IDX, numColors);
-    DMANow(3, backgroundBitmap, videoBuffer, (240 * 160) / 2);
-# 182 "main.c"
-    waitForVBlank();
-    flipPage();
 }
-
-
-
-void goToGameFromPause() {
-    state = GAME;
-    drawRect4(((240 - (6 * 6)) / 2), 60, (6 * 6), 8, bgColor);
-    drawRect4(((240 - (23 * 6)) / 2), 90, (23 * 6), 8, bgColor);
-    drawRect4(((240 - (34 * 6)) / 2), 100, (34 * 6), 8, bgColor);
-}
-
 
 void goToPause() {
-    state = PAUSE;
 
-    drawString4(((240 - (6 * 6)) / 2), 60, "PAUSED", 0);
-    drawString4(((240 - (23 * 6)) / 2), 90, "press SELECT to unpause", 0);
-    drawString4(((240 - (34 * 6)) / 2), 100, "press START to go to start screen", 0);
+    drawString4(((240 - (6 * (6))) / 2), 60, "PAUSED", WHITE_IDX);
+    drawString4(((240 - (6 * (23))) / 2), 90, "press SELECT to unpause", WHITE_IDX);
+    drawString4(((240 - (6 * (37))) / 2), 100, "press START to go to the start screen", WHITE_IDX);
+    waitForVBlank();
+    flipPage();
+    state = PAUSE;
 }
 
 void goToWin() {
-
-
-
-
+    drawString4(((240 - (6 * (7))) / 2), 60, "VICTORY", GREEN_IDX);
+    drawString4(((240 - (6 * (37))) / 2), 100, "press START to go to the start screen", WHITE_IDX);
     waitForVBlank();
     flipPage();
-
-
     state = WIN;
 }
 
-
 void goToLose() {
-    state = LOSE;
+    drawString4((240 - (6 * (13 + 6))) / 2, 18, "Final Score: ", WHITE_IDX);
     if (score > hiscore) {
         hiscore = score;
-        drawString4(1 + ((240 - (6 * 15)) / 2), 1 + 20, "NEW HIGH SCORE!", 0);
-        drawString4(((240 - (6 * 15)) / 2), 20, "NEW HIGH SCORE!", 4);
+        drawInt4((240 - (6 * (13 + 6))) / 2 + (6 * (13)), 18, 6, score, GREEN_IDX);
+        drawString4(1 + ((240 - (6 * (15))) / 2), 1 + 30, "NEW HIGH SCORE!", DARKGREEN_IDX);
+        drawString4(((240 - (6 * (15))) / 2), 30, "NEW HIGH SCORE!", GREEN_IDX);
+    } else {
+        drawInt4((240 - (6 * (13 + 6))) / 2 + (6 * (13)), 18, 6, score, WHITE_IDX);
     }
-    drawString4(1 + ((240 - (6 * 8)) / 2), 1 + 80, "YOU LOST", 0);
-    drawString4(((240 - (6 * 8)) / 2), 80, "YOU LOST", 5);
-    drawString4(((240 - (6 * 25)) / 2), 100, "press SELECT to try again", 0);
+    drawString4(1 + ((240 - (6 * (9))) / 2), 1 + 80, "GAME OVER", DARKRED_IDX);
+    drawString4(((240 - (6 * (9))) / 2), 80, "GAME OVER", RED_IDX);
+    drawString4(((240 - (6 * (25))) / 2), 100, "press SELECT to try again", WHITE_IDX);
+    drawString4(((240 - (6 * (37))) / 2), 110, "press START to go to the start screen", WHITE_IDX);
+    waitForVBlank();
+    flipPage();
+    state = LOSE;
 }
