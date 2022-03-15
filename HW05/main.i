@@ -1318,6 +1318,10 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+
+
+unsigned short colorAt(int x, int y, int level);
+int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout);
 # 4 "main.c" 2
 # 1 "title.h" 1
 # 22 "title.h"
@@ -1409,8 +1413,9 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int level;
 
-void init();
+void init(int newlevel);
 void initMario();
 
 void update();
@@ -1490,7 +1495,7 @@ void initialize() {
     DMANow(3, &level2Map, &((screenblock *)0x6000000)[30], (1 << 26) | (2048 / 4));
     DMANow(3, &spritesheetPal, ((unsigned short *)0x5000200), 256);
     DMANow(3, &spritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
-
+# 99 "main.c"
     (*(volatile unsigned short *)0x4000008) = ((0) << 2) | ((28) << 8) | (1 << 7) | (0 << 14);
     (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (0 << 14);
     (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (0 << 14);
@@ -1520,7 +1525,7 @@ void goToStart() {
 
 void start() {
     if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
-        init();
+        init(1);
         goToGame(1);
     }
     waitForVBlank();

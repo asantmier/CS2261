@@ -240,4 +240,8 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 // Miscellaneous Functions.
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 
+// Collision map functions
+unsigned short colorAt(int x, int y, int level);
+int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout);
+
 #endif

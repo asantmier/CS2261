@@ -1,4 +1,6 @@
 #include "HW05Lib.h"
+#include "level1_collision.h"
+#include <stdlib.h>
 
 // The start of the video memory.
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
@@ -138,4 +140,47 @@ void hideSprites() {
         shadowOAM[i].attr0 &= ~(3 << 8); // Clear object mode bits
         shadowOAM[i].attr0 |= ATTR0_HIDE; // Set object mode bits to hide
     }
+}
+
+unsigned short colorAt(int x, int y, int level) {
+    if (level == 1) {
+        return ((unsigned char*) level1_collisionBitmap)[x + 240 * y];
+    } else if (level == 2) {
+        // return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
+    }
+}
+
+int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout) {
+    int numx = abs(dx);
+    int numy = abs(dy);
+    *xout = x;
+    *yout = y;
+    int collision = 0;
+    int inc = 0;
+    for (int i = 1; i <= numx; i++) {
+        if (!(colorAt(x + (i * (dx / numx)), y + inc, level))) { // collision
+            // Try moving up one pixel
+            if (!inc) {
+                inc = -1;
+                // Go back a step and try again
+                i--;
+                continue;
+            } else {
+                collision = 1;
+                break;
+            }
+        } else {
+            *xout = x + (i * (dx / numx));
+        }
+    }
+    *yout = y + inc;
+    for (int i = 1; i <= numy; i++) {
+        if (!(colorAt(x, y + (i * (dy / numy)), level))) { // collision
+            collision = 1;
+            break;
+        } else {
+            *yout = y + (i * (dy / numy));
+        }
+    }
+    return collision;
 }

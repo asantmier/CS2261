@@ -96,6 +96,10 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+
+
+unsigned short colorAt(int x, int y, int level);
+int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout);
 # 2 "game.c" 2
 # 1 "game.h" 1
 
@@ -150,8 +154,9 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int level;
 
-void init();
+void init(int newlevel);
 void initMario();
 
 void update();
@@ -161,14 +166,28 @@ void updateMario();
 ANI mario;
 int hammerTimer = 0;
 int hammerState = UP;
+int level;
 
-void init() {
-    initMario();
+void init(int newlevel) {
+    level = newlevel;
+
+    initMario(level);
 }
 
 void initMario() {
-    mario.x = 80;
-    mario.y = 100;
+    mario.width = 16;
+    mario.height = 16;
+    switch (level)
+    {
+    case 1:
+        mario.x = 184;
+        mario.y = 151 - 16 + 1;
+        break;
+    case 2:
+        mario.x = 80;
+        mario.y = 100;
+        break;
+    }
 }
 
 void update() {
@@ -190,7 +209,7 @@ void updateMario() {
     }
 
 
-    if (mario.timer % 5) {
+    if (mario.timer % 10) {
         mario.curFrame = (mario.curFrame + 1) % 3;
     }
 
@@ -207,8 +226,10 @@ void updateMario() {
     }
 
 
-    mario.x += mario.dx;
-    mario.y += mario.dy;
+    int newx, newy;
+    checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
+    mario.x = newx - (mario.width / 2);
+    mario.y = newy - mario.height + 1;
 
 
     if (idle) {

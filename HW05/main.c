@@ -125,7 +125,7 @@ void goToStart() {
 // Runs every frame of the start state.
 void start() {
     if (BUTTON_PRESSED(BUTTON_START)) {
-        init();
+        init(1);
         goToGame(1);
     }
     waitForVBlank();

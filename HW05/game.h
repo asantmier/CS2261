@@ -50,8 +50,9 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int level;
 
-void init();
+void init(int newlevel);
 void initMario();
 
 void update();

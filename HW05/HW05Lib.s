@@ -618,6 +618,127 @@ hideSprites:
 .L105:
 	.word	shadowOAM
 	.size	hideSprites, .-hideSprites
+	.align	2
+	.global	colorAt
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	colorAt, %function
+colorAt:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	cmp	r2, #1
+	rsbeq	r1, r1, r1, lsl #4
+	ldreq	r3, .L109
+	addeq	r1, r0, r1, lsl #4
+	ldrbeq	r0, [r3, r1]	@ zero_extendqisi2
+	bx	lr
+.L110:
+	.align	2
+.L109:
+	.word	level1_collisionBitmap
+	.size	colorAt, .-colorAt
+	.align	2
+	.global	checkCollisionMap
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	checkCollisionMap, %function
+checkCollisionMap:
+	@ Function supports interworking.
+	@ args = 12, pretend = 0, frame = 8
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+	mov	r6, r0
+	sub	sp, sp, #12
+	ldr	lr, [sp, #56]
+	ldr	r0, [sp, #52]
+	eor	r10, r2, r2, asr #31
+	eor	r5, r3, r3, asr #31
+	cmp	r2, #0
+	str	r6, [r0]
+	ldr	ip, [sp, #48]
+	str	r1, [lr]
+	sub	r10, r10, r2, asr #31
+	sub	r5, r5, r3, asr #31
+	beq	.L120
+	mov	r9, #0
+	mov	r0, #1
+	mov	r8, r9
+	str	r3, [sp, #4]
+	sub	fp, r1, #1
+.L116:
+	cmp	r2, #0
+	mvnlt	r4, #0
+	movge	r4, #1
+	mla	r4, r0, r4, r6
+	cmp	ip, #1
+	add	r7, r1, r8
+	rsbeq	r9, r7, r7, lsl #4
+	ldreq	r3, .L129
+	addeq	r9, r4, r9, lsl #4
+	ldrbeq	r9, [r3, r9]	@ zero_extendqisi2
+	cmp	r9, #0
+	bne	.L114
+	cmp	r8, #0
+	mov	r7, fp
+	beq	.L121
+	mov	r0, #1
+	ldr	r3, [sp, #4]
+.L112:
+	cmp	r3, #0
+	str	r7, [lr]
+	beq	.L111
+	mov	r7, #1
+	ldr	r2, .L129
+	b	.L119
+.L118:
+	cmp	r5, r7
+	str	r4, [lr]
+	blt	.L111
+.L119:
+	cmp	r3, #0
+	mvnlt	r4, #0
+	movge	r4, #1
+	cmp	ip, #1
+	mla	r4, r7, r4, r1
+	add	r7, r7, #1
+	bne	.L118
+	rsb	r8, r4, r4, lsl #4
+	add	r8, r6, r8, lsl #4
+	ldrb	r8, [r8, r2]	@ zero_extendqisi2
+	cmp	r8, #0
+	bne	.L118
+	mov	r0, ip
+.L111:
+	add	sp, sp, #12
+	@ sp needed
+	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+	bx	lr
+.L114:
+	ldr	r3, [sp, #52]
+	str	r4, [r3]
+	add	r0, r0, #1
+.L115:
+	cmp	r10, r0
+	bge	.L116
+	mov	r0, #0
+	ldr	r3, [sp, #4]
+	b	.L112
+.L121:
+	mvn	r8, #0
+	b	.L115
+.L120:
+	mov	r0, r2
+	mov	r7, r1
+	b	.L112
+.L130:
+	.align	2
+.L129:
+	.word	level1_collisionBitmap
+	.size	checkCollisionMap, .-checkCollisionMap
 	.global	dma
 	.global	videoBuffer
 	.data

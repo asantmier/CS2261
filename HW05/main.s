@@ -204,6 +204,7 @@ start:
 	pop	{r4, lr}
 	bx	lr
 .L16:
+	mov	r0, #1
 	ldr	r3, .L17+12
 	mov	lr, pc
 	bx	r3

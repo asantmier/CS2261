@@ -4,14 +4,28 @@
 ANI mario;
 int hammerTimer = 0;
 int hammerState = UP;
+int level;
 
-void init() {
-    initMario();
+void init(int newlevel) {
+    level = newlevel;
+
+    initMario(level);
 }
 
 void initMario() {
-    mario.x = 80;
-    mario.y = 100;
+    mario.width = 16;
+    mario.height = 16;
+    switch (level)
+    {
+    case 1:
+        mario.x = 184;
+        mario.y = 151 - 16 + 1;
+        break;
+    case 2:
+        mario.x = 80;
+        mario.y = 100;
+        break;
+    }
 }
 
 void update() {
@@ -33,7 +47,7 @@ void updateMario() {
     }
 
     // Change the animation frame every few frames
-    if (mario.timer % 5) {
+    if (mario.timer % 10) {
         mario.curFrame = (mario.curFrame + 1) % 3;
     }
 
@@ -50,8 +64,10 @@ void updateMario() {
     }
 
     // Update mario's position
-    mario.x += mario.dx;
-    mario.y += mario.dy;
+    int newx, newy;
+    checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
+    mario.x = newx - (mario.width / 2);
+    mario.y = newy - mario.height + 1;
 
     // If the player didn't move, set their frame and timer back to 0
     if (idle) {
