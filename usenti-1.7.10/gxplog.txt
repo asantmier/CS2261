@@ -1,18 +1,26 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
+WARNING: Non-integer tiling in width (240 vs 256)
+WARNING: Non-integer tiling in height (160 vs 256)
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-03-06, 20:54:58
+STATUS: Started run at: 2022-03-14, 21:38:49
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
-STATUS: Work-DIB creation complete: 24x21@8.
+STATUS: Work-DIB creation complete: 256x256@8.
 STATUS: Tile preparation.
+STATUS:   tiling to 256x256 tiles.
+STATUS:   tiling to 8x8 tiles.
 STATUS: Tile preparation complete.
+STATUS: Map preparation.
+STATUS:   Performing tile reduction: tiles, flip
+STATUS: Creating new tileset.
+STATUS: Map preparation complete.
 STATUS: Graphics preparation.
 STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: spaceship_body_2 into C:\Users\Allen\Documents\CS2261\HW04\spaceship_body_2.c .
+STATUS: Export to C: level2 into C:\Users\Allen\Documents\CS2261\HW05\level2.c .
 STATUS: Run completed :).
