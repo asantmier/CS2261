@@ -278,148 +278,148 @@ level1Pal:
 	.size	level1Map, 2048
 level1Map:
 	.short	1
-	.short	2
-	.short	3
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
-	.short	2049
-	.short	2050
-	.short	2051
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	5
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
 	.short	1
 	.short	2
 	.short	3
 	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	6
-	.short	6
-	.short	6
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	2049
-	.short	7
+	.short	1
+	.short	1
+	.short	2050
 	.short	2051
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	2052
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	5
-	.short	4
 	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
 	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	5
+	.short	5
+	.short	5
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
+	.short	1
+	.short	1
+	.short	2
+	.short	3
 	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	2050
+	.short	7
+	.short	2052
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
-	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
+	.short	5
 	.short	8
 	.short	8
 	.short	9
@@ -431,27 +431,27 @@ level1Map:
 	.short	11
 	.short	12
 	.short	12
-	.short	12
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	6
+	.short	1
+	.short	1
 	.short	13
 	.short	13
 	.short	13
@@ -463,56 +463,56 @@ level1Map:
 	.short	15
 	.short	16
 	.short	17
-	.short	17
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	18
 	.short	2061
 	.short	2061
@@ -529,22 +529,22 @@ level1Map:
 	.short	11
 	.short	11
 	.short	10
-	.short	10
-	.short	4
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	10
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	10
 	.short	10
 	.short	8
 	.short	8
 	.short	8
-	.short	6
-	.short	6
-	.short	6
+	.short	5
+	.short	5
+	.short	5
 	.short	21
 	.short	21
 	.short	21
@@ -561,77 +561,77 @@ level1Map:
 	.short	15
 	.short	15
 	.short	14
-	.short	14
-	.short	4
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	14
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	14
 	.short	24
 	.short	13
 	.short	13
 	.short	13
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
-	.short	4
+	.short	1
 	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	5
 	.short	8
 	.short	8
 	.short	9
@@ -653,17 +653,17 @@ level1Map:
 	.short	2061
 	.short	18
 	.short	2061
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
 	.short	13
 	.short	13
 	.short	13
@@ -685,82 +685,82 @@ level1Map:
 	.short	21
 	.short	21
 	.short	21
+	.short	5
+	.short	5
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	0
+	.short	0
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	6
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	0
-	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	18
 	.short	2061
 	.short	2061
 	.short	2062
-	.short	2062
-	.short	4
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	2062
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	2062
 	.short	2062
 	.short	19
@@ -778,21 +778,21 @@ level1Map:
 	.short	8
 	.short	8
 	.short	8
-	.short	6
-	.short	6
-	.short	6
+	.short	5
+	.short	5
+	.short	5
 	.short	21
 	.short	21
 	.short	21
 	.short	22
-	.short	22
-	.short	4
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	22
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	22
 	.short	29
 	.short	23
@@ -810,51 +810,51 @@ level1Map:
 	.short	13
 	.short	13
 	.short	13
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	5
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	6
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	30
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	1035
-	.short	1035
+	.short	1
+	.short	1
 	.short	1035
 	.short	1036
 	.short	1036
@@ -868,25 +868,25 @@ level1Map:
 	.short	2061
 	.short	31
 	.short	2061
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
-	.short	4
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
+	.short	1
 	.short	0
 	.short	0
-	.short	1039
-	.short	1039
+	.short	1
+	.short	1
 	.short	1039
 	.short	1041
 	.short	1041
@@ -900,21 +900,21 @@ level1Map:
 	.short	1045
 	.short	1045
 	.short	1045
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
-	.short	1030
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1029
+	.short	1
+	.short	1
 	.short	0
 	.short	0
 	.short	0
@@ -1338,164 +1338,132 @@ level1Tiles:
 	.short	0
 	.short	4112
 	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
+	.short	4112
 	.short	4880
 	.short	4885
-	.short	4112
+	.short	5395
 	.short	4112
 	.short	4369
 	.short	4369
-	.short	4112
+	.short	4369
 	.short	4112
 	.short	5395
 	.short	4883
-	.short	4112
+	.short	4883
 	.short	4880
 	.short	5395
 	.short	4883
-	.short	4112
+	.short	4883
 	.short	4880
 	.short	5397
 	.short	4883
-	.short	4112
+	.short	4883
 	.short	4880
 	.short	5397
 	.short	4883
-	.short	4112
+	.short	4883
 	.short	4880
 	.short	5397
 	.short	4883
-	.short	4112
+	.short	4883
 	.short	4880
 	.short	5397
 	.short	4883
-	.short	5395
+	.short	4883
 	.short	4115
 	.short	4112
 	.short	4112
-	.short	4369
+	.short	5395
 	.short	4369
 	.short	4112
 	.short	4368
-	.short	4883
+	.short	4369
 	.short	4885
 	.short	4112
 	.short	4880
-	.short	4883
+	.short	4885
 	.short	4885
 	.short	4115
 	.short	4883
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	5395
+	.short	4885
 	.short	4883
 	.short	4885
 	.short	4112
-	.short	4369
+	.short	4112
 	.short	4369
 	.short	4369
 	.short	4113
-	.short	4885
+	.short	4112
 	.short	4883
 	.short	5395
 	.short	4115
-	.short	4885
+	.short	4112
 	.short	4883
 	.short	5395
 	.short	4883
-	.short	4885
-	.short	4883
-	.short	5395
-	.short	4885
-	.short	4885
-	.short	4883
-	.short	5395
-	.short	4885
-	.short	4885
-	.short	4883
-	.short	5395
-	.short	4885
-	.short	4885
+	.short	4112
 	.short	4883
 	.short	5395
 	.short	4885
 	.short	4112
+	.short	4883
+	.short	5395
+	.short	4885
 	.short	4112
+	.short	4883
+	.short	5395
+	.short	4885
 	.short	4112
+	.short	4883
+	.short	5395
+	.short	4885
 	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4112
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
-	.short	4626
-	.short	4626
-	.short	4626
-	.short	4626
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
-	.short	4626
-	.short	4626
-	.short	4626
-	.short	4626
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
-	.short	4114
-	.short	4112
-	.short	4112
-	.short	4624
 	.short	5140
 	.short	5140
 	.short	5140
@@ -1528,38 +1496,70 @@ level1Tiles:
 	.short	5140
 	.short	5140
 	.short	5140
-	.short	4883
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
+	.short	4626
+	.short	4626
+	.short	4626
+	.short	4626
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
+	.short	4626
+	.short	4626
+	.short	4626
+	.short	4626
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
+	.short	4114
+	.short	4112
+	.short	4112
+	.short	4624
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	5397
 	.short	4115
 	.short	5395
-	.short	4883
+	.short	4885
 	.short	4885
 	.short	4115
 	.short	4883
-	.short	4883
+	.short	4885
 	.short	4885
 	.short	4112
 	.short	4880
-	.short	4369
+	.short	4885
 	.short	4369
 	.short	4112
 	.short	4112
-	.short	5395
+	.short	4369
 	.short	4115
 	.short	4112
 	.short	4112
+	.short	5395
 	.short	4112
 	.short	4112
 	.short	4112

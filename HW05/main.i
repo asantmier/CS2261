@@ -1345,7 +1345,7 @@ extern const unsigned short level1Pal[256];
 # 6 "main.c" 2
 # 1 "level2.h" 1
 # 22 "level2.h"
-extern const unsigned short level2Tiles[288];
+extern const unsigned short level2Tiles[352];
 
 
 extern const unsigned short level2Map[1024];
@@ -1491,14 +1491,14 @@ void initialize() {
     DMANow(3, &titleMap, &((screenblock *)0x6000000)[28], (1 << 26) | (2048 / 4));
     DMANow(3, &level1Tiles, &((charblock *)0x6000000)[1], (1 << 26) | (2048 / 4));
     DMANow(3, &level1Map, &((screenblock *)0x6000000)[29], (1 << 26) | (2048 / 4));
-    DMANow(3, &level2Tiles, &((charblock *)0x6000000)[2], (1 << 26) | (576 / 4));
+    DMANow(3, &level2Tiles, &((charblock *)0x6000000)[2], (1 << 26) | (704 / 4));
     DMANow(3, &level2Map, &((screenblock *)0x6000000)[30], (1 << 26) | (2048 / 4));
     DMANow(3, &spritesheetPal, ((unsigned short *)0x5000200), 256);
     DMANow(3, &spritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
 # 99 "main.c"
     (*(volatile unsigned short *)0x4000008) = ((0) << 2) | ((28) << 8) | (1 << 7) | (0 << 14);
-    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (0 << 14);
-    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (0 << 14);
+    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (1 << 14);
+    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (1 << 14);
 
     hideSprites();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);

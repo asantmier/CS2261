@@ -160,7 +160,7 @@ initialize:
 	.word	level1Tiles
 	.word	100722688
 	.word	level1Map
-	.word	67109008
+	.word	67109040
 	.word	100696064
 	.word	level2Tiles
 	.word	100724736
@@ -170,8 +170,8 @@ initialize:
 	.word	67117056
 	.word	100728832
 	.word	spritesheetTiles
-	.word	7556
-	.word	7816
+	.word	23940
+	.word	24200
 	.word	hideSprites
 	.word	shadowOAM
 	.word	67109120

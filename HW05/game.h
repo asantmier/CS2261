@@ -33,6 +33,9 @@ enum {
     UP = 0, DOWN = 1
 };
 
+#define LEFT_BOUND 16
+#define RIGHT_BOUND 224
+
 #define MARIO_SPEED 1
 
 typedef struct {
@@ -50,6 +53,7 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int jump;
 extern int level;
 
 void init(int newlevel);

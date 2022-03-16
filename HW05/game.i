@@ -139,6 +139,9 @@ enum {
 
 
 
+
+
+
 typedef struct {
     int x;
     int y;
@@ -154,6 +157,7 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int jump;
 extern int level;
 
 void init(int newlevel);
@@ -164,9 +168,11 @@ void updateMario();
 # 3 "game.c" 2
 
 ANI mario;
-int hammerTimer = 0;
-int hammerState = UP;
+int hammerTimer;
+int hammerState;
 int level;
+int jump;
+int jumpTimer;
 
 void init(int newlevel) {
     level = newlevel;
@@ -175,17 +181,25 @@ void init(int newlevel) {
 }
 
 void initMario() {
+    hammerTimer = 0;
+    hammerState = UP;
+    jump = 0;
+    jumpTimer = 0;
     mario.width = 16;
     mario.height = 16;
+    mario.timer = 0;
+    mario.curFrame = 0;
     switch (level)
     {
     case 1:
         mario.x = 184;
         mario.y = 151 - 16 + 1;
+        mario.state = LEFT;
         break;
     case 2:
         mario.x = 80;
         mario.y = 100;
+        mario.state = LEFT;
         break;
     }
 }
@@ -209,27 +223,52 @@ void updateMario() {
     }
 
 
-    if (mario.timer % 10) {
+    if (!(mario.timer % 3)) {
         mario.curFrame = (mario.curFrame + 1) % 3;
     }
 
 
-    int idle = 0;
+    int idle = 1;
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
         mario.dx = -1;
         mario.state = LEFT;
+        idle = 0;
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
         mario.dx = 1;
         mario.state = RIGHT;
-    } else {
-        idle = 1;
+        idle = 0;
     }
+    if ((!(~(oldButtons) & ((1 << 0))) && (~buttons & ((1 << 0)))) && !jump) {
+        jump = 1;
+        jumpTimer = 30;
+        idle = 0;
+    }
+
+    if (!jump) {
+        mario.dy = 1;
+    } else {
+        if (jumpTimer > 10) {
+            mario.dy = -1;
+        } else if (jumpTimer > 0) {
+            mario.dy = 0;
+        } else {
+            jump = 0;
+        }
+
+        jumpTimer--;
+    }
+
 
 
     int newx, newy;
     checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
     mario.x = newx - (mario.width / 2);
     mario.y = newy - mario.height + 1;
+    if (mario.x < 16) {
+        mario.x = 16;
+    } else if (mario.x + mario.width > 224) {
+        mario.x = 224 - mario.width;
+    }
 
 
     if (idle) {

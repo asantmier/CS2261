@@ -21,29 +21,49 @@ initMario:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	mov	r1, #16
-	ldr	r3, .L7
-	ldr	r2, [r3]
-	ldr	r3, .L7+4
-	cmp	r2, #1
-	str	r1, [r3, #16]
-	str	r1, [r3, #20]
+	mov	r3, #0
+	mov	r0, #16
+	ldr	r2, .L7
+	ldr	ip, .L7+4
+	ldr	r1, [r2]
+	ldr	r2, .L7+8
+	str	lr, [sp, #-4]!
+	str	r3, [ip]
+	ldr	lr, .L7+12
+	ldr	ip, .L7+16
+	str	r3, [r2]
+	ldr	r2, .L7+20
+	cmp	r1, #1
+	str	r3, [lr]
+	str	r3, [ip]
+	str	r3, [r2, #28]
+	str	r3, [r2, #32]
+	str	r0, [r2, #16]
+	str	r0, [r2, #20]
 	beq	.L2
-	cmp	r2, #2
-	moveq	r1, #80
-	moveq	r2, #100
-	stmeq	r3, {r1, r2}
+	cmp	r1, #2
+	moveq	r0, #80
+	moveq	r1, #100
+	stmeq	r2, {r0, r1}
+	streq	r3, [r2, #24]
+.L1:
+	ldr	lr, [sp], #4
 	bx	lr
 .L2:
-	mov	r1, #184
-	mov	r2, #136
-	stm	r3, {r1, r2}
+	mov	r0, #184
+	mov	r1, #136
+	str	r3, [r2, #24]
+	stm	r2, {r0, r1}
+	ldr	lr, [sp], #4
 	bx	lr
 .L8:
 	.align	2
 .L7:
 	.word	level
+	.word	hammerTimer
+	.word	hammerState
+	.word	jump
+	.word	jumpTimer
 	.word	mario
 	.size	initMario, .-initMario
 	.align	2
@@ -77,38 +97,36 @@ updateMario:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	mov	r2, #0
 	push	{r4, r5, r6, r7, lr}
-	ldr	r5, .L32
+	ldr	r5, .L45
 	ldr	r3, [r5]
-	ldr	r4, .L32+4
+	ldr	r4, .L45+4
 	cmp	r3, r2
 	str	r2, [r4, #8]
 	str	r2, [r4, #12]
 	sub	sp, sp, #28
 	ble	.L13
 	tst	r3, #3
-	beq	.L30
+	beq	.L42
 .L14:
 	sub	r3, r3, #1
 	str	r3, [r5]
 .L13:
-	ldr	r2, [r4, #28]
-	ldr	r3, .L32+8
-	smull	r0, r1, r3, r2
-	asr	r3, r2, #31
-	rsb	r3, r3, r1, asr #2
-	add	r3, r3, r3, lsl #2
-	cmp	r2, r3, lsl #1
-	beq	.L15
-	ldr	r2, [r4, #32]
-	ldr	r3, .L32+12
-	add	r2, r2, #1
-	smull	r1, r3, r2, r3
-	sub	r3, r3, r2, asr #31
+	ldr	r1, [r4, #28]
+	ldr	r2, .L45+8
+	smull	r0, r3, r2, r1
+	sub	r3, r3, r1, asr #31
 	add	r3, r3, r3, lsl #1
-	sub	r3, r2, r3
-	str	r3, [r4, #32]
+	cmp	r1, r3
+	bne	.L15
+	ldr	r3, [r4, #32]
+	add	r3, r3, #1
+	smull	r1, r2, r3, r2
+	sub	r2, r2, r3, asr #31
+	add	r2, r2, r2, lsl #1
+	sub	r2, r3, r2
+	str	r2, [r4, #32]
 .L15:
-	ldr	r2, .L32+16
+	ldr	r2, .L45+12
 	ldrh	r3, [r2, #48]
 	ands	r6, r3, #32
 	bne	.L16
@@ -116,64 +134,104 @@ updateMario:
 	str	r6, [r4, #24]
 	str	r2, [r4, #8]
 .L17:
-	ldr	r0, .L32+20
-	add	r3, r4, #16
-	ldm	r3, {r3, lr}
-	ldr	ip, [r0]
+	ldr	r3, .L45+16
+	ldrh	r3, [r3]
+	ldr	r1, .L45+20
+	tst	r3, #1
+	ldr	r3, [r1]
+	beq	.L18
+	ldr	r0, .L45+24
+	ldrh	r0, [r0]
+	tst	r0, #1
+	bne	.L18
+	cmp	r3, #0
+	beq	.L43
+.L21:
+	ldr	r0, .L45+28
+	ldr	r3, [r0]
+	cmp	r3, #10
+	sub	ip, r3, #1
+	bgt	.L20
+	cmp	r3, #0
+	mov	r3, #0
+	strle	r3, [r1]
+.L24:
+	str	ip, [r0]
+	b	.L22
+.L18:
+	cmp	r3, #0
+	bne	.L21
+	mov	r3, #1
+	str	r3, [r4, #12]
+.L22:
+	ldr	r0, [r4, #20]
 	ldr	r1, [r4, #4]
+	ldr	lr, .L45+32
+	ldr	ip, [r4, #16]
+	ldr	lr, [lr]
+	add	r1, r1, r0
 	ldr	r0, [r4]
-	str	ip, [sp]
-	add	r1, r1, lr
-	add	r3, r3, r3, lsr #31
+	add	ip, ip, ip, lsr #31
+	str	lr, [sp]
+	add	r0, r0, ip, asr #1
 	add	lr, sp, #20
 	add	ip, sp, #16
-	sub	r1, r1, #1
-	add	r0, r0, r3, asr #1
 	stmib	sp, {ip, lr}
-	mov	r3, #0
-	ldr	r7, .L32+24
+	sub	r1, r1, #1
+	ldr	r7, .L45+36
 	mov	lr, pc
 	bx	r7
+	ldr	r1, [r4, #16]
+	ldr	ip, [sp, #16]
+	add	r3, r1, r1, lsr #31
+	sub	r3, ip, r3, asr #1
+	cmp	r3, #15
+	str	r3, [r4]
+	movle	r3, #16
+	ldr	r2, [sp, #20]
 	ldr	r0, [r4, #20]
-	ldr	r3, [sp, #20]
+	sub	r2, r2, r0
+	add	r2, r2, #1
+	str	r2, [r4, #4]
+	strle	r3, [r4]
+	ble	.L26
+	add	r0, r1, r3
+	cmp	r0, #224
+	rsbgt	r3, r1, #224
+	strgt	r3, [r4]
+.L26:
 	cmp	r6, #0
-	sub	r3, r3, r0
 	movne	r0, #0
-	ldr	r2, [r4, #16]
-	ldr	r1, [sp, #16]
-	add	r2, r2, r2, lsr #31
-	sub	r1, r1, r2, asr #1
+	movne	r1, r0
 	strne	r0, [r4, #28]
-	movne	r2, r0
 	strne	r0, [r4, #32]
 	ldr	r0, [r5]
-	ldreq	r2, [r4, #32]
-	add	r3, r3, #1
+	ldreq	r1, [r4, #32]
 	cmp	r0, #0
-	stm	r4, {r1, r3}
 	ldr	r0, [r4, #24]
-	ble	.L20
-	ldr	ip, [r5, #4]
-	lsl	r2, r2, #16
+	ble	.L29
+	ldr	ip, .L45+40
+	ldr	ip, [ip]
+	lsl	r1, r1, #16
 	cmp	ip, #0
-	lsr	r2, r2, #16
-	beq	.L31
+	lsr	r1, r1, #16
+	beq	.L44
 	cmp	r0, #1
-	subne	r1, r1, #16
-	mvneq	r1, r1, lsl #17
-	mvnne	r1, r1, lsl #17
-	mvneq	r1, r1, lsr #17
-	mvnne	r1, r1, lsr #17
-	lsl	r2, r2, #22
-	ldr	ip, .L32+28
-	lsr	r2, r2, #16
-	orr	r3, r3, #16384
-	addeq	r2, r2, #14
-	addne	r2, r2, #6
-	strh	r3, [ip]	@ movhi
-	strh	r1, [ip, #2]	@ movhi
-	strh	r2, [ip, #4]	@ movhi
-.L23:
+	subne	r3, r3, #16
+	mvneq	r3, r3, lsl #17
+	mvnne	r3, r3, lsl #17
+	mvneq	r3, r3, lsr #17
+	mvnne	r3, r3, lsr #17
+	lsl	r1, r1, #22
+	ldr	ip, .L45+44
+	lsr	r1, r1, #16
+	orr	r2, r2, #16384
+	addeq	r1, r1, #14
+	addne	r1, r1, #6
+	strh	r2, [ip]	@ movhi
+	strh	r3, [ip, #2]	@ movhi
+	strh	r1, [ip, #4]	@ movhi
+.L32:
 	ldr	r3, [r4, #28]
 	add	r3, r3, #1
 	str	r3, [r4, #28]
@@ -190,46 +248,61 @@ updateMario:
 	streq	r2, [r4, #8]
 	streq	r2, [r4, #24]
 	b	.L17
-.L31:
-	lsl	r2, r2, #23
+.L44:
+	lsl	r1, r1, #23
 	cmp	r0, #1
-	lsr	r2, r2, #16
-	ldr	r0, .L32+28
+	lsr	r1, r1, #16
+	ldr	r0, .L45+44
 	sub	ip, ip, #32768
-	sub	r3, r3, #16
+	sub	r2, r2, #16
+	orr	r2, r2, ip
 	orr	r3, r3, ip
-	orr	r1, r1, ip
-	addeq	r2, r2, #12
-	addne	r2, r2, #10
-	strh	r3, [r0]	@ movhi
-	strh	r1, [r0, #2]	@ movhi
-	strh	r2, [r0, #4]	@ movhi
-	b	.L23
-.L30:
-	ldr	r2, [r5, #4]
+	addeq	r1, r1, #12
+	addne	r1, r1, #10
+	strh	r2, [r0]	@ movhi
+	strh	r3, [r0, #2]	@ movhi
+	strh	r1, [r0, #4]	@ movhi
+	b	.L32
+.L42:
+	ldr	r1, .L45+40
+	ldr	r2, [r1]
 	rsbs	r2, r2, #1
 	movcc	r2, #0
-	str	r2, [r5, #4]
+	str	r2, [r1]
 	b	.L14
+.L29:
+	add	r1, r0, r1, lsl #5
+	ldr	r0, .L45+44
+	lsl	r1, r1, #1
+	orr	r3, r3, #16384
+	strh	r1, [r0, #4]	@ movhi
+	strh	r2, [r0]	@ movhi
+	strh	r3, [r0, #2]	@ movhi
+	b	.L32
+.L43:
+	mov	r0, #1
+	mov	r6, r3
+	mov	ip, #29
+	str	r0, [r1]
+	ldr	r0, .L45+28
 .L20:
-	ldr	ip, .L32+28
-	add	r2, r0, r2, lsl #5
-	lsl	r0, r2, #1
-	orr	r2, r1, #16384
-	strh	r0, [ip, #4]	@ movhi
-	strh	r3, [ip]	@ movhi
-	strh	r2, [ip, #2]	@ movhi
-	b	.L23
-.L33:
+	mvn	r3, #0
+	str	r3, [r4, #12]
+	b	.L24
+.L46:
 	.align	2
-.L32:
-	.word	.LANCHOR0
+.L45:
+	.word	hammerTimer
 	.word	mario
-	.word	1717986919
 	.word	1431655766
 	.word	67109120
+	.word	oldButtons
+	.word	jump
+	.word	buttons
+	.word	jumpTimer
 	.word	level
 	.word	checkCollisionMap
+	.word	hammerState
 	.word	shadowOAM
 	.size	updateMario, .-updateMario
 	.align	2
@@ -245,19 +318,10 @@ update:
 	@ link register save eliminated.
 	b	updateMario
 	.size	update, .-update
+	.comm	jumpTimer,4,4
+	.comm	jump,4,4
 	.comm	level,4,4
-	.global	hammerState
-	.global	hammerTimer
+	.comm	hammerState,4,4
+	.comm	hammerTimer,4,4
 	.comm	mario,36,4
-	.bss
-	.align	2
-	.set	.LANCHOR0,. + 0
-	.type	hammerTimer, %object
-	.size	hammerTimer, 4
-hammerTimer:
-	.space	4
-	.type	hammerState, %object
-	.size	hammerState, 4
-hammerState:
-	.space	4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

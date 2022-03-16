@@ -2,9 +2,11 @@
 #include "game.h"
 
 ANI mario;
-int hammerTimer = 0;
-int hammerState = UP;
+int hammerTimer;
+int hammerState;
 int level;
+int jump;
+int jumpTimer;
 
 void init(int newlevel) {
     level = newlevel;
@@ -13,17 +15,25 @@ void init(int newlevel) {
 }
 
 void initMario() {
+    hammerTimer = 0;
+    hammerState = UP;
+    jump = 0;
+    jumpTimer = 0;
     mario.width = 16;
     mario.height = 16;
+    mario.timer = 0;
+    mario.curFrame = 0;
     switch (level)
     {
     case 1:
         mario.x = 184;
         mario.y = 151 - 16 + 1;
+        mario.state = LEFT;
         break;
     case 2:
         mario.x = 80;
         mario.y = 100;
+        mario.state = LEFT;
         break;
     }
 }
@@ -47,27 +57,55 @@ void updateMario() {
     }
 
     // Change the animation frame every few frames
-    if (mario.timer % 10) {
+    if (!(mario.timer % 3)) {
         mario.curFrame = (mario.curFrame + 1) % 3;
     }
 
     // Take player input and update mario's state accordingly
-    int idle = 0;
+    int idle = 1;
     if (BUTTON_HELD(BUTTON_LEFT)) {
         mario.dx = -MARIO_SPEED;
         mario.state = LEFT;
+        idle = 0;
     } else if (BUTTON_HELD(BUTTON_RIGHT)) {
         mario.dx = MARIO_SPEED;
         mario.state = RIGHT;
-    } else {
-        idle = 1;
+        idle = 0;
     }
+    if (BUTTON_PRESSED(BUTTON_A) && !jump) {
+        jump = 1;
+        jumpTimer = 30;
+        idle = 0;
+    }
+    if (BUTTON_HELD(BUTTON_UP) && colorAt(mario.x, mario.y, level) == 0x0202) {
+        // climb ladder
+    }
+
+    if (!jump) {
+        mario.dy = 1;
+    } else {
+        if (jumpTimer > 10) {
+            mario.dy = -1;
+        } else if (jumpTimer > 0) {
+            mario.dy = 0;
+        } else {
+            jump = 0;
+        }
+        
+        jumpTimer--;
+    }
+    
 
     // Update mario's position
     int newx, newy;
     checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
     mario.x = newx - (mario.width / 2);
     mario.y = newy - mario.height + 1;
+    if (mario.x < LEFT_BOUND) {
+        mario.x = LEFT_BOUND;
+    } else if (mario.x + mario.width > RIGHT_BOUND) {
+        mario.x = RIGHT_BOUND - mario.width;
+    }
 
     // If the player didn't move, set their frame and timer back to 0
     if (idle) {

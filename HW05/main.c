@@ -97,8 +97,8 @@ void initialize() {
     /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
     /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_8BPP | BG_SIZE_SMALL;
-    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_SMALL;
-    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_SMALL;
+    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_WIDE;
+    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_WIDE;
 
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);

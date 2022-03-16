@@ -1,7 +1,7 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-03-15, 19:03:13
+STATUS: Started run at: 2022-03-15, 20:27:38
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
@@ -14,5 +14,5 @@ STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: level1_collision into C:\Users\Allen\Documents\CS2261\HW05\level1_collision.c .
+STATUS: Export to C: level2_collision into C:\Users\Allen\Documents\CS2261\HW05\level2_collision.c .
 STATUS: Run completed :).
