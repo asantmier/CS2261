@@ -62,6 +62,7 @@ extern int jump;
 extern int level;
 extern ANI dk;
 extern ANI pauline;
+extern int levelsCleared;
 
 void init(int newlevel);
 void initMario();

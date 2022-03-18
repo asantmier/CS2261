@@ -166,6 +166,7 @@ extern int jump;
 extern int level;
 extern ANI dk;
 extern ANI pauline;
+extern int levelsCleared;
 
 void init(int newlevel);
 void initMario();
@@ -187,9 +188,20 @@ int jumpTimer;
 int ladder;
 ANI dk;
 ANI pauline;
+int levelsCleared;
 
 void init(int newlevel) {
+    levelsCleared++;
     level = newlevel;
+    switch (level)
+    {
+    case 1:
+        (*(volatile unsigned short *)0x4000000) = 0 | (1 << 12) | (1 << 9);
+        break;
+    case 2:
+        (*(volatile unsigned short *)0x4000000) = 0 | (1 << 12) | (1 << 10);
+        break;
+    }
 
     initMario();
     initDK();
@@ -214,8 +226,8 @@ void initMario() {
         mario.state = LEFT;
         break;
     case 2:
-        mario.x = 80;
-        mario.y = 100;
+        mario.x = 176;
+        mario.y = 135;
         mario.state = LEFT;
         break;
     }
@@ -234,7 +246,7 @@ void initDK() {
         dk.y = 0;
         break;
     case 2:
-        dk.x = 100;
+        dk.x = 85;
         dk.y = 0;
         break;
     }
@@ -253,7 +265,7 @@ void initPauline() {
         pauline.y = 0;
         break;
     case 2:
-        pauline.x = 40;
+        pauline.x = 77;
         pauline.y = 0;
         break;
     }
@@ -383,6 +395,15 @@ void updateMario() {
         shadowOAM[MARIO_IDX].attr0 = mario.y | (0 << 8) | (0 << 14);
         shadowOAM[MARIO_IDX].attr1 = mario.x | (1 << 14);
         shadowOAM[MARIO_IDX].attr2 = ((mario.curFrame * 2)*32 + (mario.state * 2));
+    }
+
+
+    if (collision(mario.x, mario.y, mario.width, mario.height, pauline.x, pauline.y, pauline.width, pauline.height)) {
+        if (level == 1) {
+            init(2);
+        } else {
+            init(1);
+        }
     }
 
     mario.timer++;

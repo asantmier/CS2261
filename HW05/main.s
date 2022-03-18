@@ -195,7 +195,7 @@ start:
 	beq	.L11
 	ldr	r3, .L17+4
 	ldrh	r3, [r3]
-	tst	r3, #8
+	ands	r3, r3, #8
 	beq	.L16
 .L11:
 	ldr	r3, .L17+8
@@ -204,14 +204,16 @@ start:
 	pop	{r4, lr}
 	bx	lr
 .L16:
-	mov	r0, #1
-	ldr	r3, .L17+12
+	ldr	r1, .L17+12
+	mov	r0, #2
+	ldr	r2, .L17+16
+	str	r3, [r1]
 	mov	lr, pc
-	bx	r3
+	bx	r2
 	mov	r1, #67108864
-	mov	r0, #4608
+	mov	r0, #5120
 	mov	r2, #1
-	ldr	r3, .L17+16
+	ldr	r3, .L17+20
 	strh	r0, [r1]	@ movhi
 	str	r2, [r3]
 	b	.L11
@@ -221,6 +223,7 @@ start:
 	.word	oldButtons
 	.word	buttons
 	.word	waitForVBlank
+	.word	levelsCleared
 	.word	init
 	.word	state
 	.size	start, .-start

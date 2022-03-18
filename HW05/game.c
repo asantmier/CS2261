@@ -10,9 +10,20 @@ int jumpTimer;
 int ladder;
 ANI dk;
 ANI pauline;
+int levelsCleared;
 
 void init(int newlevel) {
+    levelsCleared++;
     level = newlevel;
+    switch (level)
+    {
+    case 1:
+        REG_DISPCTL = MODE0 | SPRITE_ENABLE | BG1_ENABLE;
+        break;
+    case 2:
+        REG_DISPCTL = MODE0 | SPRITE_ENABLE | BG2_ENABLE;
+        break;
+    }
 
     initMario();
     initDK();
@@ -37,8 +48,8 @@ void initMario() {
         mario.state = LEFT;
         break;
     case 2:
-        mario.x = 80;
-        mario.y = 100;
+        mario.x = 176;
+        mario.y = 135;
         mario.state = LEFT;
         break;
     }
@@ -57,7 +68,7 @@ void initDK() {
         dk.y = 0;
         break;
     case 2:
-        dk.x = 100;
+        dk.x = 85;
         dk.y = 0;
         break;
     }
@@ -76,7 +87,7 @@ void initPauline() {
         pauline.y = 0;
         break;
     case 2:
-        pauline.x = 40;
+        pauline.x = 77;
         pauline.y = 0;
         break;
     }
@@ -209,6 +220,13 @@ void updateMario() {
     }
 
     // check if mario is touching pauline
+    if (collision(mario.x, mario.y, mario.width, mario.height, pauline.x, pauline.y, pauline.width, pauline.height)) {
+        if (level == 1) {
+            init(2);
+        } else {
+            init(1);
+        }
+    }
 
     mario.timer++;
 }

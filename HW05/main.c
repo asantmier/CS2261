@@ -110,6 +110,7 @@ void goToStart() {
 // Runs every frame of the start state.
 void start() {
     if (BUTTON_PRESSED(BUTTON_START)) {
+        levelsCleared = 0;
         init(1);
         goToGame(1);
     }

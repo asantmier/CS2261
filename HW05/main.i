@@ -1397,6 +1397,11 @@ enum {
 };
 
 
+enum {
+    NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
+};
+
+
 
 
 
@@ -1418,12 +1423,19 @@ extern int hammerTimer;
 extern int hammerState;
 extern int jump;
 extern int level;
+extern ANI dk;
+extern ANI pauline;
+extern int levelsCleared;
 
 void init(int newlevel);
 void initMario();
+void initDK();
+void initPauline();
 
 void update();
 void updateMario();
+void updateDK();
+void updatePauline();
 # 9 "main.c" 2
 
 
@@ -1529,8 +1541,9 @@ void goToStart() {
 
 void start() {
     if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
-        init(1);
-        goToGame(1);
+        levelsCleared = 0;
+        init(2);
+        goToGame(2);
     }
     waitForVBlank();
 }
