@@ -1,5 +1,6 @@
 #include "HW05Lib.h"
 #include "level1_collision.h"
+#include "level2_collision.h"
 #include <stdlib.h>
 
 // The start of the video memory.
@@ -146,7 +147,7 @@ unsigned short colorAt(int x, int y, int level) {
     if (level == 1) {
         return ((unsigned char*) level1_collisionBitmap)[x + 240 * y];
     } else if (level == 2) {
-        // return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
+        return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
     }
 }
 

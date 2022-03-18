@@ -1388,13 +1388,16 @@ enum {
 
 
 enum {
-    LEFT = 0, RIGHT, BACK
+    LEFT = 0, RIGHT = 1, BACK = 2
 };
 
 
 enum {
     UP = 0, DOWN = 1
 };
+
+
+
 
 
 
@@ -1413,6 +1416,7 @@ typedef struct {
 extern ANI mario;
 extern int hammerTimer;
 extern int hammerState;
+extern int jump;
 extern int level;
 
 void init(int newlevel);
@@ -1495,10 +1499,10 @@ void initialize() {
     DMANow(3, &level2Map, &((screenblock *)0x6000000)[30], (1 << 26) | (2048 / 4));
     DMANow(3, &spritesheetPal, ((unsigned short *)0x5000200), 256);
     DMANow(3, &spritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
-# 99 "main.c"
+
     (*(volatile unsigned short *)0x4000008) = ((0) << 2) | ((28) << 8) | (1 << 7) | (0 << 14);
-    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (1 << 14);
-    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (1 << 14);
+    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (0 << 14);
+    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (0 << 14);
 
     hideSprites();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);

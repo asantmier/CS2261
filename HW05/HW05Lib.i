@@ -108,6 +108,13 @@ extern const unsigned short level1_collisionBitmap[19200];
 
 extern const unsigned short level1_collisionPal[256];
 # 3 "HW05Lib.c" 2
+# 1 "level2_collision.h" 1
+# 21 "level2_collision.h"
+extern const unsigned short level2_collisionBitmap[19200];
+
+
+extern const unsigned short level2_collisionPal[256];
+# 4 "HW05Lib.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -916,11 +923,11 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 4 "HW05Lib.c" 2
+# 5 "HW05Lib.c" 2
 
 
 
-# 6 "HW05Lib.c"
+# 7 "HW05Lib.c"
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
 
 
@@ -1064,7 +1071,7 @@ unsigned short colorAt(int x, int y, int level) {
     if (level == 1) {
         return ((unsigned char*) level1_collisionBitmap)[x + 240 * y];
     } else if (level == 2) {
-
+        return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
     }
 }
 

@@ -25,7 +25,7 @@ enum {
 
 // ani state
 enum {
-    LEFT = 0, RIGHT, BACK
+    LEFT = 0, RIGHT = 1, BACK = 2
 };
 
 // hammer state

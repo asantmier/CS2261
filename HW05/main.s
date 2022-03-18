@@ -170,8 +170,8 @@ initialize:
 	.word	67117056
 	.word	100728832
 	.word	spritesheetTiles
-	.word	23940
-	.word	24200
+	.word	7556
+	.word	7816
 	.word	hideSprites
 	.word	shadowOAM
 	.word	67109120

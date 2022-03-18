@@ -129,7 +129,7 @@ enum {
 
 
 enum {
-    LEFT = 0, RIGHT, BACK
+    LEFT = 0, RIGHT = 1, BACK = 2
 };
 
 
@@ -173,6 +173,7 @@ int hammerState;
 int level;
 int jump;
 int jumpTimer;
+int ladder;
 
 void init(int newlevel) {
     level = newlevel;
@@ -185,6 +186,7 @@ void initMario() {
     hammerState = UP;
     jump = 0;
     jumpTimer = 0;
+    ladder = 0;
     mario.width = 16;
     mario.height = 16;
     mario.timer = 0;
@@ -229,22 +231,48 @@ void updateMario() {
 
 
     int idle = 1;
-    if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
-        mario.dx = -1;
-        mario.state = LEFT;
+    if (!jump && hammerTimer <= 0 && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 6))) && colorAt(mario.x + (mario.width / 2), mario.y + mario.height - 1, level) == 3) {
+        mario.dy = -1;
+        mario.state = BACK;
         idle = 0;
-    } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
-        mario.dx = 1;
-        mario.state = RIGHT;
-        idle = 0;
+        ladder = 1;
+        int newx, newy;
+        if (checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, 0, mario.dy, level, &newx, &newy)) {
+            ladder = 0;
+            mario.y -= 2;
+            mario.dy = 0;
+            mario.state = LEFT;
+        }
     }
-    if ((!(~(oldButtons) & ((1 << 0))) && (~buttons & ((1 << 0)))) && !jump) {
-        jump = 1;
-        jumpTimer = 30;
+    if (ladder && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 7)))) {
+        mario.dy = 1;
         idle = 0;
+        int newx, newy;
+        if (checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, 0, mario.dy, level, &newx, &newy)) {
+            ladder = 0;
+            mario.dy = 0;
+            mario.state = LEFT;
+        }
+    }
+    if (!ladder) {
+        if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
+            mario.dx = -1;
+            mario.state = LEFT;
+            idle = 0;
+        } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
+            mario.dx = 1;
+            mario.state = RIGHT;
+            idle = 0;
+        }
+        if ((!(~(oldButtons) & ((1 << 0))) && (~buttons & ((1 << 0)))) && !jump) {
+            jump = 1;
+            jumpTimer = 30;
+            idle = 0;
+        }
     }
 
-    if (!jump) {
+
+    if (!jump && !ladder) {
         mario.dy = 1;
     } else {
         if (jumpTimer > 10) {

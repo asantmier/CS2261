@@ -7,6 +7,7 @@ int hammerState;
 int level;
 int jump;
 int jumpTimer;
+int ladder;
 
 void init(int newlevel) {
     level = newlevel;
@@ -19,6 +20,7 @@ void initMario() {
     hammerState = UP;
     jump = 0;
     jumpTimer = 0;
+    ladder = 0;
     mario.width = 16;
     mario.height = 16;
     mario.timer = 0;
@@ -63,25 +65,48 @@ void updateMario() {
 
     // Take player input and update mario's state accordingly
     int idle = 1;
-    if (BUTTON_HELD(BUTTON_LEFT)) {
-        mario.dx = -MARIO_SPEED;
-        mario.state = LEFT;
+    if (!jump && hammerTimer <= 0 && BUTTON_HELD(BUTTON_UP) && colorAt(mario.x + (mario.width / 2), mario.y + mario.height - 1, level) == 3) {
+        mario.dy = -1;
+        mario.state = BACK;
         idle = 0;
-    } else if (BUTTON_HELD(BUTTON_RIGHT)) {
-        mario.dx = MARIO_SPEED;
-        mario.state = RIGHT;
+        ladder = 1;
+        int newx, newy;
+        if (checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, 0, mario.dy, level, &newx, &newy)) {
+            ladder = 0;
+            mario.y -= 2; // teleport mario staright up to the ground to avoid collision checks
+            mario.dy = 0;
+            mario.state = LEFT;
+        }
+    }
+    if (ladder && BUTTON_HELD(BUTTON_DOWN)) {
+        mario.dy = 1;
         idle = 0;
+        int newx, newy;
+        if (checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, 0, mario.dy, level, &newx, &newy)) {
+            ladder = 0;
+            mario.dy = 0;
+            mario.state = LEFT;
+        }
     }
-    if (BUTTON_PRESSED(BUTTON_A) && !jump) {
-        jump = 1;
-        jumpTimer = 30;
-        idle = 0;
+    if (!ladder) {
+        if (BUTTON_HELD(BUTTON_LEFT)) {
+            mario.dx = -MARIO_SPEED;
+            mario.state = LEFT;
+            idle = 0;
+        } else if (BUTTON_HELD(BUTTON_RIGHT)) {
+            mario.dx = MARIO_SPEED;
+            mario.state = RIGHT;
+            idle = 0;
+        }
+        if (BUTTON_PRESSED(BUTTON_A) && !jump) {
+            jump = 1;
+            jumpTimer = 30;
+            idle = 0;
+        }
     }
-    if (BUTTON_HELD(BUTTON_UP) && colorAt(mario.x, mario.y, level) == 0x0202) {
-        // climb ladder
-    }
-
-    if (!jump) {
+    
+    // Jumping logic
+    if (!jump && !ladder) {
         mario.dy = 1;
     } else {
         if (jumpTimer > 10) {

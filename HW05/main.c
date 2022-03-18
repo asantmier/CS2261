@@ -81,24 +81,9 @@ void initialize() {
     DMANow(3, &spritesheetPal, SPRITEPALETTE, 256);
     DMANow(3, &spritesheetTiles, &CHARBLOCK[4], DMA_32 | (spritesheetTilesLen / 4));
 
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    // TO AVOID SPRITES GOING HOG WILD ON THE TOP AND LEFT SIDES OF THE SCREEN, LETS MOVE THE SCREEN IN A BIT
-    // FROM 0, 0 SO THAT THE SPRITES CAN GO OFF THE EDGE WITHOUT CAUSING EPILEPSY
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
-    /// !!!!!!!!!!!!!!!!!! TO DO !!!!!!!!!!!!!!!!!!!!!!!
     REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_8BPP | BG_SIZE_SMALL;
-    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_WIDE;
-    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_WIDE;
+    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_SMALL;
+    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_SMALL;
 
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
