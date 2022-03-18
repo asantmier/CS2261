@@ -8,11 +8,15 @@ int level;
 int jump;
 int jumpTimer;
 int ladder;
+ANI dk;
+ANI pauline;
 
 void init(int newlevel) {
     level = newlevel;
 
-    initMario(level);
+    initMario();
+    initDK();
+    initPauline();
 }
 
 void initMario() {
@@ -40,12 +44,52 @@ void initMario() {
     }
 }
 
+void initDK() {
+    dk.width = 8 * 8;
+    dk.height = 4 * 8;
+    dk.timer = 0;
+    dk.curFrame = 0;
+    dk.state = NORMAL;
+    switch (level)
+    {
+    case 1:
+        dk.x = 24;
+        dk.y = 0;
+        break;
+    case 2:
+        dk.x = 100;
+        dk.y = 0;
+        break;
+    }
+}
+
+void initPauline() {
+    pauline.width = 16;
+    pauline.height = 32;
+    pauline.timer = 0;
+    pauline.curFrame = 0;
+    pauline.state = RIGHT;
+    switch (level)
+    {
+    case 1:
+        pauline.x = 80;
+        pauline.y = 0;
+        break;
+    case 2:
+        pauline.x = 40;
+        pauline.y = 0;
+        break;
+    }
+}
+
 void update() {
     updateMario();
+    updateDK();
+    updatePauline();
 }
 
 void updateMario() {
-    // Reset mario's movement vectory
+    // Reset mario's movement vector
     mario.dx = 0;
     mario.dy = 0;
 
@@ -165,4 +209,12 @@ void updateMario() {
     }
 
     mario.timer++;
+}
+
+void updateDK() {
+
+}
+
+void updatePauline() {
+    
 }

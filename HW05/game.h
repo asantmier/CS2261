@@ -33,6 +33,11 @@ enum {
     UP = 0, DOWN = 1
 };
 
+// dk state
+enum {
+    NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
+};
+
 #define LEFT_BOUND 16
 #define RIGHT_BOUND 224
 
@@ -55,11 +60,17 @@ extern int hammerTimer;
 extern int hammerState;
 extern int jump;
 extern int level;
+extern ANI dk;
+extern ANI pauline;
 
 void init(int newlevel);
 void initMario();
+void initDK();
+void initPauline();
 
 void update();
 void updateMario();
+void updateDK();
+void updatePauline();
 
 #endif
