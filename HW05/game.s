@@ -79,32 +79,38 @@ initDK:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
 	mov	r2, #0
 	mov	ip, #64
 	mov	r0, #32
 	ldr	r3, .L14
 	ldr	r1, [r3]
+	str	lr, [sp, #-4]!
 	ldr	r3, .L14+4
+	ldr	lr, .L14+8
 	cmp	r1, #1
-	str	ip, [r3, #16]
-	str	r0, [r3, #20]
+	str	r2, [lr]
 	str	r2, [r3, #28]
 	str	r2, [r3, #32]
 	str	r2, [r3, #24]
+	str	ip, [r3, #16]
+	str	r0, [r3, #20]
 	beq	.L10
 	cmp	r1, #2
 	moveq	r1, #85
 	stmeq	r3, {r1, r2}
+.L9:
+	ldr	lr, [sp], #4
 	bx	lr
 .L10:
 	stm	r3, {r0, r2}
+	ldr	lr, [sp], #4
 	bx	lr
 .L15:
 	.align	2
 .L14:
 	.word	level
 	.word	dk
+	.word	barrelTimer
 	.size	initDK, .-initDK
 	.align	2
 	.global	initPauline
@@ -566,71 +572,113 @@ updateDK:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L93
-	ldr	r1, [r2, #28]
-	add	r3, r1, r1, lsl #4
-	ldr	r0, .L93+4
-	add	r3, r3, r3, lsl #8
-	add	r3, r3, r3, lsl #16
-	sub	r3, r0, r3
-	cmp	r0, r3, ror #1
-	str	lr, [sp, #-4]!
-	bcc	.L86
-	ldr	r3, [r2, #32]
+	push	{r4, r5, lr}
+	ldr	lr, .L105
+	ldr	r3, .L105+4
+	ldr	ip, [lr, #28]
+	smull	r2, r3, ip, r3
+	asr	r2, ip, #31
+	add	r3, r3, ip
+	rsb	r3, r2, r3, asr #4
+	rsb	r3, r3, r3, lsl #4
+	subs	r3, ip, r3, lsl #1
+	bne	.L86
+	ldr	r2, [lr, #24]
+	cmp	r2, #3
+	moveq	r3, #4
+	streq	r3, [lr, #24]
+	beq	.L86
+	cmp	r2, #4
+	beq	.L104
+	ldr	r3, [lr, #32]
 	add	r3, r3, #1
-	rsbs	r0, r3, #0
-	and	r0, r0, #3
+	rsbs	r2, r3, #0
+	and	r2, r2, #3
 	and	r3, r3, #3
-	rsbpl	r3, r0, #0
-	str	r3, [r2, #32]
+	rsbpl	r3, r2, #0
+	str	r3, [lr, #32]
 .L86:
-	ldr	r3, [r2]
-	mvn	r3, r3, lsl #18
-	mvn	r3, r3, lsr #18
-	ldr	r0, [r2, #4]
-	ldr	lr, [r2, #24]
-	ldr	ip, .L93+8
-	orr	r0, r0, #16384
-	cmp	lr, #0
-	strh	r3, [ip, #10]	@ movhi
-	strh	r0, [ip, #8]	@ movhi
-	bne	.L87
-	ldr	r3, [r2, #32]
-	cmp	r3, #3
-	ldrls	pc, [pc, r3, asl #2]
-	b	.L87
-.L89:
-	.word	.L88
-	.word	.L91
-	.word	.L90
-	.word	.L88
-.L88:
-	mov	r3, #408
-	strh	r3, [ip, #12]	@ movhi
-.L87:
-	add	r1, r1, #1
-	str	r1, [r2, #28]
-	ldr	lr, [sp], #4
-	bx	lr
-.L91:
-	mov	r3, #392
-	add	r1, r1, #1
-	strh	r3, [ip, #12]	@ movhi
-	ldr	lr, [sp], #4
-	str	r1, [r2, #28]
+	ldr	r1, [lr]
+	mvn	r1, r1, lsl #18
+	ldr	r5, .L105+8
+	ldr	r3, [r5]
+	cmp	r3, #180
+	mvn	r1, r1, lsr #18
+	beq	.L90
+	ldr	r4, [lr, #4]
+	ldr	r0, [lr, #24]
+	ldr	r2, .L105+12
+	orr	r4, r4, #16384
+	cmp	r0, #3
+	strh	r1, [r2, #10]	@ movhi
+	strh	r4, [r2, #8]	@ movhi
+	add	ip, ip, #1
+	beq	.L91
+	cmp	r0, #4
+	moveq	r1, #512
+	strheq	r1, [r2, #12]	@ movhi
+	beq	.L94
+	cmp	r0, #0
+	beq	.L89
+.L94:
+	add	r3, r3, #1
+	str	r3, [r5]
+	str	ip, [lr, #28]
+	pop	{r4, r5, lr}
 	bx	lr
 .L90:
-	mov	r3, #400
-	add	r1, r1, #1
-	strh	r3, [ip, #12]	@ movhi
-	ldr	lr, [sp], #4
-	str	r1, [r2, #28]
-	bx	lr
-.L94:
+	mov	ip, #3
+	ldr	r0, [lr, #4]
+	ldr	r2, .L105+12
+	orr	r0, r0, #16384
+	strh	r1, [r2, #10]	@ movhi
+	strh	r0, [r2, #8]	@ movhi
+	str	ip, [lr, #24]
+	mov	ip, #1
+.L91:
+	mov	r1, #384
+	strh	r1, [r2, #12]	@ movhi
+	b	.L94
+.L104:
+	ldr	r1, [lr]
+	mvn	r1, r1, lsl #18
+	mvn	r1, r1, lsr #18
+	ldr	r0, [lr, #4]
+	ldr	r2, .L105+12
+	orr	r0, r0, #16384
+	str	r3, [lr, #24]
+	ldr	r5, .L105+8
+	strh	r1, [r2, #10]	@ movhi
+	strh	r0, [r2, #8]	@ movhi
+	add	ip, ip, #1
+.L89:
+	ldr	r1, [lr, #32]
+	cmp	r1, #3
+	ldrls	pc, [pc, r1, asl #2]
+	b	.L94
+.L96:
+	.word	.L95
+	.word	.L98
+	.word	.L97
+	.word	.L95
+.L95:
+	mov	r1, #408
+	strh	r1, [r2, #12]	@ movhi
+	b	.L94
+.L97:
+	mov	r1, #400
+	strh	r1, [r2, #12]	@ movhi
+	b	.L94
+.L98:
+	mov	r1, #392
+	strh	r1, [r2, #12]	@ movhi
+	b	.L94
+.L106:
 	.align	2
-.L93:
+.L105:
 	.word	dk
-	.word	143165576
+	.word	-2004318071
+	.word	barrelTimer
 	.word	shadowOAM
 	.size	updateDK, .-updateDK
 	.align	2
@@ -643,29 +691,29 @@ updatePauline:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L98
+	ldr	r2, .L110
 	ldr	r1, [r2, #28]
 	add	r3, r1, r1, lsl #4
-	ldr	r0, .L98+4
+	ldr	r0, .L110+4
 	add	r3, r3, r3, lsl #8
 	add	r3, r3, r3, lsl #16
-	ldr	ip, .L98+8
+	ldr	ip, .L110+8
 	sub	r0, r0, r3
 	cmp	ip, r0, ror #2
 	str	lr, [sp, #-4]!
 	ldr	r3, [r2, #32]
-	bcc	.L96
+	bcc	.L108
 	adds	r3, r3, #1
 	and	r3, r3, #1
 	rsbmi	r3, r3, #0
 	str	r3, [r2, #32]
-.L96:
+.L108:
 	ldm	r2, {ip, lr}
-	ldr	r0, .L98+12
+	ldr	r0, .L110+12
 	add	r3, r3, #10
 	orr	lr, lr, r0
 	orr	ip, ip, r0
-	ldr	r0, .L98+16
+	ldr	r0, .L110+16
 	lsl	r3, r3, #1
 	add	r1, r1, #1
 	str	r1, [r2, #28]
@@ -674,9 +722,9 @@ updatePauline:
 	strh	ip, [r0, #18]	@ movhi
 	ldr	lr, [sp], #4
 	bx	lr
-.L99:
+.L111:
 	.align	2
-.L98:
+.L110:
 	.word	pauline
 	.word	143165576
 	.word	71582788
@@ -699,6 +747,7 @@ update:
 	pop	{r4, lr}
 	b	updatePauline
 	.size	update, .-update
+	.comm	barrelTimer,4,4
 	.comm	levelsCleared,4,4
 	.comm	pauline,36,4
 	.comm	dk,36,4

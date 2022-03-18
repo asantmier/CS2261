@@ -189,6 +189,7 @@ int ladder;
 ANI dk;
 ANI pauline;
 int levelsCleared;
+int barrelTimer;
 
 void init(int newlevel) {
     levelsCleared++;
@@ -234,6 +235,7 @@ void initMario() {
 }
 
 void initDK() {
+    barrelTimer = 0;
     dk.width = 8 * 8;
     dk.height = 4 * 8;
     dk.timer = 0;
@@ -354,7 +356,6 @@ void updateMario() {
     }
 
 
-
     int newx, newy;
     checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
     mario.x = newx - (mario.width / 2);
@@ -411,9 +412,21 @@ void updateMario() {
 
 void updateDK() {
 
-
     if (!(dk.timer % 30)) {
-        dk.curFrame = (dk.curFrame + 1) % 4;
+        if (dk.state == NO_BARREL) {
+            dk.state = BARREL;
+        } else if (dk.state == BARREL) {
+            dk.state = NORMAL;
+            barrelTimer = 0;
+        } else {
+            dk.curFrame = (dk.curFrame + 1) % 4;
+        }
+    }
+
+
+    if (barrelTimer == 180) {
+        dk.state = NO_BARREL;
+        dk.timer = 0;
     }
 
 
@@ -438,9 +451,16 @@ void updateDK() {
             break;
         }
         break;
+    case NO_BARREL:
+        shadowOAM[DK_IDX].attr2 = ((12)*32 + (0));
+        break;
+    case BARREL:
+        shadowOAM[DK_IDX].attr2 = ((16)*32 + (0));
+        break;
     }
 
     dk.timer++;
+    barrelTimer++;
 }
 
 void updatePauline() {

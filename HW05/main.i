@@ -1542,8 +1542,8 @@ void goToStart() {
 void start() {
     if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
         levelsCleared = 0;
-        init(2);
-        goToGame(2);
+        init(1);
+        goToGame(1);
     }
     waitForVBlank();
 }

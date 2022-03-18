@@ -11,6 +11,8 @@ int ladder;
 ANI dk;
 ANI pauline;
 int levelsCleared;
+int barrelTimer;
+ANI barrels[NUM_BARREL];
 
 void init(int newlevel) {
     levelsCleared++;
@@ -28,6 +30,7 @@ void init(int newlevel) {
     initMario();
     initDK();
     initPauline();
+    initBarrels();
 }
 
 void initMario() {
@@ -56,6 +59,7 @@ void initMario() {
 }
 
 void initDK() {
+    barrelTimer = 0;
     dk.width = 8 * 8;
     dk.height = 4 * 8;
     dk.timer = 0;
@@ -90,6 +94,21 @@ void initPauline() {
         pauline.x = 77;
         pauline.y = 0;
         break;
+    }
+}
+
+void initBarrels() {
+    for (int i = 0; i < NUM_BARREL; i++) {
+        barrels[i].curFrame = 0;
+        barrels[i].dx = 0;
+        barrels[i].dy = 0;
+        barrels[i].height = 16;
+        barrels[i].width = 16;
+        barrels[i].state = NORMAL;
+        barrels[i].timer = 0;
+        barrels[i].x = 0;
+        barrels[i].y = 0;
+        barrels[i].active = 0;
     }
 }
 
@@ -175,7 +194,6 @@ void updateMario() {
         jumpTimer--;
     }
     
-
     // Update mario's position
     int newx, newy;
     checkCollisionMap(mario.x + (mario.width / 2), mario.y + mario.height - 1, mario.dx, mario.dy, level, &newx, &newy);
@@ -232,10 +250,23 @@ void updateMario() {
 }
 
 void updateDK() {
-
     // Change the animation frame every few frames
     if (!(dk.timer % 30)) {
-        dk.curFrame = (dk.curFrame + 1) % 4;
+        if (dk.state == NO_BARREL) {
+            dk.state = BARREL;
+        } else if (dk.state == BARREL) {
+            dk.state = NORMAL;
+            barrelTimer = 0;
+            throwBarrel();
+        } else {
+            dk.curFrame = (dk.curFrame + 1) % 4;
+        }
+    }
+
+    // update barrel timer
+    if (barrelTimer == 180) {
+        dk.state = NO_BARREL;
+        dk.timer = 0;
     }
 
     // Set the sprite
@@ -260,9 +291,16 @@ void updateDK() {
             break;
         }
         break;
+    case NO_BARREL:
+        shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(0, 12);
+        break;
+    case BARREL:
+        shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(0, 16);
+        break;
     }
 
     dk.timer++;
+    barrelTimer++;
 }
 
 void updatePauline() {
@@ -278,4 +316,13 @@ void updatePauline() {
     shadowOAM[PAULINE_IDX].attr2 = ATTR2_TILEID(20 + pauline.curFrame * 2, 0);
 
     pauline.timer++;
+}
+
+void throwBarrel() {
+    for (int i = 0; i < NUM_BARREL; i++) {
+        if (!barrels[i].active) {
+            barrels[i].active = 1;
+            
+        }
+    }
 }
