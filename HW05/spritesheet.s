@@ -7366,12 +7366,12 @@ spritesheetTiles:
 	.short	17473
 	.short	17748
 	.short	17476
-	.short	13653
-	.short	13653
-	.short	13139
-	.short	13139
-	.short	13652
-	.short	13653
+	.short	5461
+	.short	5461
+	.short	4433
+	.short	4433
+	.short	5460
+	.short	5461
 	.short	17473
 	.short	21845
 	.short	16657
@@ -7382,11 +7382,11 @@ spritesheetTiles:
 	.short	4369
 	.short	17476
 	.short	17493
-	.short	13653
+	.short	5461
 	.short	17749
-	.short	13139
-	.short	17235
-	.short	13653
+	.short	4433
+	.short	16721
+	.short	5461
 	.short	17493
 	.short	17749
 	.short	5188

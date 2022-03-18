@@ -53,7 +53,7 @@ void initDK() {
     switch (level)
     {
     case 1:
-        dk.x = 24;
+        dk.x = 32;
         dk.y = 0;
         break;
     case 2:
@@ -72,7 +72,7 @@ void initPauline() {
     switch (level)
     {
     case 1:
-        pauline.x = 80;
+        pauline.x = 120;
         pauline.y = 0;
         break;
     case 2:
@@ -208,13 +208,56 @@ void updateMario() {
         shadowOAM[MARIO_IDX].attr2 = ATTR2_TILEID(mario.state * 2, mario.curFrame * 2);
     }
 
+    // check if mario is touching pauline
+
     mario.timer++;
 }
 
 void updateDK() {
 
+    // Change the animation frame every few frames
+    if (!(dk.timer % 30)) {
+        dk.curFrame = (dk.curFrame + 1) % 4;
+    }
+
+    // Set the sprite
+    shadowOAM[DK_IDX].attr0 = dk.y | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[DK_IDX].attr1 = dk.x | ATTR1_LARGE;
+    switch (dk.state)
+    {
+    case NORMAL:
+        switch (dk.curFrame)
+        {
+        case 0:
+            shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(24, 12);
+            break;
+        case 1:
+            shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(8, 12);
+            break;
+        case 2:
+            shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(16, 12);
+            break;
+        case 3:
+            shadowOAM[DK_IDX].attr2 = ATTR2_TILEID(24, 12);
+            break;
+        }
+        break;
+    }
+
+    dk.timer++;
 }
 
 void updatePauline() {
-    
+
+    // Change the animation frame every few frames
+    if (!(pauline.timer % 60)) {
+        pauline.curFrame = (pauline.curFrame + 1) % 2;
+    }
+
+    // Set the sprite
+    shadowOAM[PAULINE_IDX].attr0 = pauline.y | ATTR0_REGULAR | ATTR0_TALL;
+    shadowOAM[PAULINE_IDX].attr1 = pauline.x | ATTR1_MEDIUM;
+    shadowOAM[PAULINE_IDX].attr2 = ATTR2_TILEID(20 + pauline.curFrame * 2, 0);
+
+    pauline.timer++;
 }

@@ -138,6 +138,11 @@ enum {
 };
 
 
+enum {
+    NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
+};
+
+
 
 
 
@@ -159,12 +164,18 @@ extern int hammerTimer;
 extern int hammerState;
 extern int jump;
 extern int level;
+extern ANI dk;
+extern ANI pauline;
 
 void init(int newlevel);
 void initMario();
+void initDK();
+void initPauline();
 
 void update();
 void updateMario();
+void updateDK();
+void updatePauline();
 # 3 "game.c" 2
 
 ANI mario;
@@ -174,11 +185,15 @@ int level;
 int jump;
 int jumpTimer;
 int ladder;
+ANI dk;
+ANI pauline;
 
 void init(int newlevel) {
     level = newlevel;
 
-    initMario(level);
+    initMario();
+    initDK();
+    initPauline();
 }
 
 void initMario() {
@@ -206,8 +221,48 @@ void initMario() {
     }
 }
 
+void initDK() {
+    dk.width = 8 * 8;
+    dk.height = 4 * 8;
+    dk.timer = 0;
+    dk.curFrame = 0;
+    dk.state = NORMAL;
+    switch (level)
+    {
+    case 1:
+        dk.x = 32;
+        dk.y = 0;
+        break;
+    case 2:
+        dk.x = 100;
+        dk.y = 0;
+        break;
+    }
+}
+
+void initPauline() {
+    pauline.width = 16;
+    pauline.height = 32;
+    pauline.timer = 0;
+    pauline.curFrame = 0;
+    pauline.state = RIGHT;
+    switch (level)
+    {
+    case 1:
+        pauline.x = 120;
+        pauline.y = 0;
+        break;
+    case 2:
+        pauline.x = 40;
+        pauline.y = 0;
+        break;
+    }
+}
+
 void update() {
     updateMario();
+    updateDK();
+    updatePauline();
 }
 
 void updateMario() {
@@ -331,4 +386,53 @@ void updateMario() {
     }
 
     mario.timer++;
+}
+
+void updateDK() {
+
+
+    if (!(dk.timer % 30)) {
+        dk.curFrame = (dk.curFrame + 1) % 4;
+    }
+
+
+    shadowOAM[DK_IDX].attr0 = dk.y | (0 << 8) | (1 << 14);
+    shadowOAM[DK_IDX].attr1 = dk.x | (3 << 14);
+    switch (dk.state)
+    {
+    case NORMAL:
+        switch (dk.curFrame)
+        {
+        case 0:
+            shadowOAM[DK_IDX].attr2 = ((12)*32 + (24));
+            break;
+        case 1:
+            shadowOAM[DK_IDX].attr2 = ((12)*32 + (8));
+            break;
+        case 2:
+            shadowOAM[DK_IDX].attr2 = ((12)*32 + (16));
+            break;
+        case 3:
+            shadowOAM[DK_IDX].attr2 = ((12)*32 + (24));
+            break;
+        }
+        break;
+    }
+
+    dk.timer++;
+}
+
+void updatePauline() {
+
+
+    if (!(pauline.timer % 60)) {
+        pauline.curFrame = (pauline.curFrame + 1) % 2;
+    }
+
+
+    shadowOAM[PAULINE_IDX].attr0 = pauline.y | (0 << 8) | (2 << 14);
+    shadowOAM[PAULINE_IDX].attr1 = pauline.x | (2 << 14);
+    shadowOAM[PAULINE_IDX].attr2 = ((0)*32 + (20 + pauline.curFrame * 2));
+
+    pauline.timer++;
 }
