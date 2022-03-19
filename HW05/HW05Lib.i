@@ -1067,13 +1067,15 @@ void hideSprites() {
     }
 }
 
+
 unsigned short colorAt(int x, int y, int level) {
     if (level == 1) {
         return ((unsigned char*) level1_collisionBitmap)[x + 240 * y];
-    } else if (level == 2) {
+    } else {
         return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
     }
 }
+
 
 int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout) {
     int numx = abs(dx);

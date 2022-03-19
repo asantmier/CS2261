@@ -630,24 +630,17 @@ colorAt:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
 	cmp	r2, #1
-	beq	.L111
-	cmp	r2, #2
-	rsbeq	r1, r1, r1, lsl #4
-	ldreq	r3, .L112
-	addeq	r1, r0, r1, lsl #4
-	ldrbeq	r0, [r3, r1]	@ zero_extendqisi2
-	bx	lr
-.L111:
-	ldr	r3, .L112+4
+	ldreq	r3, .L110
+	ldrne	r3, .L110+4
 	rsb	r1, r1, r1, lsl #4
 	add	r1, r0, r1, lsl #4
 	ldrb	r0, [r3, r1]	@ zero_extendqisi2
 	bx	lr
-.L113:
+.L111:
 	.align	2
-.L112:
-	.word	level2_collisionBitmap
+.L110:
 	.word	level1_collisionBitmap
+	.word	level2_collisionBitmap
 	.size	colorAt, .-colorAt
 	.align	2
 	.global	checkCollisionMap
@@ -659,114 +652,95 @@ checkCollisionMap:
 	@ Function supports interworking.
 	@ args = 12, pretend = 0, frame = 8
 	@ frame_needed = 0, uses_anonymous_args = 0
+	mov	ip, r0
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	mov	r4, r0
 	sub	sp, sp, #12
-	ldr	lr, [sp, #56]
+	ldr	r6, [sp, #56]
 	ldr	r0, [sp, #52]
 	eor	r10, r2, r2, asr #31
-	eor	r5, r3, r3, asr #31
+	eor	r8, r3, r3, asr #31
 	cmp	r2, #0
-	str	r4, [r0]
-	ldr	ip, [sp, #48]
-	str	r1, [lr]
+	str	ip, [r0]
+	ldr	r4, [sp, #48]
+	str	r1, [r6]
 	sub	r10, r10, r2, asr #31
-	sub	r5, r5, r3, asr #31
-	beq	.L126
-	mov	r8, #0
-	mov	r6, #1
-	mov	r9, r8
-	str	r3, [sp, #4]
-	sub	fp, r1, #1
-.L120:
+	sub	r8, r8, r3, asr #31
+	beq	.L123
+	mov	r0, #1
+	mov	r9, #0
+	sub	lr, r1, #1
+	str	lr, [sp, #4]
+.L118:
 	cmp	r2, #0
-	mvnlt	r0, #0
-	movge	r0, #1
-	cmp	ip, #1
-	mla	r0, r6, r0, r4
+	mvnlt	r5, #0
+	movge	r5, #1
+	mla	r5, r0, r5, ip
 	add	r7, r1, r9
-	beq	.L135
-	cmp	ip, #2
-	rsbeq	r8, r7, r7, lsl #4
-	ldreq	r3, .L137
-	addeq	r8, r0, r8, lsl #4
-	ldrbeq	r8, [r3, r8]	@ zero_extendqisi2
-.L117:
-	cmp	r8, #0
-	bne	.L118
+	cmp	r4, #1
+	rsb	lr, r7, r7, lsl #4
+	ldreq	fp, .L133
+	ldrne	fp, .L133+4
+	lsl	lr, lr, #4
+	add	lr, r5, lr
+	ldrb	lr, [fp, lr]	@ zero_extendqisi2
+	cmp	lr, #0
+	bne	.L116
 	cmp	r9, #0
-	mov	r7, fp
-	beq	.L127
+	ldr	r7, [sp, #4]
+	beq	.L124
 	mov	r0, #1
-	ldr	r3, [sp, #4]
-.L115:
+.L113:
 	cmp	r3, #0
-	str	r7, [lr]
-	beq	.L114
+	str	r7, [r6]
+	beq	.L112
 	mov	r7, #1
-	ldr	r2, .L137
-	ldr	r9, .L137+4
-	b	.L125
+	ldr	r9, .L133+4
+	ldr	r2, .L133
+	b	.L122
+.L132:
+	cmp	r8, r7
+	str	lr, [r6]
+	blt	.L112
 .L122:
-	cmp	ip, #2
-	beq	.L136
-.L124:
-	add	r7, r7, #1
-	cmp	r5, r7
-	str	r6, [lr]
-	blt	.L114
-.L125:
 	cmp	r3, #0
-	mvnlt	r6, #0
-	movge	r6, #1
-	cmp	ip, #1
-	mla	r6, r7, r6, r1
-	bne	.L122
-	rsb	r8, r6, r6, lsl #4
-	add	r8, r4, r8, lsl #4
-	ldrb	r8, [r9, r8]	@ zero_extendqisi2
-.L123:
-	cmp	r8, #0
-	bne	.L124
+	mvnlt	lr, #0
+	movge	lr, #1
+	mla	lr, r7, lr, r1
+	rsb	r5, lr, lr, lsl #4
+	cmp	r4, #1
+	add	r5, ip, r5, lsl #4
+	ldrbeq	r5, [r2, r5]	@ zero_extendqisi2
+	ldrbne	r5, [r9, r5]	@ zero_extendqisi2
+	cmp	r5, #0
+	add	r7, r7, #1
+	bne	.L132
 	mov	r0, #1
-.L114:
+.L112:
 	add	sp, sp, #12
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L136:
-	rsb	r8, r6, r6, lsl #4
-	add	r8, r4, r8, lsl #4
-	ldrb	r8, [r2, r8]	@ zero_extendqisi2
-	b	.L123
-.L118:
-	ldr	r3, [sp, #52]
-	str	r0, [r3]
-	add	r6, r6, #1
-.L119:
-	cmp	r10, r6
-	bge	.L120
+.L116:
+	ldr	lr, [sp, #52]
+	str	r5, [lr]
+	add	r0, r0, #1
+.L117:
+	cmp	r0, r10
+	ble	.L118
 	mov	r0, #0
-	ldr	r3, [sp, #4]
-	b	.L115
-.L135:
-	ldr	r3, .L137+4
-	rsb	r8, r7, r7, lsl #4
-	add	r8, r0, r8, lsl #4
-	ldrb	r8, [r3, r8]	@ zero_extendqisi2
-	b	.L117
-.L127:
+	b	.L113
+.L124:
 	mvn	r9, #0
-	b	.L119
-.L126:
+	b	.L117
+.L123:
 	mov	r0, r2
 	mov	r7, r1
-	b	.L115
-.L138:
+	b	.L113
+.L134:
 	.align	2
-.L137:
-	.word	level2_collisionBitmap
+.L133:
 	.word	level1_collisionBitmap
+	.word	level2_collisionBitmap
 	.size	checkCollisionMap, .-checkCollisionMap
 	.global	dma
 	.global	videoBuffer

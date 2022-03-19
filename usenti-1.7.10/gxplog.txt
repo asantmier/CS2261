@@ -1,18 +1,20 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-03-19, 13:45:39
+STATUS: Started run at: 2022-03-19, 17:27:25
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
-STATUS: Work-DIB creation complete: 240x160@8.
+STATUS: Work-DIB creation complete: 256x256@8.
 STATUS: Tile preparation.
+STATUS:   tiling to 8x8 tiles.
 STATUS: Tile preparation complete.
 STATUS: Graphics preparation.
+STATUS:   Bitpacking: 8 -> 4.
 STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: level1_collision into C:\Users\lofte\Documents\CS2261\HW05\level1_collision.c .
+STATUS: Export to C: spritesheet into C:\Users\lofte\Documents\CS2261\HW05\spritesheet.c .
 STATUS: Run completed :).

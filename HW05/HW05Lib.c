@@ -143,14 +143,16 @@ void hideSprites() {
     }
 }
 
+// Gets the color at a coordinate. Level can only be 1 or 2
 unsigned short colorAt(int x, int y, int level) {
     if (level == 1) {
         return ((unsigned char*) level1_collisionBitmap)[x + 240 * y];
-    } else if (level == 2) {
+    } else {
         return ((unsigned char*) level2_collisionBitmap)[x + 240 * y];
     }
 }
 
+// Checks collision map. x out and y out return the position this object should move to
 int checkCollisionMap(int x, int y, int dx, int dy, int level, int* xout, int* yout) {
     int numx = abs(dx);
     int numy = abs(dy);

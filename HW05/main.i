@@ -1370,7 +1370,7 @@ enum {
     PAULINE_IDX = 2,
     HAMMER_IDX = 3,
     BARREL_IDX = 4,
-    HIGHSCORE_TXT_IDX = 14,
+    IGNORE_HIGHSCORE_TXT_IDX = 14,
     HIGHSCORE_NUM_IDX = 15,
     SCORE_NUM_IDX = 22,
     L_PARAN_IDX = 29,
@@ -1384,6 +1384,8 @@ enum {
     LEVELCOUNT_IDX = 40,
     R_PARAN_IDX = 41,
     SCORE_GAIN_IDX = 42,
+    HIGHSCORE_TXT_IDX = 47,
+    GAME_OVER_IDX = 100
 };
 
 
@@ -1400,7 +1402,7 @@ enum {
 enum {
     NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
 };
-# 48 "game.h"
+# 50 "game.h"
 typedef struct {
     int x;
     int y;
@@ -1416,6 +1418,7 @@ typedef struct {
     int active;
     int wasFalling;
     int adder;
+    int scored;
 } ANI;
 
 extern ANI mario;
@@ -1427,6 +1430,9 @@ extern ANI dk;
 extern ANI pauline;
 extern int levelsCleared;
 extern ANI barrels[10];
+extern int lives;
+extern int score;
+extern ANI hammer;
 
 void init(int newlevel);
 void initMario();
@@ -1439,6 +1445,7 @@ void updateMario();
 void updateDK();
 void updatePauline();
 void updateBarrels();
+void updateHUD();
 
 void throwBarrel();
 # 9 "main.c" 2
@@ -1474,6 +1481,9 @@ unsigned short oldButtons;
 
 
 OBJ_ATTR shadowOAM[128];
+
+
+int randTimer;
 
 int main() {
     initialize();
@@ -1517,9 +1527,9 @@ void initialize() {
     DMANow(3, &spritesheetPal, ((unsigned short *)0x5000200), 256);
     DMANow(3, &spritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
 
-    (*(volatile unsigned short *)0x4000008) = ((0) << 2) | ((28) << 8) | (1 << 7) | (0 << 14);
-    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (0 << 14);
-    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (0 << 14);
+    (*(volatile unsigned short *)0x4000008) = ((0) << 2) | ((28) << 8) | (1 << 7) | (0 << 14) | 1;
+    (*(volatile unsigned short *)0x400000A) = ((1) << 2) | ((29) << 8) | (1 << 7) | (0 << 14) | 1;
+    (*(volatile unsigned short *)0x400000C) = ((2) << 2) | ((30) << 8) | (1 << 7) | (0 << 14) | 1;
 
     hideSprites();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
@@ -1529,6 +1539,7 @@ void initialize() {
 
     buttons = (*(volatile unsigned short *)0x04000130);
     oldButtons = 0;
+    randTimer = 0;
 
     goToStart();
 }
@@ -1546,11 +1557,15 @@ void goToStart() {
 
 void start() {
     if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
+        srand(randTimer);
         levelsCleared = 0;
+        score = 0;
+        lives = 3;
         init(1);
         goToGame(1);
     }
     waitForVBlank();
+    randTimer++;
 }
 
 
@@ -1570,31 +1585,68 @@ void goToGame(int level) {
 
 
 void game() {
-    if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
-        hammerTimer = 300;
-    }
     if ((!(~(oldButtons) & ((1 << 2))) && (~buttons & ((1 << 2))))) {
-        hammerTimer = 0;
+        goToPause();
     }
     update();
     waitForVBlank();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+    if (lives <= 0) {
+        goToLose();
+    }
+    if (levelsCleared == 3) {
+        goToWin();
+    }
 }
 
 
-void goToPause() {}
+void goToPause() {
+    state = PAUSE;
+}
 
 
-void pause() {}
+void pause() {
+    if ((!(~(oldButtons) & ((1 << 2))) && (~buttons & ((1 << 2))))) {
+        goToGame(level);
+    }
+    waitForVBlank();
+}
 
 
-void goToWin() {}
+void goToWin() {
+    shadowOAM[GAME_OVER_IDX].attr0 = ((160 / 2) - 8) | (0 << 8) | (1 << 14);
+    shadowOAM[GAME_OVER_IDX].attr1 = ((240 / 2) - 40) | (3 << 14);
+    shadowOAM[GAME_OVER_IDX].attr2 = ((20)*32 + (21)) | ((0) << 10);
+    DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+
+    state = WIN;
+}
 
 
-void win() {}
+void win() {
+    if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
+        goToStart();
+    }
+    waitForVBlank();
+}
 
 
-void goToLose() {}
+void goToLose() {
+    shadowOAM[GAME_OVER_IDX].attr0 = ((160 / 2) - 8) | (0 << 8) | (1 << 14);
+    shadowOAM[GAME_OVER_IDX].attr1 = ((240 / 2) - 40) | (3 << 14);
+    shadowOAM[GAME_OVER_IDX].attr2 = ((25)*32 + (0)) | ((0) << 10);
+    shadowOAM[GAME_OVER_IDX + 1].attr0 = ((160 / 2) - 8) | (0 << 8) | (0 << 14);
+    shadowOAM[GAME_OVER_IDX + 1].attr1 = (((240 / 2) - 40) + 64) | (1 << 14);
+    shadowOAM[GAME_OVER_IDX + 1].attr2 = ((25)*32 + (8)) | ((0) << 10);
+    DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+
+    state = LOSE;
+}
 
 
-void lose() {}
+void lose() {
+    if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
+        goToStart();
+    }
+    waitForVBlank();
+}

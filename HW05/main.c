@@ -39,6 +39,9 @@ unsigned short oldButtons;
 // Shadow OAM.
 OBJ_ATTR shadowOAM[128];
 
+// Timer for srand
+int randTimer;
+
 int main() {
     initialize();
 
@@ -81,9 +84,10 @@ void initialize() {
     DMANow(3, &spritesheetPal, SPRITEPALETTE, 256);
     DMANow(3, &spritesheetTiles, &CHARBLOCK[4], DMA_32 | (spritesheetTilesLen / 4));
 
-    REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_8BPP | BG_SIZE_SMALL;
-    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_SMALL;
-    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_SMALL;
+    // The priority of all backgrounds is set to 1 so that we can use some basic sprite priority
+    REG_BG0CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_8BPP | BG_SIZE_SMALL | 1;
+    REG_BG1CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(29) | BG_8BPP | BG_SIZE_SMALL | 1;
+    REG_BG2CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(30) | BG_8BPP | BG_SIZE_SMALL | 1;
 
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
@@ -93,6 +97,7 @@ void initialize() {
 
     buttons = BUTTONS;
     oldButtons = 0;
+    randTimer = 0;
 
     goToStart();
 }
@@ -110,15 +115,21 @@ void goToStart() {
 // Runs every frame of the start state.
 void start() {
     if (BUTTON_PRESSED(BUTTON_START)) {
+        // Set up the game
+        srand(randTimer);
         levelsCleared = 0;
+        score = 0;
+        lives = 3;
         init(1);
         goToGame(1);
     }
     waitForVBlank();
+    randTimer++;
 }
 
 // Sets up the game state.
 void goToGame(int level) {
+    // Make sure the right background is active
     switch (level)
     {
     case 1:
@@ -134,31 +145,72 @@ void goToGame(int level) {
 
 // Runs every frame of the game state.
 void game() {
-    if (BUTTON_PRESSED(BUTTON_START)) {
-        hammerTimer = 300;
-    }
+    // Pause the game if select is pressed
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
-        hammerTimer = 0;
+        goToPause();
     }
     update();
     waitForVBlank();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
+    if (lives <= 0) {
+        goToLose();
+    }
+    if (levelsCleared == 3) {
+        goToWin();
+    }
 }
 
 // Sets up the pause state.
-void goToPause() {}
+void goToPause() {
+    state = PAUSE;
+}
 
 // Runs every frame of the pause state.
-void pause() {}
+void pause() {
+    // Resume the game
+    if (BUTTON_PRESSED(BUTTON_SELECT)) {
+        goToGame(level);
+    }
+    waitForVBlank();
+}
 
 // Sets up the win state.
-void goToWin() {}
+void goToWin() {
+    // Draw some text
+    shadowOAM[GAME_OVER_IDX].attr0 = ((SCREENHEIGHT / 2) - 8) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[GAME_OVER_IDX].attr1 = ((SCREENWIDTH / 2) - 40) | ATTR1_LARGE;
+    shadowOAM[GAME_OVER_IDX].attr2 = ATTR2_TILEID(21, 20) | ATTR2_PRIORITY(0);
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+
+    state = WIN;
+}
 
 // Runs every frame of the win state.
-void win() {}
+void win() {
+    if (BUTTON_PRESSED(BUTTON_START)) {
+        goToStart();
+    }
+    waitForVBlank();
+}
 
 // Sets up the lose state.
-void goToLose() {}
+void goToLose() {
+    // Draw some text that's slightly too large for one sprite
+    shadowOAM[GAME_OVER_IDX].attr0 = ((SCREENHEIGHT / 2) - 8) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[GAME_OVER_IDX].attr1 = ((SCREENWIDTH / 2) - 40) | ATTR1_LARGE;
+    shadowOAM[GAME_OVER_IDX].attr2 = ATTR2_TILEID(0, 25) | ATTR2_PRIORITY(0);
+    shadowOAM[GAME_OVER_IDX + 1].attr0 = ((SCREENHEIGHT / 2) - 8) | ATTR0_REGULAR | ATTR0_SQUARE;
+    shadowOAM[GAME_OVER_IDX + 1].attr1 = (((SCREENWIDTH / 2) - 40) + 64) | ATTR1_SMALL;
+    shadowOAM[GAME_OVER_IDX + 1].attr2 = ATTR2_TILEID(8, 25) | ATTR2_PRIORITY(0);
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+
+    state = LOSE;
+}
 
 // Runs every frame of the lose state.
-void lose() {}
+void lose() {
+    if (BUTTON_PRESSED(BUTTON_START)) {
+        goToStart();
+    }
+    waitForVBlank();
+}
