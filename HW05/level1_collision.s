@@ -7348,10 +7348,10 @@ level1_collisionBitmap:
 	.short	0
 	.short	0
 	.short	0
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	257
 	.short	257
 	.short	257
@@ -10839,11 +10839,11 @@ level1_collisionBitmap:
 	.short	257
 	.short	257
 	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	1
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	0
 	.short	0
 	.short	0
@@ -14548,11 +14548,11 @@ level1_collisionBitmap:
 	.short	0
 	.short	0
 	.short	0
-	.short	257
-	.short	257
-	.short	257
-	.short	257
-	.short	257
+	.short	0
+	.short	0
+	.short	0
+	.short	0
+	.short	256
 	.short	257
 	.short	257
 	.short	257
@@ -17820,9 +17820,6 @@ level1_collisionBitmap:
 	.short	771
 	.short	771
 	.short	771
-	.short	257
-	.short	257
-	.short	257
 	.short	257
 	.short	257
 	.short	257
@@ -17923,7 +17920,10 @@ level1_collisionBitmap:
 	.short	257
 	.short	257
 	.short	257
-	.short	257
+	.short	0
+	.short	0
+	.short	0
+	.short	0
 	.short	0
 	.short	0
 	.short	0

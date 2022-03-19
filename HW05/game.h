@@ -43,7 +43,7 @@ enum {
 
 #define MARIO_SPEED 1
 
-#define NUM_BARREL 8
+#define NUM_BARREL 10
 
 typedef struct {
     int x;
@@ -57,7 +57,9 @@ typedef struct {
     int curFrame;
     // this is only used for barrels so its value at initialization doesn't usuaully matter and we don't set it
     // We could probably have another struct for barrels, but it doesn't really matter.
-    int active; 
+    int active;
+    int wasFalling;
+    int adder;
 } ANI;
 
 extern ANI mario;
@@ -80,6 +82,7 @@ void update();
 void updateMario();
 void updateDK();
 void updatePauline();
+void updateBarrels();
 
 void throwBarrel();
 

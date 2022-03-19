@@ -1400,12 +1400,7 @@ enum {
 enum {
     NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
 };
-
-
-
-
-
-
+# 48 "game.h"
 typedef struct {
     int x;
     int y;
@@ -1416,6 +1411,11 @@ typedef struct {
     int state;
     int timer;
     int curFrame;
+
+
+    int active;
+    int wasFalling;
+    int adder;
 } ANI;
 
 extern ANI mario;
@@ -1426,16 +1426,21 @@ extern int level;
 extern ANI dk;
 extern ANI pauline;
 extern int levelsCleared;
+extern ANI barrels[10];
 
 void init(int newlevel);
 void initMario();
 void initDK();
 void initPauline();
+void initBarrels();
 
 void update();
 void updateMario();
 void updateDK();
 void updatePauline();
+void updateBarrels();
+
+void throwBarrel();
 # 9 "main.c" 2
 
 

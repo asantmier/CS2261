@@ -141,12 +141,7 @@ enum {
 enum {
     NORMAL, RIGHT_HAND, LEFT_HAND, NO_BARREL, BARREL
 };
-
-
-
-
-
-
+# 48 "game.h"
 typedef struct {
     int x;
     int y;
@@ -157,6 +152,11 @@ typedef struct {
     int state;
     int timer;
     int curFrame;
+
+
+    int active;
+    int wasFalling;
+    int adder;
 } ANI;
 
 extern ANI mario;
@@ -167,16 +167,21 @@ extern int level;
 extern ANI dk;
 extern ANI pauline;
 extern int levelsCleared;
+extern ANI barrels[10];
 
 void init(int newlevel);
 void initMario();
 void initDK();
 void initPauline();
+void initBarrels();
 
 void update();
 void updateMario();
 void updateDK();
 void updatePauline();
+void updateBarrels();
+
+void throwBarrel();
 # 3 "game.c" 2
 
 ANI mario;
@@ -190,6 +195,7 @@ ANI dk;
 ANI pauline;
 int levelsCleared;
 int barrelTimer;
+ANI barrels[10];
 
 void init(int newlevel) {
     levelsCleared++;
@@ -207,6 +213,7 @@ void init(int newlevel) {
     initMario();
     initDK();
     initPauline();
+    initBarrels();
 }
 
 void initMario() {
@@ -273,10 +280,26 @@ void initPauline() {
     }
 }
 
+void initBarrels() {
+    for (int i = 0; i < 10; i++) {
+        barrels[i].curFrame = 0;
+        barrels[i].dx = 0;
+        barrels[i].dy = 0;
+        barrels[i].height = 16;
+        barrels[i].width = 16;
+        barrels[i].state = NORMAL;
+        barrels[i].timer = 0;
+        barrels[i].x = 0;
+        barrels[i].y = 0;
+        barrels[i].active = 0;
+    }
+}
+
 void update() {
     updateMario();
     updateDK();
     updatePauline();
+    updateBarrels();
 }
 
 void updateMario() {
@@ -418,6 +441,7 @@ void updateDK() {
         } else if (dk.state == BARREL) {
             dk.state = NORMAL;
             barrelTimer = 0;
+            throwBarrel();
         } else {
             dk.curFrame = (dk.curFrame + 1) % 4;
         }
@@ -476,4 +500,163 @@ void updatePauline() {
     shadowOAM[PAULINE_IDX].attr2 = ((0)*32 + (20 + pauline.curFrame * 2));
 
     pauline.timer++;
+}
+
+void updateBarrels() {
+    for (int i = 0; i < 10; i++) {
+        if (barrels[i].active) {
+
+            int newx, newy, cooly;
+            int falling = 0;
+
+            if(!checkCollisionMap(barrels[i].x + barrels[i].adder, barrels[i].y + barrels[i].height - 1, 0, barrels[i].dy, level, &newx, &newy)) {
+                cooly = newy;
+
+                if (!checkCollisionMap(barrels[i].x + barrels[i].adder, barrels[i].y + barrels[i].height - 1 + 1, 0, barrels[i].dy, level, &newx, &newy)) {
+
+                    falling = 1;
+                    barrels[i].wasFalling = 1;
+                }
+            }
+            if (!falling) {
+                if (barrels[i].wasFalling) {
+                    if (barrels[i].state == RIGHT) {
+                        barrels[i].state = LEFT;
+                        barrels[i].dx = -1;
+                        barrels[i].adder = barrels[i].width - 1;
+                    } else if (barrels[i].state == LEFT) {
+                        barrels[i].state = RIGHT;
+                        barrels[i].dx = 1;
+                        barrels[i].adder = 0;
+                    }
+                    barrels[i].wasFalling = 0;
+                }
+                checkCollisionMap(barrels[i].x + barrels[i].adder, barrels[i].y + barrels[i].height - 1, barrels[i].dx, barrels[i].dy, level, &newx, &newy);
+                barrels[i].x = newx - barrels[i].adder;
+                barrels[i].y = newy - barrels[i].height + 1;
+            } else {
+                barrels[i].y = cooly - barrels[i].height + 1;
+            }
+            if (barrels[i].x < 16) {
+                barrels[i].x = 16;
+            } else if (barrels[i].x + barrels[i].width > 224) {
+                barrels[i].x = 224 - barrels[i].width;
+            }
+
+
+            if (!(barrels[i].timer % 6)) {
+                barrels[i].curFrame = (barrels[i].curFrame + 1) % 4;
+            }
+
+
+            shadowOAM[BARREL_IDX + i].attr0 = (barrels[i].y + 3) | (0 << 8) | (0 << 14);
+            if (barrels[i].state == LEFT) {
+                switch (barrels[i].curFrame)
+                {
+                case 0:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (0));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (4));
+                    }
+                    break;
+                case 1:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (2));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 13);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (4));
+                    }
+                    break;
+                case 2:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (0));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (6));
+                    }
+                    break;
+                case 3:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (2));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 13);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (6));
+                    }
+                    break;
+                }
+            } else {
+                switch (barrels[i].curFrame)
+                {
+                case 0:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (0));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 12);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (4));
+                    }
+                    break;
+                case 1:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (2));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 13) | (1 << 12);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (4));
+                    }
+                    break;
+                case 2:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (0));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 12);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (6));
+                    }
+                    break;
+                case 3:
+                    if (falling) {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (2));
+                    } else {
+                        shadowOAM[BARREL_IDX + i].attr1 = barrels[i].x | (1 << 14) | (1 << 13) | (1 << 12);
+                        shadowOAM[BARREL_IDX + i].attr2 = ((10)*32 + (6));
+                    }
+                    break;
+                }
+            }
+
+            barrels[i].timer++;
+        }
+    }
+}
+
+void throwBarrel() {
+    for (int i = 0; i < 10; i++) {
+        if (!barrels[i].active) {
+            barrels[i].active = 1;
+            barrels[i].dy = 1;
+            barrels[i].curFrame = 0;
+            barrels[i].timer = 0;
+            barrels[i].wasFalling = 0;
+            switch (level)
+            {
+            case 1:
+                barrels[i].x = 96;
+                barrels[i].y = 16;
+                barrels[i].dx = 1;
+                barrels[i].state = RIGHT;
+                barrels[i].adder = 0;
+                break;
+            case 2:
+                break;
+            }
+        }
+    }
 }
