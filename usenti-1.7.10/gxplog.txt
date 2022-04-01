@@ -1,7 +1,7 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-03-19, 17:27:25
+STATUS: Started run at: 2022-04-01, 16:23:59
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
@@ -16,5 +16,5 @@ STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: spritesheet into C:\Users\lofte\Documents\CS2261\HW05\spritesheet.c .
+STATUS: Export to C: tempspritesheet into C:\Users\lofte\Documents\CS2261\Final Project\tempspritesheet.c .
 STATUS: Run completed :).

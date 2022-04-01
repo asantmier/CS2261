@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mode0.h"
+#include "tempspritesheet.h"
+#include "game.h"
 
 // Prototypes.
 void initialize();
@@ -34,6 +36,9 @@ unsigned short oldButtons;
 // Shadow OAM.
 OBJ_ATTR shadowOAM[128];
 
+// Timer for srand
+int randTimer;
+
 int main() {
     initialize();
 
@@ -65,41 +70,97 @@ int main() {
 
 // Sets up GBA.
 void initialize() {
-    REG_DISPCTL = MODE0; // Bitwise OR the BG(s) you want to use and Bitwise OR SPRITE_ENABLE if you want to use sprites.
+    // The almighty DMA
+    // Sprites
+    DMANow(3, &tempspritesheetPal, SPRITEPALETTE, 256);
+    DMANow(3, &tempspritesheetTiles, &CHARBLOCK[4], DMA_32 | (tempspritesheetTilesLen / 4));
+    // Backgrounds
+
+    // begone sprites
+    hideSprites();
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+
+    REG_DISPCTL = MODE0 | SPRITE_ENABLE | BG0_ENABLE; // Bitwise OR the BG(s) you want to use and Bitwise OR SPRITE_ENABLE if you want to use sprites.
     // Don't forget to set up whatever BGs you enabled in the line above!
 
     buttons = BUTTONS;
     oldButtons = 0;
+    randTimer = 0;
 
+    // its gamer time
     goToStart();
 }
 
 // Sets up the start state.
-void goToStart() {}
+void goToStart() {
+
+    state = START;
+}
 
 // Runs every frame of the start state.
-void start() {}
+void start() {
+    randTimer++;
+    // if (BUTTON_PRESSED(BUTTON_START)) {
+        // Seed RNG
+        srand(randTimer);
+        init();
+        goToGame();
+    // }
+
+    waitForVBlank();
+
+}
 
 // Sets up the game state.
-void goToGame() {}
+void goToGame() {
+
+    state = GAME;
+}
 
 // Runs every frame of the game state.
-void game() {}
+void game() {
+    update();
+    
+    waitForVBlank();
+
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+}
 
 // Sets up the pause state.
-void goToPause() {}
+void goToPause() {
+
+    state = PAUSE;
+}
 
 // Runs every frame of the pause state.
-void pause() {}
+void pause() {
+
+    waitForVBlank();
+
+}
 
 // Sets up the win state.
-void goToWin() {}
+void goToWin() {
+
+    state = WIN;
+}
 
 // Runs every frame of the win state.
-void win() {}
+void win() {
+
+    waitForVBlank();
+
+}
 
 // Sets up the lose state.
-void goToLose() {}
+void goToLose() {
+
+    state = LOSE;
+}
 
 // Runs every frame of the lose state.
-void lose() {}
+void lose() {
+
+    waitForVBlank();
+
+}
