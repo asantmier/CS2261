@@ -35,6 +35,7 @@ unsigned short oldButtons;
 
 // Shadow OAM.
 OBJ_ATTR shadowOAM[128];
+fp256 bg2xOff, bg2yOff;
 
 // Timer for srand
 int randTimer;
@@ -75,12 +76,21 @@ void initialize() {
     DMANow(3, &tempspritesheetPal, SPRITEPALETTE, 256);
     DMANow(3, &tempspritesheetTiles, &CHARBLOCK[4], DMA_32 | (tempspritesheetTilesLen / 4));
     // Backgrounds
+    // BG2 contains the world. It's a 128x tile map so it uses the entire 3rd charblock for its map
+    REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_4BPP | BG_SIZE_LARGE | BG_WRAP;
+    *REG_BG2_AFFINE = bg_aff_default;
+
+    // Move background back to its origin
+    bg2xOff = 0;
+    bg2yOff = 0;
+    REG_BG2X = ENCODE24_8(bg2xOff);
+    REG_BG2Y = ENCODE24_8(bg2yOff);
 
     // begone sprites
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
 
-    REG_DISPCTL = MODE0 | SPRITE_ENABLE | BG0_ENABLE; // Bitwise OR the BG(s) you want to use and Bitwise OR SPRITE_ENABLE if you want to use sprites.
+    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE; // Bitwise OR the BG(s) you want to use and Bitwise OR SPRITE_ENABLE if you want to use sprites.
     // Don't forget to set up whatever BGs you enabled in the line above!
 
     buttons = BUTTONS;

@@ -618,6 +618,18 @@ hideSprites:
 	.size	hideSprites, .-hideSprites
 	.global	dma
 	.global	videoBuffer
+	.global	bg_aff_default
+	.section	.rodata
+	.align	2
+	.type	bg_aff_default, %object
+	.size	bg_aff_default, 16
+bg_aff_default:
+	.short	256
+	.short	0
+	.short	0
+	.short	256
+	.word	0
+	.word	0
 	.data
 	.align	2
 	.set	.LANCHOR0,. + 0

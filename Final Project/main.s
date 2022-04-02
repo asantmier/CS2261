@@ -21,44 +21,58 @@ initialize:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, lr}
+	push	{r4, r5, r6, lr}
+	mov	r5, #67108864
+	ldr	r6, .L4
 	mov	r3, #256
-	ldr	r4, .L4
 	mov	r0, #3
 	ldr	r2, .L4+4
 	ldr	r1, .L4+8
 	mov	lr, pc
-	bx	r4
+	bx	r6
 	mov	r0, #3
-	ldr	r2, .L4+12
-	ldr	r1, .L4+16
-	ldr	r3, .L4+20
+	ldr	r3, .L4+12
+	ldr	r2, .L4+16
+	ldr	r1, .L4+20
 	mov	lr, pc
-	bx	r4
+	bx	r6
+	mov	r4, #0
+	mov	lr, #63488
 	ldr	r3, .L4+24
+	ldm	r3, {r0, r1, r2, r3}
+	add	ip, r5, #32
+	stm	ip, {r0, r1, r2, r3}
+	ldr	r2, .L4+28
+	ldr	r3, .L4+32
+	strh	lr, [r5, #12]	@ movhi
+	str	r4, [r3]
+	str	r4, [r2]
+	str	r4, [r5, #40]
+	ldr	r3, [r3]
+	lsl	r3, r3, #8
+	str	r3, [r5, #44]
+	ldr	r3, .L4+36
 	mov	lr, pc
 	bx	r3
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L4+28
-	mov	lr, pc
-	bx	r4
-	mov	r2, #67108864
-	mov	r1, #4352
-	mov	r3, #0
-	strh	r1, [r2]	@ movhi
-	add	r2, r2, #256
-	ldrh	lr, [r2, #48]
-	ldr	ip, .L4+32
-	ldr	r0, .L4+36
 	ldr	r1, .L4+40
+	mov	lr, pc
+	bx	r6
 	ldr	r2, .L4+44
-	strh	lr, [ip]	@ movhi
-	strh	r3, [r0]	@ movhi
-	str	r3, [r1]
-	str	r3, [r2]
-	pop	{r4, lr}
+	ldr	r3, .L4+48
+	strh	r2, [r5]	@ movhi
+	ldr	ip, .L4+52
+	ldrh	r0, [r3, #48]
+	ldr	r1, .L4+56
+	ldr	r2, .L4+60
+	ldr	r3, .L4+64
+	strh	r4, [ip]	@ movhi
+	str	r4, [r2]
+	str	r4, [r3]
+	strh	r0, [r1]	@ movhi
+	pop	{r4, r5, r6, lr}
 	bx	lr
 .L5:
 	.align	2
@@ -66,13 +80,18 @@ initialize:
 	.word	DMANow
 	.word	83886592
 	.word	tempspritesheetPal
+	.word	67117056
 	.word	100728832
 	.word	tempspritesheetTiles
-	.word	67117056
+	.word	bg_aff_default
+	.word	bg2xOff
+	.word	bg2yOff
 	.word	hideSprites
 	.word	shadowOAM
-	.word	buttons
+	.word	5121
+	.word	67109120
 	.word	oldButtons
+	.word	buttons
 	.word	randTimer
 	.word	state
 	.size	initialize, .-initialize
@@ -376,6 +395,8 @@ lose:
 	.word	waitForVBlank
 	.size	lose, .-lose
 	.comm	randTimer,4,4
+	.comm	bg2yOff,4,4
+	.comm	bg2xOff,4,4
 	.comm	shadowOAM,1024,4
 	.comm	oldButtons,2,2
 	.comm	buttons,2,2

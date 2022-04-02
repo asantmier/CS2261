@@ -12,6 +12,8 @@ typedef unsigned int u32;
 // Display Control Register.
 #define REG_DISPCTL (*(volatile unsigned short *)0x4000000)
 #define MODE0 0
+#define MODE1 1
+#define MODE2 2
 #define MODE3 3
 #define MODE4 4
 #define DISP_BACKBUFFER (1 << 4)
@@ -37,6 +39,7 @@ typedef unsigned int u32;
 #define BG_SIZE_WIDE (1 << 14)  // 64x32 tiles
 #define BG_SIZE_TALL (2 << 14)  // 32x64 tiles
 #define BG_SIZE_LARGE (3 << 14) // 64x64 tiles
+#define BG_WRAP (1 << 13)
 
 // Background Offset Registers.
 #define REG_BG0HOFF (*(volatile unsigned short *)0x04000010)
@@ -47,9 +50,28 @@ typedef unsigned int u32;
 
 #define REG_BG2HOFF (*(volatile unsigned short *)0x04000018)
 #define REG_BG2VOFF (*(volatile unsigned short *)0x0400001A)
+#define REG_BG2X    (*(volatile unsigned int *)  0x04000028)
+#define REG_BG2Y    (*(volatile unsigned int *)  0x0400002C)
 
 #define REG_BG3HOFF (*(volatile unsigned short *)0x0400001C)
 #define REG_BG3VOFF (*(volatile unsigned short *)0x0400001E)
+
+// 24.8 fixed point encoding for affine background offsets
+typedef int fp256;
+#define ENCODE24_8(n) ((n) << 8)
+extern fp256 bg2xOff, bg2yOff;
+
+// Affine Background P registers
+typedef struct {
+    short pa, pb;
+    short pc, pd;
+    int dx, dy;
+} BG_AFFINE;
+
+#define REG_BG2_AFFINE ((BG_AFFINE *)(0x04000020))
+
+// default affine matrix for backgrounds
+extern const BG_AFFINE bg_aff_default;
 
 // Display Status Registers.
 #define SCANLINECOUNTER (*(volatile unsigned short *)0x4000006)

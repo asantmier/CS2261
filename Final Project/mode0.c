@@ -1,5 +1,8 @@
 #include "mode0.h"
 
+// Identity matrix for affine backgrounds
+const BG_AFFINE bg_aff_default = { 256, 0, 0, 256, 0, 0 };
+
 // The start of the video memory.
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
 

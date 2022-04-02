@@ -1232,9 +1232,25 @@ _putchar_unlocked(int _c)
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
-# 62 "mode0.h"
+# 60 "mode0.h"
+typedef int fp256;
+
+extern fp256 bg2xOff, bg2yOff;
+
+
+typedef struct {
+    short pa, pb;
+    short pc, pd;
+    int dx, dy;
+} BG_AFFINE;
+
+
+
+
+extern const BG_AFFINE bg_aff_default;
+# 84 "mode0.h"
 extern volatile unsigned short *videoBuffer;
-# 83 "mode0.h"
+# 105 "mode0.h"
 typedef struct {
     u16 tileimg[8192];
 } charblock;
@@ -1274,7 +1290,7 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 152 "mode0.h"
+# 174 "mode0.h"
 void hideSprites();
 
 
@@ -1296,7 +1312,7 @@ typedef struct {
     int numFrames;
     int hide;
 } SPRITE;
-# 190 "mode0.h"
+# 212 "mode0.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
 
@@ -1313,7 +1329,7 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 238 "mode0.h"
+# 260 "mode0.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
 
 
@@ -1330,8 +1346,30 @@ extern const unsigned short tempspritesheetPal[256];
 
 
 
+
+enum {
+    PLAYER_IDX
+};
+
+
+typedef int fp64;
+# 22 "game.h"
+typedef struct {
+    fp64 x, y;
+    fp64 dx, dy;
+    int width, height;
+} PLAYER;
+
+
+extern PLAYER player;
+
+
 void init();
+void initPlayer();
+
+
 void update();
+void updatePlayer();
 # 6 "main.c" 2
 
 
@@ -1365,6 +1403,7 @@ unsigned short oldButtons;
 
 
 OBJ_ATTR shadowOAM[128];
+fp256 bg2xOff, bg2yOff;
 
 
 int randTimer;
@@ -1406,11 +1445,20 @@ void initialize() {
     DMANow(3, &tempspritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
 
 
+    (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (0 << 7) | (3 << 14) | (1 << 13);
+    *((BG_AFFINE *)(0x04000020)) = bg_aff_default;
+
+
+    bg2xOff = 0;
+    bg2yOff = 0;
+    (*(volatile unsigned int *) 0x04000028) = ((bg2xOff) << 8);
+    (*(volatile unsigned int *) 0x0400002C) = ((bg2yOff) << 8);
+
 
     hideSprites();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
 
-    (*(volatile unsigned short *)0x4000000) = 0 | (1 << 12) | (1 << 8);
+    (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 10);
 
 
     buttons = (*(volatile unsigned short *)0x04000130);

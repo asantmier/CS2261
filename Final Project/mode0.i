@@ -10,9 +10,25 @@
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
-# 62 "mode0.h"
+# 60 "mode0.h"
+typedef int fp256;
+
+extern fp256 bg2xOff, bg2yOff;
+
+
+typedef struct {
+    short pa, pb;
+    short pc, pd;
+    int dx, dy;
+} BG_AFFINE;
+
+
+
+
+extern const BG_AFFINE bg_aff_default;
+# 84 "mode0.h"
 extern volatile unsigned short *videoBuffer;
-# 83 "mode0.h"
+# 105 "mode0.h"
 typedef struct {
     u16 tileimg[8192];
 } charblock;
@@ -52,7 +68,7 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 152 "mode0.h"
+# 174 "mode0.h"
 void hideSprites();
 
 
@@ -74,7 +90,7 @@ typedef struct {
     int numFrames;
     int hide;
 } SPRITE;
-# 190 "mode0.h"
+# 212 "mode0.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
 
@@ -91,12 +107,15 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 238 "mode0.h"
+# 260 "mode0.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 2 "mode0.c" 2
+
+
+const BG_AFFINE bg_aff_default = { 256, 0, 0, 256, 0, 0 };
 
 
 unsigned volatile short *videoBuffer = (unsigned short *)0x6000000;
