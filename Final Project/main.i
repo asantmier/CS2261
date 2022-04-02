@@ -1335,13 +1335,6 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 4 "main.c" 2
-# 1 "tempspritesheet.h" 1
-# 21 "tempspritesheet.h"
-extern const unsigned short tempspritesheetTiles[16384];
-
-
-extern const unsigned short tempspritesheetPal[256];
-# 5 "main.c" 2
 # 1 "game.h" 1
 
 
@@ -1370,7 +1363,24 @@ void initPlayer();
 
 void update();
 void updatePlayer();
+# 5 "main.c" 2
+# 1 "tempspritesheet.h" 1
+# 21 "tempspritesheet.h"
+extern const unsigned short tempspritesheetTiles[16384];
+
+
+extern const unsigned short tempspritesheetPal[256];
 # 6 "main.c" 2
+# 1 "tempbackground.h" 1
+# 22 "tempbackground.h"
+extern const unsigned short tempbackgroundTiles[192];
+
+
+extern const unsigned short tempbackgroundMap[8192];
+
+
+extern const unsigned short tempbackgroundPal[256];
+# 7 "main.c" 2
 
 
 void initialize();
@@ -1444,8 +1454,11 @@ void initialize() {
     DMANow(3, &tempspritesheetPal, ((unsigned short *)0x5000200), 256);
     DMANow(3, &tempspritesheetTiles, &((charblock *)0x6000000)[4], (1 << 26) | (32768 / 4));
 
+    DMANow(3, &tempbackgroundPal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, &tempbackgroundTiles, &((charblock *)0x6000000)[0], (1 << 26) | (384 / 4));
+    DMANow(3, &tempbackgroundMap, &((screenblock *)0x6000000)[24], (1 << 26) | (16384 / 4));
 
-    (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (0 << 7) | (3 << 14) | (1 << 13);
+    (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (1 << 7) | (3 << 14) | (1 << 13);
     *((BG_AFFINE *)(0x04000020)) = bg_aff_default;
 
 

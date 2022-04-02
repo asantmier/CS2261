@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mode0.h"
-#include "tempspritesheet.h"
 #include "game.h"
+#include "tempspritesheet.h"
+#include "tempbackground.h"
 
 // Prototypes.
 void initialize();
@@ -76,8 +77,11 @@ void initialize() {
     DMANow(3, &tempspritesheetPal, SPRITEPALETTE, 256);
     DMANow(3, &tempspritesheetTiles, &CHARBLOCK[4], DMA_32 | (tempspritesheetTilesLen / 4));
     // Backgrounds
+    DMANow(3, &tempbackgroundPal, PALETTE, 256);
+    DMANow(3, &tempbackgroundTiles, &CHARBLOCK[0], DMA_32 | (tempbackgroundTilesLen / 4));
+    DMANow(3, &tempbackgroundMap, &SCREENBLOCK[24], DMA_32 | (tempbackgroundMapLen / 4));
     // BG2 contains the world. It's a 128x tile map so it uses the entire 3rd charblock for its map
-    REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_4BPP | BG_SIZE_LARGE | BG_WRAP;
+    REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_8BPP | BG_SIZE_LARGE | BG_WRAP;
     *REG_BG2_AFFINE = bg_aff_default;
 
     // Move background back to its origin

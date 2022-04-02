@@ -3,6 +3,7 @@
         "time.h": "c",
         "hw3lib.h": "c",
         "images.h": "c",
-        "hw05lib.h": "c"
+        "hw05lib.h": "c",
+        "tempspritesheet.h": "c"
     }
 }
