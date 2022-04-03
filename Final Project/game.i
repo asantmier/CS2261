@@ -124,9 +124,10 @@ enum {
 
 
 typedef int fp64;
-# 22 "game.h"
+# 26 "game.h"
 typedef struct {
-    fp64 x, y;
+    fp64 int_x, int_y;
+    int x, y;
     fp64 dx, dy;
     int width, height;
 } PLAYER;
@@ -951,9 +952,17 @@ extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
 # 4 "game.c" 2
+# 1 "print.h" 1
+# 36 "print.h"
 
+# 36 "print.h"
+void mgba_printf_level(int level, const char* ptr, ...);
+void mgba_printf(const char* string, ...);
+void mgba_break(void);
+uint8_t mgba_open(void);
+void mgba_close(void);
+# 5 "game.c" 2
 
-# 5 "game.c"
 PLAYER player;
 
 void init() {
@@ -961,6 +970,8 @@ void init() {
 }
 
 void initPlayer() {
+    player.int_x = 0;
+    player.int_y = 0;
     player.x = 0;
     player.y = 0;
     player.dx = 0;
@@ -975,12 +986,88 @@ void update() {
 
 
 void movePlayer() {
-    player.x += player.dx;
-    player.y += player.dy;
-    if (player.x < 0) player.x = 0;
-    if (((player.x) >> 6) + player.width > 240) player.x = ((240 - player.width) << 6);
-    if (player.y < 0) player.y = 0;
-    if (((player.y) >> 6) + player.height > 160) player.y = ((160 - player.height) << 6);
+
+    player.int_x += player.dx;
+    player.int_y += player.dy;
+
+    if (player.int_x < 0) {
+        player.int_x = 0;
+    }
+
+    if (player.int_x + ((player.width) << 6) > ((1024) << 6)) {
+        player.int_x = ((1024 - player.width) << 6);
+    }
+    if (player.int_y < 0) {
+        player.int_y = 0;
+    }
+    if (player.int_y + ((player.height) << 6) > ((1024) << 6)) {
+        player.int_y = ((1024 - player.height) << 6);
+    }
+
+
+    player.x = ((player.int_x) >> 6) - bg2xOff;
+    player.y = ((player.int_y) >> 6) - bg2yOff;
+
+    if (player.x < 79) {
+
+        if (bg2xOff > 0) {
+            int xDiff = 79 - player.x;
+            if (xDiff <= bg2xOff) {
+                player.x = 79;
+                bg2xOff -= xDiff;
+            } else {
+                int netDx = xDiff - bg2xOff;
+                bg2xOff -= xDiff - netDx;
+                player.x -= netDx;
+            }
+        }
+    }
+    if (player.x + player.width > 159) {
+        if (bg2xOff < 1024 - 240) {
+            int xDiff = player.x + player.width - 159;
+            if (xDiff + bg2xOff <= 1024 - 240) {
+                player.x = 159 - player.width;
+                bg2xOff += xDiff;
+            } else {
+                int netDx = (xDiff + bg2xOff + 240) - 1024;
+                bg2xOff += xDiff - netDx;
+                player.x += netDx;
+            }
+        }
+    }
+    if (player.y < 52) {
+        if (bg2yOff > 0) {
+            int yDiff = 52 - player.y;
+            if (yDiff <= bg2yOff) {
+                player.y = 52;
+                bg2yOff -= yDiff;
+            } else {
+                int netDy = yDiff - bg2yOff;
+                bg2yOff -= yDiff - netDy;
+                player.y -= netDy;
+            }
+        }
+    }
+    if (player.y + player.height > 105) {
+        if (bg2yOff < 1024 - 160) {
+            int yDiff = player.y + player.height - 105;
+            if (yDiff + bg2yOff <= 1024 - 160) {
+                player.y = 105 - player.height;
+                bg2yOff += yDiff;
+            } else {
+                int netDy = (yDiff + bg2yOff + 160) - 1024;
+                bg2yOff += yDiff - netDy;
+                player.y += netDy;
+            }
+        }
+    }
+    mgba_printf("internal: (%d, %d)", player.int_x, player.int_y);
+}
+
+void drawPlayer() {
+    shadowOAM[PLAYER_IDX].attr0 = (player.y & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[PLAYER_IDX].attr1 = (player.x & 0x1FF) | (0 << 14);
+    shadowOAM[PLAYER_IDX].attr2 = ((0)*32 + (0));
 }
 
 void updatePlayer() {
@@ -990,37 +1077,35 @@ void updatePlayer() {
         slowMode = 1;
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
-        player.dx += -(slowMode ? 2 / 2 : 2);
+        player.dx += -(slowMode ? 200 / 2 : 200);
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
-        player.dx += (slowMode ? 2 / 2 : 2);
+        player.dx += (slowMode ? 200 / 2 : 200);
     } else {
         if (player.dx > 0) {
-            player.dx -= 1;
+            player.dx -= 10;
         } else if (player.dx < 0) {
-            player.dx += 1;
+            player.dx += 10;
         }
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 6)))) {
-        player.dy += -(slowMode ? 2 / 2 : 2);
+        player.dy += -(slowMode ? 200 / 2 : 200);
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 7)))) {
-        player.dy += (slowMode ? 2 / 2 : 2);
+        player.dy += (slowMode ? 200 / 2 : 200);
     } else {
         if (player.dy > 0) {
-            player.dy -= 1;
+            player.dy -= 10;
         } else if (player.dy < 0) {
-            player.dy += 1;
+            player.dy += 10;
         }
     }
-    if (player.dx > (slowMode ? 48 / 2 : 48)) player.dx = (slowMode ? 48 / 2 : 48);
-    if (player.dx < -(slowMode ? 48 / 2 : 48)) player.dx = -(slowMode ? 48 / 2 : 48);
-    if (player.dy > (slowMode ? 48 / 2 : 48)) player.dy = (slowMode ? 48 / 2 : 48);
-    if (player.dy < -(slowMode ? 48 / 2 : 48)) player.dy = -(slowMode ? 48 / 2 : 48);
+    if (player.dx > (slowMode ? 480 / 2 : 480)) player.dx = (slowMode ? 480 / 2 : 480);
+    if (player.dx < -(slowMode ? 480 / 2 : 480)) player.dx = -(slowMode ? 480 / 2 : 480);
+    if (player.dy > (slowMode ? 480 / 2 : 480)) player.dy = (slowMode ? 480 / 2 : 480);
+    if (player.dy < -(slowMode ? 480 / 2 : 480)) player.dy = -(slowMode ? 480 / 2 : 480);
 
 
     movePlayer();
 
 
-    shadowOAM[PLAYER_IDX].attr0 = ((player.y) >> 6) | (0 << 8) | (1 << 14);
-    shadowOAM[PLAYER_IDX].attr1 = ((player.x) >> 6) | (0 << 14);
-    shadowOAM[PLAYER_IDX].attr2 = ((0)*32 + (0));
+    drawPlayer();
 }

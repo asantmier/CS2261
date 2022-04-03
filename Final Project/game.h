@@ -12,16 +12,21 @@ typedef int fp64;
 #define DECODE26_6(n) ((n) >> 6)
 
 // Constants
-#define GAMEWIDTH SCREENWIDTH
-#define GAMEHEIGHT SCREENHEIGHT
-#define PLAYER_MAX_V 48
-#define PLAYER_MAX_A 2
-#define PLAYER_DRAG  1
+#define GAMEWIDTH 1024
+#define GAMEHEIGHT 1024
+#define CAM_BOUND_L 79
+#define CAM_BOUND_R 159
+#define CAM_BOUND_T 52
+#define CAM_BOUND_B 105
+#define PLAYER_MAX_V 480
+#define PLAYER_MAX_A 200
+#define PLAYER_DRAG  10
 
 // Structs
 typedef struct {
-    fp64 x, y;
-    fp64 dx, dy;
+    fp64 int_x, int_y; // internal x and y
+    int x, y; // screen space x and y
+    fp64 dx, dy; // internal velocity
     int width, height;
 } PLAYER;
 
