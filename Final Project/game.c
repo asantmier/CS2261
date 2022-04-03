@@ -4,9 +4,11 @@
 #include "print.h"
 
 PLAYER player;
+BULLET bullets[NUM_BULLETS];
 
 void init() {
     initPlayer();
+    initBullets();
 }
 
 void initPlayer() {
@@ -18,10 +20,31 @@ void initPlayer() {
     player.dy = 0;
     player.width = 16;
     player.height = 8;
+    player.facing = RIGHT;
+}
+
+void initBullets() {
+    for (int i = 0; i < NUM_BULLETS; i++) {
+        bullets[i].int_x = 0;
+        bullets[i].int_y = 0;
+        bullets[i].x = 0;
+        bullets[i].y = 0;
+        bullets[i].dx = 0;
+        bullets[i].dy = 0;
+        bullets[i].width = 2;
+        bullets[i].height = 1;
+        bullets[i].active = 0;
+        bullets[i].spriteIdx = BULLET1 + i; // bullets are contiguous
+    }
 }
 
 void update() {
     updatePlayer();
+    for (int i = 0; i < NUM_BULLETS; i++) {
+        if (bullets[i].active) {
+            updateBullet(&bullets[i]);
+        }
+    }
 }
 
 // Move the player
@@ -101,13 +124,41 @@ void movePlayer() {
             }
         }
     }
-    mgba_printf("internal: (%d, %d)", player.int_x, player.int_y);
 }
 
+// ShadowOAM sprite stuff for the player
 void drawPlayer() {
     shadowOAM[PLAYER_IDX].attr0 = (player.y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[PLAYER_IDX].attr1 = (player.x & COLMASK) | ATTR1_TINY;
     shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID(0, 0);
+}
+
+// applies high velocity unemployment to the player
+void firePlayer() {
+    // Player shoots in the direction they're facing
+    fp64 dx, startx, starty;
+    if (player.facing == RIGHT) { // right
+        dx = BULLET_MAX_V;
+        startx = player.int_x + ENCODE26_6(player.width);
+        starty = player.int_y;
+    } else { // left
+        dx = -BULLET_MAX_V;
+        startx = player.int_x - ENCODE26_6(bullets[0].width);
+        starty = player.int_y;
+    }
+    for (int i = 0; i < NUM_BULLETS; i++) {
+        if (!bullets[i].active) {
+            bullets[i].active = 1;
+            bullets[i].dx = dx;
+            bullets[i].dy = 0;
+            bullets[i].int_x = startx;
+            bullets[i].int_y = starty;
+            bullets[i].x = DECODE26_6(bullets[i].int_x);
+            bullets[i].y = DECODE26_6(bullets[i].int_y);
+            mgba_printf("dx: %d, startx: %d, starty: %d", dx, startx, starty);
+            break;
+        }
+    }
 }
 
 void updatePlayer() {
@@ -145,7 +196,47 @@ void updatePlayer() {
 
     // Move player
     movePlayer();
+
+    if (player.dx > 0) {
+        player.facing = RIGHT;
+    } else if (player.dx < 0) {
+        player.facing = LEFT;
+    }
+
+    // bang bang
+    if (BUTTON_PRESSED(BUTTON_A)) {
+        firePlayer();
+    }
     
     // Update sprite
     drawPlayer();
+}
+
+void updateBullet(BULLET* bullet) {
+    bullet->int_x += bullet->dx;
+    bullet->int_y += bullet->dy;
+    // remove the bullet if it hits the collision map, level edge, or a dude
+    if ((bullet->int_x < 0) ||
+        (bullet->int_x + ENCODE26_6(bullet->width) > ENCODE26_6(GAMEWIDTH)) ||
+        (bullet->int_y < 0) ||
+        (bullet->int_y + ENCODE26_6(bullet->height) > ENCODE26_6(GAMEHEIGHT))) 
+    {
+        bullet->active = 0;
+    }
+    bullet->x = DECODE26_6(bullet->int_x) - bg2xOff;
+    bullet->y = DECODE26_6(bullet->int_y) - bg2yOff;
+    // Only draw the bullet if any part of it is onscreen
+    if (bullet->active && !(
+        (bullet->x + bullet->width - 1 < 0) ||
+        (bullet->x > SCREENWIDTH) ||
+        (bullet->y + bullet->height - 1 < 0) ||
+        (bullet->y > SCREENHEIGHT)))
+    {
+        shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+        shadowOAM[bullet->spriteIdx].attr1 = (bullet->x & COLMASK) | ATTR1_TINY;
+        // The bullet is gonna be way too big but this is just placeholder until we get a real sprite
+        shadowOAM[bullet->spriteIdx].attr2 = ATTR2_TILEID(8, 16);
+    } else {
+        shadowOAM[bullet->spriteIdx].attr0 = ATTR0_HIDE;
+    }
 }

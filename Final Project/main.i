@@ -1341,29 +1341,45 @@ int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, i
 
 
 enum {
-    PLAYER_IDX
+    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5
 };
 
 
 typedef int fp64;
-# 26 "game.h"
+# 28 "game.h"
+enum { LEFT, RIGHT };
+
+
 typedef struct {
     fp64 int_x, int_y;
     int x, y;
     fp64 dx, dy;
     int width, height;
+    int facing;
 } PLAYER;
+
+typedef struct {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int spriteIdx;
+} BULLET;
 
 
 extern PLAYER player;
+extern BULLET bullets[5];
 
 
 void init();
 void initPlayer();
+void initBullets();
 
 
 void update();
 void updatePlayer();
+void updateBullet(BULLET* bullet);
 # 5 "main.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"

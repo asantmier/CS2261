@@ -119,29 +119,45 @@ int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, i
 
 
 enum {
-    PLAYER_IDX
+    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5
 };
 
 
 typedef int fp64;
-# 26 "game.h"
+# 28 "game.h"
+enum { LEFT, RIGHT };
+
+
 typedef struct {
     fp64 int_x, int_y;
     int x, y;
     fp64 dx, dy;
     int width, height;
+    int facing;
 } PLAYER;
+
+typedef struct {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int spriteIdx;
+} BULLET;
 
 
 extern PLAYER player;
+extern BULLET bullets[5];
 
 
 void init();
 void initPlayer();
+void initBullets();
 
 
 void update();
 void updatePlayer();
+void updateBullet(BULLET* bullet);
 # 3 "game.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
@@ -964,9 +980,11 @@ void mgba_close(void);
 # 5 "game.c" 2
 
 PLAYER player;
+BULLET bullets[5];
 
 void init() {
     initPlayer();
+    initBullets();
 }
 
 void initPlayer() {
@@ -978,10 +996,31 @@ void initPlayer() {
     player.dy = 0;
     player.width = 16;
     player.height = 8;
+    player.facing = RIGHT;
+}
+
+void initBullets() {
+    for (int i = 0; i < 5; i++) {
+        bullets[i].int_x = 0;
+        bullets[i].int_y = 0;
+        bullets[i].x = 0;
+        bullets[i].y = 0;
+        bullets[i].dx = 0;
+        bullets[i].dy = 0;
+        bullets[i].width = 2;
+        bullets[i].height = 1;
+        bullets[i].active = 0;
+        bullets[i].spriteIdx = BULLET1 + i;
+    }
 }
 
 void update() {
     updatePlayer();
+    for (int i = 0; i < 5; i++) {
+        if (bullets[i].active) {
+            updateBullet(&bullets[i]);
+        }
+    }
 }
 
 
@@ -1061,13 +1100,41 @@ void movePlayer() {
             }
         }
     }
-    mgba_printf("internal: (%d, %d)", player.int_x, player.int_y);
 }
+
 
 void drawPlayer() {
     shadowOAM[PLAYER_IDX].attr0 = (player.y & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[PLAYER_IDX].attr1 = (player.x & 0x1FF) | (0 << 14);
     shadowOAM[PLAYER_IDX].attr2 = ((0)*32 + (0));
+}
+
+
+void firePlayer() {
+
+    fp64 dx, startx, starty;
+    if (player.facing == RIGHT) {
+        dx = 96;
+        startx = player.int_x + ((player.width) << 6);
+        starty = player.int_y;
+    } else {
+        dx = -96;
+        startx = player.int_x - ((bullets[0].width) << 6);
+        starty = player.int_y;
+    }
+    for (int i = 0; i < 5; i++) {
+        if (!bullets[i].active) {
+            bullets[i].active = 1;
+            bullets[i].dx = dx;
+            bullets[i].dy = 0;
+            bullets[i].int_x = startx;
+            bullets[i].int_y = starty;
+            bullets[i].x = ((bullets[i].int_x) >> 6);
+            bullets[i].y = ((bullets[i].int_y) >> 6);
+            mgba_printf("dx: %d, startx: %d, starty: %d", dx, startx, starty);
+            break;
+        }
+    }
 }
 
 void updatePlayer() {
@@ -1077,35 +1144,75 @@ void updatePlayer() {
         slowMode = 1;
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
-        player.dx += -(slowMode ? 200 / 2 : 200);
+        player.dx += -(slowMode ? 20 / 2 : 20);
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
-        player.dx += (slowMode ? 200 / 2 : 200);
+        player.dx += (slowMode ? 20 / 2 : 20);
     } else {
         if (player.dx > 0) {
-            player.dx -= 10;
+            player.dx -= 1;
         } else if (player.dx < 0) {
-            player.dx += 10;
+            player.dx += 1;
         }
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 6)))) {
-        player.dy += -(slowMode ? 200 / 2 : 200);
+        player.dy += -(slowMode ? 20 / 2 : 20);
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 7)))) {
-        player.dy += (slowMode ? 200 / 2 : 200);
+        player.dy += (slowMode ? 20 / 2 : 20);
     } else {
         if (player.dy > 0) {
-            player.dy -= 10;
+            player.dy -= 1;
         } else if (player.dy < 0) {
-            player.dy += 10;
+            player.dy += 1;
         }
     }
-    if (player.dx > (slowMode ? 480 / 2 : 480)) player.dx = (slowMode ? 480 / 2 : 480);
-    if (player.dx < -(slowMode ? 480 / 2 : 480)) player.dx = -(slowMode ? 480 / 2 : 480);
-    if (player.dy > (slowMode ? 480 / 2 : 480)) player.dy = (slowMode ? 480 / 2 : 480);
-    if (player.dy < -(slowMode ? 480 / 2 : 480)) player.dy = -(slowMode ? 480 / 2 : 480);
+    if (player.dx > (slowMode ? 48 / 2 : 48)) player.dx = (slowMode ? 48 / 2 : 48);
+    if (player.dx < -(slowMode ? 48 / 2 : 48)) player.dx = -(slowMode ? 48 / 2 : 48);
+    if (player.dy > (slowMode ? 48 / 2 : 48)) player.dy = (slowMode ? 48 / 2 : 48);
+    if (player.dy < -(slowMode ? 48 / 2 : 48)) player.dy = -(slowMode ? 48 / 2 : 48);
 
 
     movePlayer();
 
+    if (player.dx > 0) {
+        player.facing = RIGHT;
+    } else if (player.dx < 0) {
+        player.facing = LEFT;
+    }
+
+
+    if ((!(~(oldButtons) & ((1 << 0))) && (~buttons & ((1 << 0))))) {
+        firePlayer();
+    }
+
 
     drawPlayer();
+}
+
+void updateBullet(BULLET* bullet) {
+    bullet->int_x += bullet->dx;
+    bullet->int_y += bullet->dy;
+
+    if ((bullet->int_x < 0) ||
+        (bullet->int_x + ((bullet->width) << 6) > ((1024) << 6)) ||
+        (bullet->int_y < 0) ||
+        (bullet->int_y + ((bullet->height) << 6) > ((1024) << 6)))
+    {
+        bullet->active = 0;
+    }
+    bullet->x = ((bullet->int_x) >> 6) - bg2xOff;
+    bullet->y = ((bullet->int_y) >> 6) - bg2yOff;
+
+    if (bullet->active && !(
+        (bullet->x + bullet->width - 1 < 0) ||
+        (bullet->x > 240) ||
+        (bullet->y + bullet->height - 1 < 0) ||
+        (bullet->y > 160)))
+    {
+        shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & 0xFF) | (0 << 8) | (0 << 14);
+        shadowOAM[bullet->spriteIdx].attr1 = (bullet->x & 0x1FF) | (0 << 14);
+
+        shadowOAM[bullet->spriteIdx].attr2 = ((16)*32 + (8));
+    } else {
+        shadowOAM[bullet->spriteIdx].attr0 = (2 << 8);
+    }
 }
