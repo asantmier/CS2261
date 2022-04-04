@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mode0.h"
+#include "print.h"
+#include "world.h"
+#include "battle.h"
 #include "game.h"
 #include "tempspritesheet.h"
 #include "tempbackground.h"
@@ -9,7 +12,7 @@
 #include "temppause.h"
 #include "tempwin.h"
 #include "templose.h"
-#include "print.h"
+#include "tempbattle.h"
 
 // Prototypes.
 void initialize();
@@ -21,6 +24,8 @@ void goToInstructions();
 void instructions();
 void goToGame();
 void game();
+void goToBattle();
+void battle();
 void goToPause();
 void pause();
 void goToWin();
@@ -33,6 +38,7 @@ enum {
     START,
     INSTRUCTIONS,
     GAME,
+    BATTLE,
     PAUSE,
     WIN,
     LOSE
@@ -71,6 +77,9 @@ int main() {
             break;
         case GAME:
             game();
+            break;
+        case BATTLE:
+            battle();
             break;
         case PAUSE:
             pause();
@@ -143,7 +152,8 @@ void start() {
     } else if (BUTTON_PRESSED(BUTTON_START)) {
         // Seed RNG
         srand(randTimer);
-        init();
+        initGame();
+        initWorld();
         goToGame();
     }
 
@@ -179,7 +189,7 @@ void goToGame() {
 
 // Runs every frame of the game state.
 void game() {
-    update();
+    updateWorld();
 
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         goToPause();
@@ -189,6 +199,42 @@ void game() {
         goToLose();
     }
     
+    waitForVBlank();
+
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+    REG_BG2X = ENCODE24_8(bg2xOff);
+    REG_BG2Y = ENCODE24_8(bg2yOff);
+
+    if (doBattle) {
+        goToBattle();
+    }
+}
+
+// Sets up the battle state
+void goToBattle() {
+    // DMA in the battle background (maybe we could do this earlier?)
+    DMANow(3, &tempbattlePal, PALETTE, 256);
+    DMANow(3, &tempbattleTiles, &CHARBLOCK[1], DMA_32 | (tempbattleTilesLen / 4));
+    DMANow(3, &tempbattleMap, &SCREENBLOCK[15], DMA_32 | (tempbattleMapLen / 4));
+    // Turn off all the sprites from the game state
+    hideSprites();
+    DMANow(3, &shadowOAM, OAM, 128 * 4);
+    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE;
+
+    state = BATTLE;
+}
+
+// Runs every frame of the battle state
+void battle() {
+
+
+    if (BUTTON_PRESSED(BUTTON_L)) {
+        goToLose();
+    } else if (BUTTON_PRESSED(BUTTON_R)) {
+        returnFromBattle(1);
+        goToGame();
+    }
+
     waitForVBlank();
 
     DMANow(3, &shadowOAM, OAM, 128 * 4);

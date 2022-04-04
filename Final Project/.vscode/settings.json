@@ -4,6 +4,14 @@
         "hw3lib.h": "c",
         "images.h": "c",
         "hw05lib.h": "c",
-        "tempspritesheet.h": "c"
+        "tempspritesheet.h": "c",
+        "tempbattle.h": "c",
+        "world.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "print.h": "c",
+        "mode0.h": "c",
+        "tempbackground.h": "c",
+        "game.h": "c"
     }
 }

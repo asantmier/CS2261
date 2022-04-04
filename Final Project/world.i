@@ -1,164 +1,7 @@
-# 1 "game.c"
+# 1 "world.c"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "game.c"
-# 1 "mode0.h" 1
-
-
-
-
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-# 60 "mode0.h"
-typedef int fp256;
-
-extern fp256 bg2xOff, bg2yOff;
-
-
-typedef struct {
-    short pa, pb;
-    short pc, pd;
-    int dx, dy;
-} BG_AFFINE;
-
-
-
-
-extern const BG_AFFINE bg_aff_default;
-# 84 "mode0.h"
-extern volatile unsigned short *videoBuffer;
-# 105 "mode0.h"
-typedef struct {
-    u16 tileimg[8192];
-} charblock;
-
-
-typedef struct {
-    u16 tilemap[1024];
-} screenblock;
-
-
-
-void setPixel3(int col, int row, unsigned short color);
-void drawRect3(int col, int row, int width, int height, volatile unsigned short color);
-void fillScreen3(volatile unsigned short color);
-void drawImage3(int col, int row, int width, int height, const unsigned short *image);
-void drawFullscreenImage3(const unsigned short *image);
-
-
-void setPixel4(int col, int row, unsigned char colorIndex);
-void drawRect4(int col, int row, int width, int height, volatile unsigned char colorIndex);
-void fillScreen4(volatile unsigned char colorIndex);
-void drawImage4(int col, int row, int width, int height, const unsigned short *image);
-void drawFullscreenImage4(const unsigned short *image);
-
-
-void waitForVBlank();
-void flipPage();
-
-
-typedef struct {
-    unsigned short attr0;
-    unsigned short attr1;
-    unsigned short attr2;
-    unsigned short fill;
-} OBJ_ATTR;
-
-
-
-extern OBJ_ATTR shadowOAM[];
-# 174 "mode0.h"
-void hideSprites();
-
-
-
-
-
-
-typedef struct {
-    int worldRow;
-    int worldCol;
-    int rdel;
-    int cdel;
-    int width;
-    int height;
-    int aniCounter;
-    int aniState;
-    int prevAniState;
-    int curFrame;
-    int numFrames;
-    int hide;
-} SPRITE;
-# 212 "mode0.h"
-extern unsigned short oldButtons;
-extern unsigned short buttons;
-
-
-
-
-
-
-typedef volatile struct {
-    volatile const void *src;
-    volatile void *dst;
-    volatile unsigned int cnt;
-} DMA;
-
-
-extern DMA *dma;
-# 260 "mode0.h"
-void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-
-
-int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
-# 2 "game.c" 2
-# 1 "game.h" 1
-
-
-
-
-enum {
-    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5
-};
-
-
-typedef int fp64;
-# 28 "game.h"
-enum { LEFT, RIGHT };
-
-
-typedef struct {
-    fp64 int_x, int_y;
-    int x, y;
-    fp64 dx, dy;
-    int width, height;
-    int facing;
-} PLAYER;
-
-typedef struct {
-    fp64 int_x, int_y;
-    int x, y;
-    fp64 dx, dy;
-    int width, height;
-    int active;
-    int spriteIdx;
-} BULLET;
-
-
-extern PLAYER player;
-extern BULLET bullets[5];
-
-
-void init();
-void initPlayer();
-void initBullets();
-
-
-void update();
-void updatePlayer();
-void updateBullet(BULLET* bullet);
-# 3 "game.c" 2
+# 1 "world.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -967,24 +810,249 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 4 "game.c" 2
-# 1 "print.h" 1
-# 36 "print.h"
+# 2 "world.c" 2
+# 1 "mode0.h" 1
 
+
+
+
+
+# 5 "mode0.h"
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+# 60 "mode0.h"
+typedef int fp256;
+
+extern fp256 bg2xOff, bg2yOff;
+
+
+typedef struct {
+    short pa, pb;
+    short pc, pd;
+    int dx, dy;
+} BG_AFFINE;
+
+
+
+
+extern const BG_AFFINE bg_aff_default;
+# 84 "mode0.h"
+extern volatile unsigned short *videoBuffer;
+# 105 "mode0.h"
+typedef struct {
+    u16 tileimg[8192];
+} charblock;
+
+
+typedef struct {
+    u16 tilemap[1024];
+} screenblock;
+
+
+
+void setPixel3(int col, int row, unsigned short color);
+void drawRect3(int col, int row, int width, int height, volatile unsigned short color);
+void fillScreen3(volatile unsigned short color);
+void drawImage3(int col, int row, int width, int height, const unsigned short *image);
+void drawFullscreenImage3(const unsigned short *image);
+
+
+void setPixel4(int col, int row, unsigned char colorIndex);
+void drawRect4(int col, int row, int width, int height, volatile unsigned char colorIndex);
+void fillScreen4(volatile unsigned char colorIndex);
+void drawImage4(int col, int row, int width, int height, const unsigned short *image);
+void drawFullscreenImage4(const unsigned short *image);
+
+
+void waitForVBlank();
+void flipPage();
+
+
+typedef struct {
+    unsigned short attr0;
+    unsigned short attr1;
+    unsigned short attr2;
+    unsigned short fill;
+} OBJ_ATTR;
+
+
+
+extern OBJ_ATTR shadowOAM[];
+# 174 "mode0.h"
+void hideSprites();
+
+
+
+
+
+
+typedef struct {
+    int worldRow;
+    int worldCol;
+    int rdel;
+    int cdel;
+    int width;
+    int height;
+    int aniCounter;
+    int aniState;
+    int prevAniState;
+    int curFrame;
+    int numFrames;
+    int hide;
+} SPRITE;
+# 212 "mode0.h"
+extern unsigned short oldButtons;
+extern unsigned short buttons;
+
+
+
+
+
+
+typedef volatile struct {
+    volatile const void *src;
+    volatile void *dst;
+    volatile unsigned int cnt;
+} DMA;
+
+
+extern DMA *dma;
+# 260 "mode0.h"
+void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
+
+
+int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+# 3 "world.c" 2
+# 1 "print.h" 1
 # 36 "print.h"
 void mgba_printf_level(int level, const char* ptr, ...);
 void mgba_printf(const char* string, ...);
 void mgba_break(void);
 uint8_t mgba_open(void);
 void mgba_close(void);
-# 5 "game.c" 2
+# 4 "world.c" 2
+# 1 "world.h" 1
+
+
+
+
+enum {
+    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+};
+
+
+
+
+typedef int fp64;
+# 32 "world.h"
+enum { LEFT, RIGHT };
+
+enum { PASSIVE, NEUTRAL, HOSTILE };
+
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_player {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int facing;
+} PLAYER;
+
+typedef struct tag_bullet {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int spriteIdx;
+} BULLET;
+
+typedef struct tag_enemy {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int spriteIdx;
+    int ai;
+    int type;
+} ENEMY;
+
+typedef struct tag_level {
+
+    ENEMY enemyList[5];
+} LEVEL;
+
+
+LEVEL levels[1];
+
+
+extern PLAYER player;
+extern BULLET bullets[5];
+extern ENEMY enemies[5];
+
+
+extern int doBattle;
+extern int opponentIdx;
+
+
+void returnFromBattle(int victory);
+
+
+void initWorld();
+void initPlayer();
+void initBullets();
+void initEnemies();
+
+
+
+void updateWorld();
+void updatePlayer();
+void updateBullet(BULLET* bullet);
+void updateEnemy(ENEMY* enemy);
+# 5 "world.c" 2
 
 PLAYER player;
 BULLET bullets[5];
+ENEMY enemies[5];
+const ENEMY _disable_enemy_ = { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH };
 
-void init() {
+LEVEL levels[1] = {
+    {
+        {
+            { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH },
+            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+        }
+    }
+};
+
+int level = 0;
+int doBattle = 0;
+int opponentIdx;
+
+void returnFromBattle(int victory) {
+    if (victory) {
+        doBattle = 0;
+        enemies[opponentIdx].active = 0;
+        shadowOAM[enemies[opponentIdx].spriteIdx].attr0 = (2 << 8);
+    } else {
+
+    }
+}
+
+void initWorld() {
+    level = 0;
+    doBattle = 0;
+
     initPlayer();
     initBullets();
+    initEnemies();
 }
 
 void initPlayer() {
@@ -1014,13 +1082,50 @@ void initBullets() {
     }
 }
 
-void update() {
+void initEnemies() {
+    for (int i = 0; i < 5; i++) {
+        enemies[i].int_x = levels[level].enemyList[i].int_x;
+        enemies[i].int_y = levels[level].enemyList[i].int_y;
+        enemies[i].x = ((enemies[i].int_x) >> 6) - bg2xOff;
+        enemies[i].y = ((enemies[i].int_y) >> 6) - bg2yOff;
+        enemies[i].dx = levels[level].enemyList[i].dx;
+        enemies[i].dy = levels[level].enemyList[i].dy;
+        enemies[i].width = levels[level].enemyList[i].width;
+        enemies[i].height = levels[level].enemyList[i].height;
+        enemies[i].active = levels[level].enemyList[i].active;
+        enemies[i].spriteIdx = ENEMY1 + i;
+        enemies[i].ai = levels[level].enemyList[i].ai;
+        enemies[i].type = levels[level].enemyList[i].type;
+    }
+}
+
+void doCollision() {
+    for (int i = 0; i < 5; i++) {
+        if (enemies[i].active) {
+            if (collision(player.int_x, player.int_y, ((player.width) << 6), ((player.height) << 6),
+            enemies[i].int_x, enemies[i].int_y, ((enemies[i].width) << 6), ((enemies[i].height) << 6))) {
+
+                doBattle = 1;
+                opponentIdx = i;
+                return;
+            }
+        }
+    }
+}
+
+void updateWorld() {
     updatePlayer();
     for (int i = 0; i < 5; i++) {
         if (bullets[i].active) {
             updateBullet(&bullets[i]);
         }
     }
+    for (int i = 0; i < 5; i++) {
+        if (enemies[i].active) {
+            updateEnemy(&enemies[i]);
+        }
+    }
+    doCollision();
 }
 
 
@@ -1131,11 +1236,11 @@ void firePlayer() {
             bullets[i].int_y = starty;
             bullets[i].x = ((bullets[i].int_x) >> 6);
             bullets[i].y = ((bullets[i].int_y) >> 6);
-            mgba_printf("dx: %d, startx: %d, starty: %d", dx, startx, starty);
             break;
         }
     }
 }
+
 
 void updatePlayer() {
 
@@ -1188,6 +1293,7 @@ void updatePlayer() {
     drawPlayer();
 }
 
+
 void updateBullet(BULLET* bullet) {
     bullet->int_x += bullet->dx;
     bullet->int_y += bullet->dy;
@@ -1214,5 +1320,27 @@ void updateBullet(BULLET* bullet) {
         shadowOAM[bullet->spriteIdx].attr2 = ((16)*32 + (8));
     } else {
         shadowOAM[bullet->spriteIdx].attr0 = (2 << 8);
+    }
+}
+
+
+void updateEnemy(ENEMY* enemy) {
+
+    enemy->int_x += enemy->dx;
+    enemy->int_y += enemy->dy;
+    enemy->x = ((enemy->int_x) >> 6) - bg2xOff;
+    enemy->y = ((enemy->int_y) >> 6) - bg2yOff;
+
+    if (enemy->active && !(
+        (enemy->x + enemy->width - 1 < 0) ||
+        (enemy->x > 240) ||
+        (enemy->y + enemy->height - 1 < 0) ||
+        (enemy->y > 160)))
+    {
+        shadowOAM[enemy->spriteIdx].attr0 = (enemy->y & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[enemy->spriteIdx].attr1 = (enemy->x & 0x1FF) | (0 << 14);
+        shadowOAM[enemy->spriteIdx].attr2 = ((0)*32 + (16));
+    } else {
+        shadowOAM[enemy->spriteIdx].attr0 = (2 << 8);
     }
 }

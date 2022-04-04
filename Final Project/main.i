@@ -1335,22 +1335,36 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 4 "main.c" 2
-# 1 "game.h" 1
+# 1 "print.h" 1
+# 36 "print.h"
+void mgba_printf_level(int level, const char* ptr, ...);
+void mgba_printf(const char* string, ...);
+void mgba_break(void);
+uint8_t mgba_open(void);
+void mgba_close(void);
+# 5 "main.c" 2
+# 1 "world.h" 1
 
 
 
 
 enum {
-    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5
+    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
 };
 
 
+
+
 typedef int fp64;
-# 28 "game.h"
+# 32 "world.h"
 enum { LEFT, RIGHT };
 
+enum { PASSIVE, NEUTRAL, HOSTILE };
 
-typedef struct {
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_player {
     fp64 int_x, int_y;
     int x, y;
     fp64 dx, dy;
@@ -1358,7 +1372,7 @@ typedef struct {
     int facing;
 } PLAYER;
 
-typedef struct {
+typedef struct tag_bullet {
     fp64 int_x, int_y;
     int x, y;
     fp64 dx, dy;
@@ -1367,27 +1381,57 @@ typedef struct {
     int spriteIdx;
 } BULLET;
 
+typedef struct tag_enemy {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int spriteIdx;
+    int ai;
+    int type;
+} ENEMY;
+
+typedef struct tag_level {
+
+    ENEMY enemyList[5];
+} LEVEL;
+
+
+LEVEL levels[1];
+
 
 extern PLAYER player;
 extern BULLET bullets[5];
+extern ENEMY enemies[5];
 
 
-void init();
+extern int doBattle;
+extern int opponentIdx;
+
+
+void returnFromBattle(int victory);
+
+
+void initWorld();
 void initPlayer();
 void initBullets();
+void initEnemies();
 
 
-void update();
+
+void updateWorld();
 void updatePlayer();
 void updateBullet(BULLET* bullet);
-# 5 "main.c" 2
+void updateEnemy(ENEMY* enemy);
+# 6 "main.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
 extern const unsigned short tempspritesheetTiles[16384];
 
 
 extern const unsigned short tempspritesheetPal[256];
-# 6 "main.c" 2
+# 7 "main.c" 2
 # 1 "tempbackground.h" 1
 # 22 "tempbackground.h"
 extern const unsigned short tempbackgroundTiles[3168];
@@ -1397,7 +1441,7 @@ extern const unsigned short tempbackgroundMap[8192];
 
 
 extern const unsigned short tempbackgroundPal[256];
-# 7 "main.c" 2
+# 8 "main.c" 2
 # 1 "tempsplash.h" 1
 # 22 "tempsplash.h"
 extern const unsigned short tempsplashTiles[1664];
@@ -1407,7 +1451,7 @@ extern const unsigned short tempsplashMap[1024];
 
 
 extern const unsigned short tempsplashPal[256];
-# 8 "main.c" 2
+# 9 "main.c" 2
 # 1 "tempinstructions.h" 1
 # 22 "tempinstructions.h"
 extern const unsigned short tempinstructionsTiles[704];
@@ -1417,7 +1461,7 @@ extern const unsigned short tempinstructionsMap[1024];
 
 
 extern const unsigned short tempinstructionsPal[256];
-# 9 "main.c" 2
+# 10 "main.c" 2
 # 1 "temppause.h" 1
 # 22 "temppause.h"
 extern const unsigned short temppauseTiles[1504];
@@ -1427,7 +1471,7 @@ extern const unsigned short temppauseMap[1024];
 
 
 extern const unsigned short temppausePal[256];
-# 10 "main.c" 2
+# 11 "main.c" 2
 # 1 "tempwin.h" 1
 # 22 "tempwin.h"
 extern const unsigned short tempwinTiles[480];
@@ -1437,7 +1481,7 @@ extern const unsigned short tempwinMap[1024];
 
 
 extern const unsigned short tempwinPal[256];
-# 11 "main.c" 2
+# 12 "main.c" 2
 # 1 "templose.h" 1
 # 22 "templose.h"
 extern const unsigned short temploseTiles[704];
@@ -1447,15 +1491,17 @@ extern const unsigned short temploseMap[1024];
 
 
 extern const unsigned short templosePal[256];
-# 12 "main.c" 2
-# 1 "print.h" 1
-# 36 "print.h"
-void mgba_printf_level(int level, const char* ptr, ...);
-void mgba_printf(const char* string, ...);
-void mgba_break(void);
-uint8_t mgba_open(void);
-void mgba_close(void);
 # 13 "main.c" 2
+# 1 "tempbattle.h" 1
+# 22 "tempbattle.h"
+extern const unsigned short tempbattleTiles[1760];
+
+
+extern const unsigned short tempbattleMap[1024];
+
+
+extern const unsigned short tempbattlePal[256];
+# 14 "main.c" 2
 
 
 void initialize();
@@ -1467,6 +1513,8 @@ void goToInstructions();
 void instructions();
 void goToGame();
 void game();
+void goToBattle();
+void battle();
 void goToPause();
 void pause();
 void goToWin();
@@ -1479,6 +1527,7 @@ enum {
     START,
     INSTRUCTIONS,
     GAME,
+    BATTLE,
     PAUSE,
     WIN,
     LOSE
@@ -1517,6 +1566,9 @@ int main() {
             break;
         case GAME:
             game();
+            break;
+        case BATTLE:
+            battle();
             break;
         case PAUSE:
             pause();
@@ -1589,7 +1641,7 @@ void start() {
     } else if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
 
         srand(randTimer);
-        init();
+        initWorld();
         goToGame();
     }
 
@@ -1625,7 +1677,7 @@ void goToGame() {
 
 
 void game() {
-    update();
+    updateWorld();
 
     if ((!(~(oldButtons) & ((1 << 2))) && (~buttons & ((1 << 2))))) {
         goToPause();
@@ -1633,6 +1685,42 @@ void game() {
         goToWin();
     } else if ((!(~(oldButtons) & ((1 << 1))) && (~buttons & ((1 << 1))))) {
         goToLose();
+    }
+
+    waitForVBlank();
+
+    DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+    (*(volatile unsigned int *) 0x04000028) = ((bg2xOff) << 8);
+    (*(volatile unsigned int *) 0x0400002C) = ((bg2yOff) << 8);
+
+    if (doBattle) {
+        goToBattle();
+    }
+}
+
+
+void goToBattle() {
+
+    DMANow(3, &tempbattlePal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, &tempbattleTiles, &((charblock *)0x6000000)[1], (1 << 26) | (3520 / 4));
+    DMANow(3, &tempbattleMap, &((screenblock *)0x6000000)[15], (1 << 26) | (2048 / 4));
+
+    hideSprites();
+    DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+    (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 8);
+
+    state = BATTLE;
+}
+
+
+void battle() {
+
+
+    if ((!(~(oldButtons) & ((1 << 9))) && (~buttons & ((1 << 9))))) {
+        goToLose();
+    } else if ((!(~(oldButtons) & ((1 << 8))) && (~buttons & ((1 << 8))))) {
+        returnFromBattle(1);
+        goToGame();
     }
 
     waitForVBlank();
