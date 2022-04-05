@@ -21,70 +21,61 @@ drawText:
 	@ Function supports interworking.
 	@ args = 4, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldrb	ip, [r0]	@ zero_extendqisi2
-	cmp	ip, #0
-	bxeq	lr
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	mov	r4, #0
-	mov	r6, r1
-	mov	lr, r4
-	ldr	r9, .L22
-	ldr	r10, .L22+4
-	add	r0, r0, #1
-.L8:
+	ldrb	ip, [r0]	@ zero_extendqisi2
+	ldr	r8, [sp, #36]
+	cmp	ip, #0
+	add	r3, r1, r3
+	add	r8, r2, r8
+	beq	.L1
+	mov	lr, r1
+	ldr	r9, .L18
+	ldr	r10, .L18+4
+	b	.L7
+.L17:
+	ldrb	ip, [r0, #1]!	@ zero_extendqisi2
+	cmp	ip, #0
+	beq	.L1
+.L7:
 	cmp	ip, #10
-	beq	.L21
+	add	r5, lr, #14
+	addeq	r2, r2, #8
+	moveq	lr, r1
+	beq	.L4
 	cmp	ip, #32
 	beq	.L5
-	ldr	r5, [r9]
-	add	ip, r5, #8
-	cmp	ip, #127
+	ldr	ip, [r9]
+	add	r4, ip, #8
+	cmp	r4, #127
 	bgt	.L1
-	lsl	r7, r6, #23
-	lsl	fp, ip, #3
-	and	r8, r2, #255
-	add	ip, r10, ip, lsl #3
-	lsr	r7, r7, #23
-	strh	r8, [r10, fp]	@ movhi
-	strh	r7, [ip, #2]	@ movhi
-	ldrb	r7, [r0, #-1]	@ zero_extendqisi2
-	ldr	r8, .L22+8
-	sub	r7, r7, #44
-	ldr	r7, [r8, r7, lsl #2]
-	add	r5, r5, #1
-	str	r5, [r9]
-	strh	r7, [ip, #4]	@ movhi
+	lsl	r6, lr, #23
+	lsl	r7, r4, #3
+	lsr	r6, r6, #23
+	add	r4, r10, r4, lsl #3
+	and	fp, r2, #255
+	strh	fp, [r10, r7]	@ movhi
+	strh	r6, [r4, #2]	@ movhi
+	ldrb	r6, [r0]	@ zero_extendqisi2
+	ldr	r7, .L18+8
+	sub	r6, r6, #33
+	ldr	r6, [r7, r6, lsl #2]
+	add	ip, ip, #1
+	str	ip, [r9]
+	strh	r6, [r4, #4]	@ movhi
 .L5:
-	add	lr, lr, #1
-	cmp	lr, r3
-	addlt	r6, r6, #8
-	blt	.L4
-	ldr	ip, [sp, #36]
-	add	r4, r4, #1
-	cmp	r4, ip
-	add	r2, r2, #8
-	bge	.L1
-	mov	r6, r1
-	mov	lr, #0
+	cmp	r5, r3
+	movge	lr, r1
+	addlt	lr, lr, #7
+	addge	r2, r2, #8
 .L4:
-	ldrb	ip, [r0], #1	@ zero_extendqisi2
-	cmp	ip, #0
-	bne	.L8
+	cmp	r2, r8
+	blt	.L17
 .L1:
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L21:
-	ldr	ip, [sp, #36]
-	add	r4, r4, #1
-	cmp	ip, r4
-	ble	.L1
-	mov	r6, r1
-	mov	lr, #0
-	add	r2, r2, #8
-	b	.L4
-.L23:
+.L19:
 	.align	2
-.L22:
+.L18:
 	.word	.LANCHOR0
 	.word	shadowOAM
 	.word	.LANCHOR1
@@ -92,7 +83,7 @@ drawText:
 	.section	.rodata.str1.4,"aMS",%progbits,1
 	.align	2
 .LC0:
-	.ascii	"BATTLE MODE\000"
+	.ascii	"BATTLE MODE\012TESTING A REALLY  LONG LINE OF TEXT\000"
 	.align	2
 .LC1:
 	.ascii	"L BUMPER:LOSE\012R BUMPER:WIN\000"
@@ -109,29 +100,29 @@ initBattle:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
 	mov	ip, #0
-	mov	r4, #3
-	ldr	r0, .L26
+	mov	r4, #24
+	ldr	r0, .L22
 	sub	sp, sp, #8
 	str	r4, [sp]
-	mov	r3, #14
+	mov	r3, #121
 	str	ip, [r0]
-	mov	r2, #12
-	mov	r1, #64
-	ldr	r0, .L26+4
+	mov	r2, #11
+	mov	r1, #59
+	ldr	r0, .L22+4
 	bl	drawText
-	mov	r3, #14
-	mov	r2, #124
-	mov	r1, #64
+	mov	r3, #121
+	mov	r2, #123
+	mov	r1, #59
 	str	r4, [sp]
-	ldr	r0, .L26+8
+	ldr	r0, .L22+8
 	bl	drawText
 	add	sp, sp, #8
 	@ sp needed
 	pop	{r4, lr}
 	bx	lr
-.L27:
+.L23:
 	.align	2
-.L26:
+.L22:
 	.word	.LANCHOR0
 	.word	.LC0
 	.word	.LC1
@@ -155,29 +146,8 @@ updateBattle:
 	.align	2
 	.set	.LANCHOR1,. + 0
 	.type	text_tile_lkup, %object
-	.size	text_tile_lkup, 188
+	.size	text_tile_lkup, 256
 text_tile_lkup:
-	.word	670
-	.word	-1
-	.word	669
-	.word	671
-	.word	634
-	.word	635
-	.word	636
-	.word	637
-	.word	638
-	.word	639
-	.word	664
-	.word	665
-	.word	666
-	.word	667
-	.word	668
-	.word	-1
-	.word	-1
-	.word	-1
-	.word	-1
-	.word	-1
-	.word	-1
 	.word	536
 	.word	537
 	.word	538
@@ -204,6 +174,44 @@ text_tile_lkup:
 	.word	607
 	.word	632
 	.word	633
+	.word	634
+	.word	635
+	.word	636
+	.word	637
+	.word	638
+	.word	639
+	.word	664
+	.word	665
+	.word	666
+	.word	667
+	.word	668
+	.word	669
+	.word	670
+	.word	671
+	.word	696
+	.word	697
+	.word	698
+	.word	699
+	.word	700
+	.word	701
+	.word	702
+	.word	703
+	.word	728
+	.word	729
+	.word	730
+	.word	731
+	.word	732
+	.word	733
+	.word	734
+	.word	735
+	.word	760
+	.word	761
+	.word	762
+	.word	763
+	.word	764
+	.word	765
+	.word	766
+	.word	767
 	.bss
 	.align	2
 	.set	.LANCHOR0,. + 0

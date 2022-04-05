@@ -936,15 +936,16 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 5 "battle.h" 2
-# 53 "battle.h"
+# 81 "battle.h"
 extern const int text_tile_lkup[];
-# 63 "battle.h"
+# 93 "battle.h"
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
 
 
 extern int lettersActive;
-void drawText(char* str, int x, int y, int charWidth, int charHeight);
+void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
 
 
 void initBattle();
@@ -963,64 +964,61 @@ void initGame();
 # 6 "battle.c" 2
 
 
-const int text_tile_lkup[] = {
-    ((20)*32 + (30)), -1, ((20)*32 + (29)), ((20)*32 + (31)), ((19)*32 + (26)), ((19)*32 + (27)), ((19)*32 + (28)), ((19)*32 + (29)), ((19)*32 + (30)), ((19)*32 + (31)),
-    ((20)*32 + (24)), ((20)*32 + (25)), ((20)*32 + (26)), ((20)*32 + (27)), ((20)*32 + (28)), -1, -1, -1, -1, -1, -1, ((16)*32 + (24)), ((16)*32 + (25)), ((16)*32 + (26)),
-    ((16)*32 + (27)), ((16)*32 + (28)), ((16)*32 + (29)), ((16)*32 + (30)), ((16)*32 + (31)), ((17)*32 + (24)), ((17)*32 + (25)), ((17)*32 + (26)), ((17)*32 + (27)), ((17)*32 + (28)), ((17)*32 + (29)),
-    ((17)*32 + (30)), ((17)*32 + (31)), ((18)*32 + (24)), ((18)*32 + (25)), ((18)*32 + (26)), ((18)*32 + (27)), ((18)*32 + (28)), ((18)*32 + (29)), ((18)*32 + (30)), ((18)*32 + (31)), ((19)*32 + (24)), ((19)*32 + (25))
-};
+const int text_tile_lkup[] = {((16)*32 + (24)),((16)*32 + (25)),((16)*32 + (26)),((16)*32 + (27)),
+((16)*32 + (28)),((16)*32 + (29)),((16)*32 + (30)),((16)*32 + (31)),((17)*32 + (24)),
+((17)*32 + (25)),((17)*32 + (26)),((17)*32 + (27)),((17)*32 + (28)),((17)*32 + (29)),((17)*32 + (30)),((17)*32 + (31)),((18)*32 + (24)),
+((18)*32 + (25)),((18)*32 + (26)),((18)*32 + (27)),((18)*32 + (28)),((18)*32 + (29)),((18)*32 + (30)),((18)*32 + (31)),((19)*32 + (24)),((19)*32 + (25)),((19)*32 + (26)),
+((19)*32 + (27)),((19)*32 + (28)),((19)*32 + (29)),((19)*32 + (30)),((19)*32 + (31)),((20)*32 + (24)),((20)*32 + (25)),((20)*32 + (26)),((20)*32 + (27)),
+((20)*32 + (28)),((20)*32 + (29)),((20)*32 + (30)),((20)*32 + (31)),((21)*32 + (24)),((21)*32 + (25)),((21)*32 + (26)),((21)*32 + (27)),((21)*32 + (28)),((21)*32 + (29)),((21)*32 + (30)),((21)*32 + (31)),
+((22)*32 + (24)),((22)*32 + (25)),((22)*32 + (26)),((22)*32 + (27)),((22)*32 + (28)),((22)*32 + (29)),((22)*32 + (30)),((22)*32 + (31)),((23)*32 + (24)),((23)*32 + (25)),((23)*32 + (26)),
+((23)*32 + (27)),((23)*32 + (28)),((23)*32 + (29)),((23)*32 + (30)),((23)*32 + (31))};
 
 int lettersActive = 0;
 
-void drawText(char* str, int x, int y, int charWidth, int charHeight) {
+void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight) {
 
-    int startx = x;
-    int charactersWritten = 0;
-    int linesWritten = 0;
+    int rightLimit = textboxX + textboxWidth;
+    int bottomLimit = textboxY + textboxHeight;
+    int cursorx = textboxX;
+    int cursory = textboxY;
     while(*str != '\0') {
 
         if (*str == '\n') {
-            y += 8;
-            x = startx;
-            charactersWritten = 0;
-            linesWritten++;
-            if (linesWritten >= charHeight) {
-                return;
+            cursory += 8;
+            cursorx = textboxX;
+        } else {
+
+            if (*str != ' ') {
+                int idx = TEXT_IDX + lettersActive;
+
+                if (idx >= 128) {
+                    return;
+                }
+                shadowOAM[idx].attr0 = (cursory & 0xFF) | (0 << 8);
+                shadowOAM[idx].attr1 = (cursorx & 0x1FF) | (0 << 14);
+                shadowOAM[idx].attr2 = text_tile_lkup[*str - '!'];
+                lettersActive++;
             }
-            str++;
-            continue;
+
+            cursorx += 7;
+            if (cursorx + 7 >= rightLimit) {
+                cursory += 8;
+                cursorx = textboxX;
+            }
         }
 
-        if (*str != ' ') {
-            int idx = TEXT_IDX + lettersActive;
-            if (idx >= 128) {
-                return;
-            }
-            shadowOAM[idx].attr0 = (y & 0xFF) | (0 << 8);
-            shadowOAM[idx].attr1 = (x & 0x1FF) | (0 << 14);
-            shadowOAM[idx].attr2 = text_tile_lkup[*str - ','];
-            lettersActive++;
+        if (cursory >= bottomLimit) {
+            return;
         }
 
-        charactersWritten++;
-        x += 8;
-        if (charactersWritten >= charWidth) {
-            y += 8;
-            x = startx;
-            charactersWritten = 0;
-            linesWritten++;
-            if (linesWritten >= charHeight) {
-                return;
-            }
-        }
         str++;
     }
 }
 
 void initBattle() {
     lettersActive = 0;
-    drawText("BATTLE MODE", 64, 12, 14, 3);
-    drawText("L BUMPER:LOSE\nR BUMPER:WIN", 64, 124, 14, 3);
+    drawText("BATTLE MODE\nTESTING A REALLY  LONG LINE OF TEXT", 59, 11, (121), (3 * 8));
+    drawText("L BUMPER:LOSE\nR BUMPER:WIN", 59, 123, (121), (3 * 8));
 }
 
 void updateBattle() {

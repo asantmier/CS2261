@@ -923,6 +923,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 3 "game.c" 2
 # 1 "print.h" 1
 # 36 "print.h"

@@ -1334,6 +1334,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 4 "main.c" 2
 # 1 "print.h" 1
 # 36 "print.h"
@@ -1413,8 +1414,6 @@ extern int opponentIdx;
 void returnFromBattle(int victory);
 
 
-
-
 void initWorld();
 void initPlayer();
 void initBullets();
@@ -1427,14 +1426,14 @@ void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 6 "main.c" 2
 # 1 "battle.h" 1
-# 53 "battle.h"
+# 81 "battle.h"
 extern const int text_tile_lkup[];
-# 63 "battle.h"
+# 93 "battle.h"
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
 
 
 extern int lettersActive;
-void drawText(char* str, int x, int y, int charWidth, int charHeight);
+void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
 
 
 void initBattle();

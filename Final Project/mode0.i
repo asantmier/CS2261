@@ -112,7 +112,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
-int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int dy, int width, int height);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 2 "mode0.c" 2
 
 

@@ -1,18 +1,20 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-04-04, 21:00:51
+STATUS: Started run at: 2022-04-05, 15:31:28
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
-STATUS: Work-DIB creation complete: 1024x1024@8.
+STATUS: Work-DIB creation complete: 256x256@8.
 STATUS: Tile preparation.
+STATUS:   tiling to 8x8 tiles.
 STATUS: Tile preparation complete.
 STATUS: Graphics preparation.
+STATUS:   Bitpacking: 8 -> 4.
 STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: tempbackground_collision into C:\Users\lofte\Documents\CS2261\Final Project\tempbackground_collision.c .
+STATUS: Export to C: tempspritesheet into C:\Users\lofte\Documents\CS2261\Final Project\tempspritesheet.c .
 STATUS: Run completed :).
