@@ -616,6 +616,40 @@ hideSprites:
 .L105:
 	.word	shadowOAM
 	.size	hideSprites, .-hideSprites
+	.align	2
+	.global	collisionCheck
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	collisionCheck, %function
+collisionCheck:
+	@ Function supports interworking.
+	@ args = 8, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, lr}
+	mla	lr, r1, r3, r0
+	ldr	ip, [sp, #8]
+	add	ip, r2, ip
+	sub	ip, ip, #1
+	ldrb	r4, [lr, ip]	@ zero_extendqisi2
+	ldrb	lr, [lr, r2]	@ zero_extendqisi2
+	cmp	lr, r4
+	movlt	lr, r4
+	ldr	r4, [sp, #12]
+	add	r3, r3, r4
+	sub	r3, r3, #1
+	mul	r1, r3, r1
+	add	r3, r0, r1
+	ldrb	r3, [r3, r2]	@ zero_extendqisi2
+	cmp	r3, lr
+	movlt	r3, lr
+	add	r0, r0, ip
+	ldrb	r0, [r0, r1]	@ zero_extendqisi2
+	cmp	r0, r3
+	movlt	r0, r3
+	pop	{r4, lr}
+	bx	lr
+	.size	collisionCheck, .-collisionCheck
 	.global	dma
 	.global	videoBuffer
 	.global	bg_aff_default

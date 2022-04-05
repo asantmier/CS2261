@@ -3,6 +3,9 @@
 #include "print.h"
 #include "world.h"
 #include "game.h"
+#include "tempbackground_collision.h"
+
+unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
 
 PLAYER player;
 BULLET bullets[NUM_BULLETS];
@@ -13,7 +16,7 @@ LEVEL levels[NUM_LEVELS] = {
     { // start 1st LEVEL constructor
         { // start ENEMY list 
             { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH }, // 1
-            DISABLE_ENEMY, // 2
+            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, FISH }, // 2
             DISABLE_ENEMY, // 3
             DISABLE_ENEMY, // 4
             DISABLE_ENEMY, // 5
@@ -119,22 +122,69 @@ void updateWorld() {
 
 // Move the player
 void movePlayer() {
-    // update the internal coordinates
-    player.int_x += player.dx;
-    player.int_y += player.dy;
+    // Lets figure out how far we can travel
+    // first we need to make sure we land within the world
+    fp64 rdx = player.dx;
+    fp64 rdy = player.dy;
     // first off, lets check to make sure the internal coordinates are within the level
-    if (player.int_x < 0) { // off the left edge
-        player.int_x = 0;
+    // We can't decode or else we lose precision! both of these statements also cannot be true
+    if (player.int_x + player.dx < 0) { // off the left edge
+        rdx = player.dx - (player.int_x + player.dx);
+    } else if (player.int_x + player.dx + ENCODE26_6(player.width) > ENCODE26_6(GAMEWIDTH)) { // off the right edge
+        rdx = player.dx - (player.int_x + player.dx + ENCODE26_6(player.width) - ENCODE26_6(GAMEWIDTH));
     }
-    // We can't decode or else we lose precision!
-    if (player.int_x + ENCODE26_6(player.width) > ENCODE26_6(GAMEWIDTH)) { // off the right edge
-        player.int_x = ENCODE26_6(GAMEWIDTH - player.width);
+    if (player.int_y + player.dy < 0) { // off the top
+        rdy = player.dy - (player.int_y + player.dy);
+    } else if (player.int_y + ENCODE26_6(player.height) > ENCODE26_6(GAMEHEIGHT)) { // off the bottom
+        rdy = player.dy - (player.int_y + player.dy + ENCODE26_6(player.height) - ENCODE26_6(GAMEHEIGHT));
     }
-    if (player.int_y < 0) { // off the top
-        player.int_y = 0;
+    // Now that we know how fast we are allowed to go without breaking the game, where can we land that isn't in a wall
+    // We're gonna check every quarter step of travel
+    // TODO possible optimization, can we get away with half steps?
+    if (collisionCheck(collisionMap, 1024, DECODE26_6(player.int_x + rdx), DECODE26_6(player.int_y + rdy), player.width, player.height) > 0) {
+        if (collisionCheck(collisionMap, 1024, DECODE26_6(player.int_x + ((rdx * 3) / 4)), DECODE26_6(player.int_y + ((rdy * 3) / 4)), player.width, player.height) > 0) {
+            if (collisionCheck(collisionMap, 1024, DECODE26_6(player.int_x + (rdx / 2)), DECODE26_6(player.int_y + (rdy / 2)), player.width, player.height) > 0) {
+                if (collisionCheck(collisionMap, 1024, DECODE26_6(player.int_x + (rdx / 4)), DECODE26_6(player.int_y + (rdy / 4)), player.width, player.height) > 0) {
+                    // you can't move
+                    rdx = 0;
+                    rdy = 0;
+                }  else { 
+                    // else 1/4 is ok
+                    rdx /= 4;
+                    rdy /= 4;
+                    // We have to decode encode to keep consistent with the fact that the 6 decimal digits aren't checked for collision
+                    // We could totally just bitmask this though
+                    player.int_x = ENCODE26_6(DECODE26_6(player.int_x + rdx));
+                    player.int_y = ENCODE26_6(DECODE26_6(player.int_y + rdy));
+                }
+            }  else {
+                // else 1/2 is ok
+                rdx /= 2;
+                rdy /= 2;
+                player.int_x = ENCODE26_6(DECODE26_6(player.int_x + rdx));
+                player.int_y = ENCODE26_6(DECODE26_6(player.int_y + rdy));
+            }
+        }  else {
+            // else 3/4 is ok
+            rdx = (rdx * 3) / 4;
+            rdy = (rdy * 3) / 4;
+            player.int_x = ENCODE26_6(DECODE26_6(player.int_x + rdx));
+            player.int_y = ENCODE26_6(DECODE26_6(player.int_y + rdy));
+        }
+    } else {
+        // else rdx, rdy is ok, no change needed
+        player.int_x += rdx;
+        player.int_y += rdy;
     }
-    if (player.int_y + ENCODE26_6(player.height) > ENCODE26_6(GAMEHEIGHT)) { // off the bottom
-        player.int_y = ENCODE26_6(GAMEHEIGHT - player.height);
+    // TODO let the player slide along walls maybe
+    
+    // If we hit something in a direction, zero our directional velocity
+    if (abs(rdx) < abs(player.dx)) {
+        player.dx = 0;
+        
+    }
+    if (abs(rdy) < abs(player.dy)) {
+        player.dy = 0;
     }
 
     // Update the screen space coordinates now that we have valid internal coordinates

@@ -112,6 +112,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int dy, int width, int height);
 # 2 "mode0.c" 2
 
 
@@ -254,4 +255,36 @@ void hideSprites() {
     for (int i = 0; i < 128; i++) {
         shadowOAM[i].attr0 = (2 << 8);
     }
+}
+
+
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height) {
+    int largestSoFar = 0;
+    int current;
+
+
+    current = collisionMap[((y) * (mapWidth) + (x))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+
+    current = collisionMap[((y) * (mapWidth) + (x + width - 1))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+
+    current = collisionMap[((y + height - 1) * (mapWidth) + (x))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+
+    current = collisionMap[((y + height - 1) * (mapWidth) + (x + width - 1))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    return largestSoFar;
 }

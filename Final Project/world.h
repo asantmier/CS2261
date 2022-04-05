@@ -3,7 +3,7 @@
 
 // Sprite ID table
 enum {
-    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
 };
 // TODO rather than have each enemy get a unique sprite, grab like 10 sprites for enemies and just use
 //  a unique sprite index for every enemy that's on screen.
@@ -89,7 +89,6 @@ void initWorld();
 void initPlayer();
 void initBullets();
 void initEnemies();
-
 
 // Update functions
 void updateWorld();

@@ -1349,7 +1349,7 @@ void mgba_close(void);
 
 
 enum {
-    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
 };
 
 
@@ -1413,11 +1413,12 @@ extern int opponentIdx;
 void returnFromBattle(int victory);
 
 
+
+
 void initWorld();
 void initPlayer();
 void initBullets();
 void initEnemies();
-
 
 
 void updateWorld();
@@ -1425,23 +1426,48 @@ void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 6 "main.c" 2
+# 1 "battle.h" 1
+# 53 "battle.h"
+extern const int text_tile_lkup[];
+# 63 "battle.h"
+enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
+
+
+extern int lettersActive;
+void drawText(char* str, int x, int y, int charWidth, int charHeight);
+
+
+void initBattle();
+
+
+void updateBattle();
+# 7 "main.c" 2
+# 1 "game.h" 1
+
+
+
+extern int playerHp;
+
+
+void initGame();
+# 8 "main.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
 extern const unsigned short tempspritesheetTiles[16384];
 
 
 extern const unsigned short tempspritesheetPal[256];
-# 7 "main.c" 2
+# 9 "main.c" 2
 # 1 "tempbackground.h" 1
 # 22 "tempbackground.h"
-extern const unsigned short tempbackgroundTiles[3168];
+extern const unsigned short tempbackgroundTiles[2912];
 
 
 extern const unsigned short tempbackgroundMap[8192];
 
 
 extern const unsigned short tempbackgroundPal[256];
-# 8 "main.c" 2
+# 10 "main.c" 2
 # 1 "tempsplash.h" 1
 # 22 "tempsplash.h"
 extern const unsigned short tempsplashTiles[1664];
@@ -1451,7 +1477,7 @@ extern const unsigned short tempsplashMap[1024];
 
 
 extern const unsigned short tempsplashPal[256];
-# 9 "main.c" 2
+# 11 "main.c" 2
 # 1 "tempinstructions.h" 1
 # 22 "tempinstructions.h"
 extern const unsigned short tempinstructionsTiles[704];
@@ -1461,7 +1487,7 @@ extern const unsigned short tempinstructionsMap[1024];
 
 
 extern const unsigned short tempinstructionsPal[256];
-# 10 "main.c" 2
+# 12 "main.c" 2
 # 1 "temppause.h" 1
 # 22 "temppause.h"
 extern const unsigned short temppauseTiles[1504];
@@ -1471,7 +1497,7 @@ extern const unsigned short temppauseMap[1024];
 
 
 extern const unsigned short temppausePal[256];
-# 11 "main.c" 2
+# 13 "main.c" 2
 # 1 "tempwin.h" 1
 # 22 "tempwin.h"
 extern const unsigned short tempwinTiles[480];
@@ -1481,7 +1507,7 @@ extern const unsigned short tempwinMap[1024];
 
 
 extern const unsigned short tempwinPal[256];
-# 12 "main.c" 2
+# 14 "main.c" 2
 # 1 "templose.h" 1
 # 22 "templose.h"
 extern const unsigned short temploseTiles[704];
@@ -1491,17 +1517,17 @@ extern const unsigned short temploseMap[1024];
 
 
 extern const unsigned short templosePal[256];
-# 13 "main.c" 2
+# 15 "main.c" 2
 # 1 "tempbattle.h" 1
 # 22 "tempbattle.h"
-extern const unsigned short tempbattleTiles[1760];
+extern const unsigned short tempbattleTiles[3904];
 
 
 extern const unsigned short tempbattleMap[1024];
 
 
 extern const unsigned short tempbattlePal[256];
-# 14 "main.c" 2
+# 16 "main.c" 2
 
 
 void initialize();
@@ -1601,7 +1627,7 @@ void initialize() {
     DMANow(3, &tempinstructionsMap, &((screenblock *)0x6000000)[23], (1 << 26) | (2048 / 4));
     (*(volatile unsigned short *)0x400000A) = ((2) << 2) | ((23) << 8) | (1 << 7) | (0 << 14);
 
-    DMANow(3, &tempbackgroundTiles, &((charblock *)0x6000000)[0], (1 << 26) | (6336 / 4));
+    DMANow(3, &tempbackgroundTiles, &((charblock *)0x6000000)[0], (1 << 26) | (5824 / 4));
     DMANow(3, &tempbackgroundMap, &((screenblock *)0x6000000)[24], (1 << 26) | (16384 / 4));
     (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (1 << 7) | (3 << 14) | (1 << 13);
     *((BG_AFFINE *)(0x04000020)) = bg_aff_default;
@@ -1613,6 +1639,10 @@ void initialize() {
 
     hideSprites();
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+
+
+
+    waitForVBlank();
 
 
     (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 10);
@@ -1641,6 +1671,7 @@ void start() {
     } else if ((!(~(oldButtons) & ((1 << 3))) && (~buttons & ((1 << 3))))) {
 
         srand(randTimer);
+        initGame();
         initWorld();
         goToGame();
     }
@@ -1683,8 +1714,6 @@ void game() {
         goToPause();
     } else if ((!(~(oldButtons) & ((1 << 9))) && (~buttons & ((1 << 9))))) {
         goToWin();
-    } else if ((!(~(oldButtons) & ((1 << 1))) && (~buttons & ((1 << 1))))) {
-        goToLose();
     }
 
     waitForVBlank();
@@ -1694,6 +1723,10 @@ void game() {
     (*(volatile unsigned int *) 0x0400002C) = ((bg2yOff) << 8);
 
     if (doBattle) {
+
+        hideSprites();
+        DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+        initBattle();
         goToBattle();
     }
 }
@@ -1702,11 +1735,8 @@ void game() {
 void goToBattle() {
 
     DMANow(3, &tempbattlePal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, &tempbattleTiles, &((charblock *)0x6000000)[1], (1 << 26) | (3520 / 4));
+    DMANow(3, &tempbattleTiles, &((charblock *)0x6000000)[1], (1 << 26) | (7808 / 4));
     DMANow(3, &tempbattleMap, &((screenblock *)0x6000000)[15], (1 << 26) | (2048 / 4));
-
-    hideSprites();
-    DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
     (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 8);
 
     state = BATTLE;
@@ -1714,11 +1744,14 @@ void goToBattle() {
 
 
 void battle() {
-
+    updateBattle();
 
     if ((!(~(oldButtons) & ((1 << 9))) && (~buttons & ((1 << 9))))) {
         goToLose();
     } else if ((!(~(oldButtons) & ((1 << 8))) && (~buttons & ((1 << 8))))) {
+
+        hideSprites();
+        DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
         returnFromBattle(1);
         goToGame();
     }

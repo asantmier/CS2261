@@ -141,3 +141,35 @@ void hideSprites() {
         shadowOAM[i].attr0 = ATTR0_HIDE;
     }
 }
+
+// Collision map check at point
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height) {
+    int largestSoFar = 0;
+    int current;
+
+    // Top Left
+    current = collisionMap[OFFSET(x, y, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    // Top Right
+    current = collisionMap[OFFSET(x + width - 1, y, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    // Bottom Left
+    current = collisionMap[OFFSET(x, y + height - 1, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    // Bottom Right
+    current = collisionMap[OFFSET(x + width - 1, y + height - 1, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    return largestSoFar;
+}

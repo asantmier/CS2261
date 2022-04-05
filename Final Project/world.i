@@ -923,6 +923,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
+int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 3 "world.c" 2
 # 1 "print.h" 1
 # 36 "print.h"
@@ -938,7 +939,7 @@ void mgba_close(void);
 
 
 enum {
-    PLAYER_IDX, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
 };
 
 
@@ -1008,12 +1009,29 @@ void initBullets();
 void initEnemies();
 
 
-
 void updateWorld();
 void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 5 "world.c" 2
+# 1 "game.h" 1
+
+
+
+extern int playerHp;
+
+
+void initGame();
+# 6 "world.c" 2
+# 1 "tempbackground_collision.h" 1
+# 21 "tempbackground_collision.h"
+extern const unsigned short tempbackground_collisionBitmap[524288];
+
+
+extern const unsigned short tempbackground_collisionPal[256];
+# 7 "world.c" 2
+
+unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
 
 PLAYER player;
 BULLET bullets[5];
@@ -1024,7 +1042,7 @@ LEVEL levels[1] = {
     {
         {
             { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH },
-            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, FISH },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
@@ -1131,21 +1149,68 @@ void updateWorld() {
 
 void movePlayer() {
 
-    player.int_x += player.dx;
-    player.int_y += player.dy;
 
-    if (player.int_x < 0) {
-        player.int_x = 0;
+    fp64 rdx = player.dx;
+    fp64 rdy = player.dy;
+
+
+    if (player.int_x + player.dx < 0) {
+        rdx = player.dx - (player.int_x + player.dx);
+    } else if (player.int_x + player.dx + ((player.width) << 6) > ((1024) << 6)) {
+        rdx = player.dx - (player.int_x + player.dx + ((player.width) << 6) - ((1024) << 6));
+    }
+    if (player.int_y + player.dy < 0) {
+        rdy = player.dy - (player.int_y + player.dy);
+    } else if (player.int_y + ((player.height) << 6) > ((1024) << 6)) {
+        rdy = player.dy - (player.int_y + player.dy + ((player.height) << 6) - ((1024) << 6));
     }
 
-    if (player.int_x + ((player.width) << 6) > ((1024) << 6)) {
-        player.int_x = ((1024 - player.width) << 6);
+
+
+    if (collisionCheck(collisionMap, 1024, ((player.int_x + rdx) >> 6), ((player.int_y + rdy) >> 6), player.width, player.height) > 0) {
+        if (collisionCheck(collisionMap, 1024, ((player.int_x + ((rdx * 3) / 4)) >> 6), ((player.int_y + ((rdy * 3) / 4)) >> 6), player.width, player.height) > 0) {
+            if (collisionCheck(collisionMap, 1024, ((player.int_x + (rdx / 2)) >> 6), ((player.int_y + (rdy / 2)) >> 6), player.width, player.height) > 0) {
+                if (collisionCheck(collisionMap, 1024, ((player.int_x + (rdx / 4)) >> 6), ((player.int_y + (rdy / 4)) >> 6), player.width, player.height) > 0) {
+
+                    rdx = 0;
+                    rdy = 0;
+                } else {
+
+                    rdx /= 4;
+                    rdy /= 4;
+
+
+                    player.int_x = ((((player.int_x + rdx) >> 6)) << 6);
+                    player.int_y = ((((player.int_y + rdy) >> 6)) << 6);
+                }
+            } else {
+
+                rdx /= 2;
+                rdy /= 2;
+                player.int_x = ((((player.int_x + rdx) >> 6)) << 6);
+                player.int_y = ((((player.int_y + rdy) >> 6)) << 6);
+            }
+        } else {
+
+            rdx = (rdx * 3) / 4;
+            rdy = (rdy * 3) / 4;
+            player.int_x = ((((player.int_x + rdx) >> 6)) << 6);
+            player.int_y = ((((player.int_y + rdy) >> 6)) << 6);
+        }
+    } else {
+
+        player.int_x += rdx;
+        player.int_y += rdy;
     }
-    if (player.int_y < 0) {
-        player.int_y = 0;
+
+
+
+    if (abs(rdx) < abs(player.dx)) {
+        player.dx = 0;
+
     }
-    if (player.int_y + ((player.height) << 6) > ((1024) << 6)) {
-        player.int_y = ((1024 - player.height) << 6);
+    if (abs(rdy) < abs(player.dy)) {
+        player.dy = 0;
     }
 
 

@@ -125,6 +125,10 @@ void initialize() {
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
 
+    // Doing this makes the entire screen flash black for 1 frame when restarting the game rather than introducing a
+    // black tearing artifact at the top of the screen for 1 frame. I think it looks better
+    waitForVBlank();
+
     // gaming: activated
     REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE;
 
@@ -195,8 +199,6 @@ void game() {
         goToPause();
     } else if (BUTTON_PRESSED(BUTTON_L)) {
         goToWin();
-    } else if (BUTTON_PRESSED(BUTTON_B)) {
-        goToLose();
     }
     
     waitForVBlank();
@@ -206,6 +208,10 @@ void game() {
     REG_BG2Y = ENCODE24_8(bg2yOff);
 
     if (doBattle) {
+        // Turn off all the sprites from the game state
+        hideSprites();
+        DMANow(3, &shadowOAM, OAM, 128 * 4);
+        initBattle();
         goToBattle();
     }
 }
@@ -216,9 +222,6 @@ void goToBattle() {
     DMANow(3, &tempbattlePal, PALETTE, 256);
     DMANow(3, &tempbattleTiles, &CHARBLOCK[1], DMA_32 | (tempbattleTilesLen / 4));
     DMANow(3, &tempbattleMap, &SCREENBLOCK[15], DMA_32 | (tempbattleMapLen / 4));
-    // Turn off all the sprites from the game state
-    hideSprites();
-    DMANow(3, &shadowOAM, OAM, 128 * 4);
     REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE;
 
     state = BATTLE;
@@ -226,11 +229,14 @@ void goToBattle() {
 
 // Runs every frame of the battle state
 void battle() {
-
+    updateBattle();
 
     if (BUTTON_PRESSED(BUTTON_L)) {
         goToLose();
     } else if (BUTTON_PRESSED(BUTTON_R)) {
+        // Turn off all the sprites from the battle state
+        hideSprites();
+        DMANow(3, &shadowOAM, OAM, 128 * 4);
         returnFromBattle(1);
         goToGame();
     }
