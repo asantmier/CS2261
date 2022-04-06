@@ -1144,7 +1144,7 @@ levels:
 	.word	1
 	.word	7
 	.word	0
-	.word	0
+	.word	1
 	.word	0
 	.word	0
 	.word	0

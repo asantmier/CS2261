@@ -701,6 +701,12 @@ game:
 	mov	lr, pc
 	bx	r4
 	ldr	r3, .L81+40
+	ldr	r3, [r3]
+	ldr	r2, .L81+44
+	add	r3, r3, r3, lsl #1
+	add	r3, r2, r3, lsl #4
+	ldr	r0, [r3, #44]
+	ldr	r3, .L81+48
 	mov	lr, pc
 	bx	r3
 	pop	{r4, lr}
@@ -721,6 +727,8 @@ game:
 	.word	bg2yOff
 	.word	doBattle
 	.word	hideSprites
+	.word	opponentIdx
+	.word	enemies
 	.word	initBattle
 	.size	game, .-game
 	.align	2
@@ -820,86 +828,75 @@ battle:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L110
-	push	{r4, lr}
+	push	{r4, r5, r6, lr}
+	ldr	r3, .L103
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L110+4
-	ldrh	r3, [r3]
-	tst	r3, #512
-	beq	.L97
-	ldr	r2, .L110+8
-	ldrh	r2, [r2]
-	tst	r2, #512
-	beq	.L109
-.L97:
-	tst	r3, #256
-	bne	.L105
-.L108:
-	ldr	r4, .L110+12
+	ldr	r3, .L103+4
+	ldr	r4, [r3]
+	cmn	r4, #1
+	beq	.L102
+	cmp	r4, #1
+	beq	.L100
+	ldr	r5, .L103+8
 .L98:
-	ldr	r3, .L110+16
+	ldr	r3, .L103+12
 	mov	lr, pc
 	bx	r3
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L110+20
+	ldr	r1, .L103+16
 	mov	lr, pc
-	bx	r4
+	bx	r5
 	mov	r2, #67108864
-	ldr	r3, .L110+24
+	ldr	r3, .L103+20
 	ldr	r3, [r3]
 	lsl	r3, r3, #8
 	str	r3, [r2, #40]
-	ldr	r3, .L110+28
+	ldr	r3, .L103+24
 	ldr	r3, [r3]
 	lsl	r3, r3, #8
 	str	r3, [r2, #44]
-	pop	{r4, lr}
+	pop	{r4, r5, r6, lr}
 	bx	lr
-.L105:
-	ldr	r3, .L110+8
-	ldrh	r3, [r3]
-	tst	r3, #256
-	bne	.L108
-	ldr	r3, .L110+32
+.L102:
+	bl	goToLose
+	ldr	r5, .L103+8
+	b	.L98
+.L100:
+	ldr	r3, .L103+28
 	mov	lr, pc
 	bx	r3
-	ldr	r4, .L110+12
+	ldr	r5, .L103+8
 	mov	r2, #117440512
-	ldr	r1, .L110+20
+	ldr	r1, .L103+16
 	mov	r3, #512
 	mov	r0, #3
 	mov	lr, pc
-	bx	r4
-	mov	r0, #1
-	ldr	r3, .L110+36
+	bx	r5
+	mov	r0, r4
+	ldr	r3, .L103+32
 	mov	lr, pc
 	bx	r3
 	mov	r3, #256
 	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L110+40
+	ldr	r1, .L103+36
 	mov	lr, pc
-	bx	r4
+	bx	r5
 	mov	r1, #67108864
 	mov	r2, #2
-	ldr	r0, .L110+44
-	ldr	r3, .L110+48
+	ldr	r0, .L103+40
+	ldr	r3, .L103+44
 	strh	r0, [r1]	@ movhi
 	str	r2, [r3]
 	b	.L98
-.L109:
-	bl	goToLose
-	ldr	r4, .L110+12
-	b	.L98
-.L111:
+.L104:
 	.align	2
-.L110:
+.L103:
 	.word	updateBattle
-	.word	oldButtons
-	.word	buttons
+	.word	battleStatus
 	.word	DMANow
 	.word	waitForVBlank
 	.word	shadowOAM
@@ -924,67 +921,67 @@ main:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r7, fp, lr}
-	ldr	r3, .L125
+	ldr	r3, .L118
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L125+4
+	ldr	r3, .L118+4
 	mov	lr, pc
 	bx	r3
-	ldr	r6, .L125+8
-	ldr	r8, .L125+12
-	ldr	r5, .L125+16
-	ldr	fp, .L125+20
-	ldr	r10, .L125+24
-	ldr	r9, .L125+28
-	ldr	r7, .L125+32
-	ldr	r4, .L125+36
-.L113:
+	ldr	r6, .L118+8
+	ldr	r8, .L118+12
+	ldr	r5, .L118+16
+	ldr	fp, .L118+20
+	ldr	r10, .L118+24
+	ldr	r9, .L118+28
+	ldr	r7, .L118+32
+	ldr	r4, .L118+36
+.L106:
 	ldr	r2, [r6]
 	ldrh	r3, [r8]
-.L114:
+.L107:
 	strh	r3, [r5]	@ movhi
 	ldrh	r3, [r4, #48]
 	strh	r3, [r8]	@ movhi
 	cmp	r2, #6
 	ldrls	pc, [pc, r2, asl #2]
-	b	.L114
-.L116:
-	.word	.L121
-	.word	.L120
-	.word	.L119
-	.word	.L118
-	.word	.L117
-	.word	.L115
-	.word	.L115
-.L115:
+	b	.L107
+.L109:
+	.word	.L114
+	.word	.L113
+	.word	.L112
+	.word	.L111
+	.word	.L110
+	.word	.L108
+	.word	.L108
+.L108:
 	mov	lr, pc
 	bx	r7
-	b	.L113
-.L117:
-	ldr	r3, .L125+40
+	b	.L106
+.L110:
+	ldr	r3, .L118+40
 	mov	lr, pc
 	bx	r3
-	b	.L113
-.L118:
-	ldr	r3, .L125+44
+	b	.L106
+.L111:
+	ldr	r3, .L118+44
 	mov	lr, pc
 	bx	r3
-	b	.L113
-.L119:
+	b	.L106
+.L112:
 	mov	lr, pc
 	bx	r9
-	b	.L113
-.L120:
+	b	.L106
+.L113:
 	mov	lr, pc
 	bx	r10
-	b	.L113
-.L121:
+	b	.L106
+.L114:
 	mov	lr, pc
 	bx	fp
-	b	.L113
-.L126:
+	b	.L106
+.L119:
 	.align	2
-.L125:
+.L118:
 	.word	mgba_open
 	.word	initialize
 	.word	state

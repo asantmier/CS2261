@@ -937,6 +937,35 @@ void mgba_close(void);
 
 
 
+# 1 "game.h" 1
+
+
+
+extern int submarineHp;
+
+
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_combatant {
+    int exists;
+    int hp;
+    int damage;
+} COMBATANT;
+
+
+
+
+
+
+extern COMBATANT battleAllies[4];
+extern COMBATANT battleOpponents[4];
+
+
+void initGame();
+void initParty();
+# 5 "world.h" 2
+
 
 enum {
     PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
@@ -946,12 +975,10 @@ enum {
 
 
 typedef int fp64;
-# 32 "world.h"
+# 34 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
-
-enum { FISH, SHARK, ANGLER, JIM };
 
 
 typedef struct tag_player {
@@ -1014,22 +1041,13 @@ void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 5 "world.c" 2
-# 1 "game.h" 1
-
-
-
-extern int playerHp;
-
-
-void initGame();
-# 6 "world.c" 2
 # 1 "tempbackground_collision.h" 1
 # 21 "tempbackground_collision.h"
 extern const unsigned short tempbackground_collisionBitmap[524288];
 
 
 extern const unsigned short tempbackground_collisionPal[256];
-# 7 "world.c" 2
+# 6 "world.c" 2
 
 unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
 
@@ -1042,7 +1060,7 @@ LEVEL levels[1] = {
     {
         {
             { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH },
-            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, FISH },
+            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, SHARK },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
             { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },

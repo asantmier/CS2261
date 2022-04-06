@@ -811,6 +811,417 @@ extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
 # 2 "battle.c" 2
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
+# 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+# 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
+# 37 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 2 3
+
+
+
+# 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stdarg.h" 1 3 4
+# 40 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stdarg.h" 3 4
+typedef __builtin_va_list __gnuc_va_list;
+# 41 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 2 3
+# 61 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 1 3
+# 28 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 3
+typedef __uint8_t u_int8_t;
+
+
+typedef __uint16_t u_int16_t;
+
+
+typedef __uint32_t u_int32_t;
+
+
+typedef __uint64_t u_int64_t;
+
+typedef int register_t;
+# 62 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 3
+# 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
+# 63 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 2 3
+# 113 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 3
+typedef __blkcnt_t blkcnt_t;
+
+
+
+
+typedef __blksize_t blksize_t;
+
+
+
+
+typedef unsigned long clock_t;
+
+
+
+
+
+typedef __int_least64_t time_t;
+
+
+
+
+
+typedef long daddr_t;
+
+
+
+typedef char * caddr_t;
+
+
+
+
+typedef __fsblkcnt_t fsblkcnt_t;
+typedef __fsfilcnt_t fsfilcnt_t;
+
+
+
+
+typedef __id_t id_t;
+
+
+
+
+typedef __ino_t ino_t;
+# 173 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 3
+typedef __off_t off_t;
+
+
+
+typedef __dev_t dev_t;
+
+
+
+typedef __uid_t uid_t;
+
+
+
+typedef __gid_t gid_t;
+
+
+
+
+typedef __pid_t pid_t;
+
+
+
+
+typedef __key_t key_t;
+
+
+
+
+typedef _ssize_t ssize_t;
+
+
+
+
+typedef __mode_t mode_t;
+
+
+
+
+typedef __nlink_t nlink_t;
+
+
+
+
+typedef __clockid_t clockid_t;
+
+
+
+
+
+typedef __timer_t timer_t;
+
+
+
+
+
+typedef __useconds_t useconds_t;
+
+
+
+
+typedef __suseconds_t suseconds_t;
+
+
+
+typedef __int64_t sbintime_t;
+
+
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/_pthreadtypes.h" 1 3
+# 240 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 2 3
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/types.h" 1 3
+# 241 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/types.h" 2 3
+# 62 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 2 3
+
+
+
+
+typedef __FILE FILE;
+
+
+
+
+
+
+typedef _fpos_t fpos_t;
+
+
+
+
+
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/stdio.h" 1 3
+# 80 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 2 3
+# 186 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+FILE * tmpfile (void);
+char * tmpnam (char *);
+
+
+
+int fclose (FILE *);
+int fflush (FILE *);
+FILE * freopen (const char *restrict, const char *restrict, FILE *restrict);
+void setbuf (FILE *restrict, char *restrict);
+int setvbuf (FILE *restrict, char *restrict, int, size_t);
+int fprintf (FILE *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 2, 3)));
+int fscanf (FILE *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 2, 3)));
+int printf (const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 1, 2)));
+int scanf (const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 1, 2)));
+int sscanf (const char *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 2, 3)));
+int vfprintf (FILE *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 2, 0)));
+int vprintf (const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 1, 0)));
+int vsprintf (char *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 2, 0)));
+int fgetc (FILE *);
+char * fgets (char *restrict, int, FILE *restrict);
+int fputc (int, FILE *);
+int fputs (const char *restrict, FILE *restrict);
+int getc (FILE *);
+int getchar (void);
+char * gets (char *);
+int putc (int, FILE *);
+int putchar (int);
+int puts (const char *);
+int ungetc (int, FILE *);
+size_t fread (void *restrict, size_t _size, size_t _n, FILE *restrict);
+size_t fwrite (const void *restrict , size_t _size, size_t _n, FILE *);
+
+
+
+int fgetpos (FILE *restrict, fpos_t *restrict);
+
+int fseek (FILE *, long, int);
+
+
+
+int fsetpos (FILE *, const fpos_t *);
+
+long ftell ( FILE *);
+void rewind (FILE *);
+void clearerr (FILE *);
+int feof (FILE *);
+int ferror (FILE *);
+void perror (const char *);
+
+FILE * fopen (const char *restrict _name, const char *restrict _type);
+int sprintf (char *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 2, 3)));
+int remove (const char *);
+int rename (const char *, const char *);
+# 266 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+int snprintf (char *restrict, size_t, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int vsnprintf (char *restrict, size_t, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int vfscanf (FILE *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 2, 0)));
+int vscanf (const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 1, 0)));
+int vsscanf (const char *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 2, 0)));
+# 396 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+int _asiprintf_r (struct _reent *, char **, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+char * _asniprintf_r (struct _reent *, char *, size_t *, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 4, 5)));
+char * _asnprintf_r (struct _reent *, char *restrict, size_t *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 4, 5)));
+int _asprintf_r (struct _reent *, char **restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _diprintf_r (struct _reent *, int, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _dprintf_r (struct _reent *, int, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _fclose_r (struct _reent *, FILE *);
+int _fcloseall_r (struct _reent *);
+FILE * _fdopen_r (struct _reent *, int, const char *);
+int _fflush_r (struct _reent *, FILE *);
+int _fgetc_r (struct _reent *, FILE *);
+int _fgetc_unlocked_r (struct _reent *, FILE *);
+char * _fgets_r (struct _reent *, char *restrict, int, FILE *restrict);
+char * _fgets_unlocked_r (struct _reent *, char *restrict, int, FILE *restrict);
+
+
+
+
+int _fgetpos_r (struct _reent *, FILE *, fpos_t *);
+int _fsetpos_r (struct _reent *, FILE *, const fpos_t *);
+
+int _fiprintf_r (struct _reent *, FILE *, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _fiscanf_r (struct _reent *, FILE *, const char *, ...)
+               __attribute__ ((__format__ (__scanf__, 3, 4)));
+FILE * _fmemopen_r (struct _reent *, void *restrict, size_t, const char *restrict);
+FILE * _fopen_r (struct _reent *, const char *restrict, const char *restrict);
+FILE * _freopen_r (struct _reent *, const char *restrict, const char *restrict, FILE *restrict);
+int _fprintf_r (struct _reent *, FILE *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _fpurge_r (struct _reent *, FILE *);
+int _fputc_r (struct _reent *, int, FILE *);
+int _fputc_unlocked_r (struct _reent *, int, FILE *);
+int _fputs_r (struct _reent *, const char *restrict, FILE *restrict);
+int _fputs_unlocked_r (struct _reent *, const char *restrict, FILE *restrict);
+size_t _fread_r (struct _reent *, void *restrict, size_t _size, size_t _n, FILE *restrict);
+size_t _fread_unlocked_r (struct _reent *, void *restrict, size_t _size, size_t _n, FILE *restrict);
+int _fscanf_r (struct _reent *, FILE *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 3, 4)));
+int _fseek_r (struct _reent *, FILE *, long, int);
+int _fseeko_r (struct _reent *, FILE *, _off_t, int);
+long _ftell_r (struct _reent *, FILE *);
+_off_t _ftello_r (struct _reent *, FILE *);
+void _rewind_r (struct _reent *, FILE *);
+size_t _fwrite_r (struct _reent *, const void *restrict, size_t _size, size_t _n, FILE *restrict);
+size_t _fwrite_unlocked_r (struct _reent *, const void *restrict, size_t _size, size_t _n, FILE *restrict);
+int _getc_r (struct _reent *, FILE *);
+int _getc_unlocked_r (struct _reent *, FILE *);
+int _getchar_r (struct _reent *);
+int _getchar_unlocked_r (struct _reent *);
+char * _gets_r (struct _reent *, char *);
+int _iprintf_r (struct _reent *, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 2, 3)));
+int _iscanf_r (struct _reent *, const char *, ...)
+               __attribute__ ((__format__ (__scanf__, 2, 3)));
+FILE * _open_memstream_r (struct _reent *, char **, size_t *);
+void _perror_r (struct _reent *, const char *);
+int _printf_r (struct _reent *, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 2, 3)));
+int _putc_r (struct _reent *, int, FILE *);
+int _putc_unlocked_r (struct _reent *, int, FILE *);
+int _putchar_unlocked_r (struct _reent *, int);
+int _putchar_r (struct _reent *, int);
+int _puts_r (struct _reent *, const char *);
+int _remove_r (struct _reent *, const char *);
+int _rename_r (struct _reent *,
+      const char *_old, const char *_new);
+int _scanf_r (struct _reent *, const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 2, 3)));
+int _siprintf_r (struct _reent *, char *, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _siscanf_r (struct _reent *, const char *, const char *, ...)
+               __attribute__ ((__format__ (__scanf__, 3, 4)));
+int _sniprintf_r (struct _reent *, char *, size_t, const char *, ...)
+               __attribute__ ((__format__ (__printf__, 4, 5)));
+int _snprintf_r (struct _reent *, char *restrict, size_t, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 4, 5)));
+int _sprintf_r (struct _reent *, char *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__printf__, 3, 4)));
+int _sscanf_r (struct _reent *, const char *restrict, const char *restrict, ...)
+               __attribute__ ((__format__ (__scanf__, 3, 4)));
+char * _tempnam_r (struct _reent *, const char *, const char *);
+FILE * _tmpfile_r (struct _reent *);
+char * _tmpnam_r (struct _reent *, char *);
+int _ungetc_r (struct _reent *, int, FILE *);
+int _vasiprintf_r (struct _reent *, char **, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+char * _vasniprintf_r (struct _reent*, char *, size_t *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 4, 0)));
+char * _vasnprintf_r (struct _reent*, char *, size_t *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 4, 0)));
+int _vasprintf_r (struct _reent *, char **, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vdiprintf_r (struct _reent *, int, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vdprintf_r (struct _reent *, int, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vfiprintf_r (struct _reent *, FILE *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vfiscanf_r (struct _reent *, FILE *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 3, 0)));
+int _vfprintf_r (struct _reent *, FILE *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vfscanf_r (struct _reent *, FILE *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 3, 0)));
+int _viprintf_r (struct _reent *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 2, 0)));
+int _viscanf_r (struct _reent *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 2, 0)));
+int _vprintf_r (struct _reent *, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 2, 0)));
+int _vscanf_r (struct _reent *, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 2, 0)));
+int _vsiprintf_r (struct _reent *, char *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vsiscanf_r (struct _reent *, const char *, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 3, 0)));
+int _vsniprintf_r (struct _reent *, char *, size_t, const char *, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 4, 0)));
+int _vsnprintf_r (struct _reent *, char *restrict, size_t, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 4, 0)));
+int _vsprintf_r (struct _reent *, char *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__printf__, 3, 0)));
+int _vsscanf_r (struct _reent *, const char *restrict, const char *restrict, __gnuc_va_list)
+               __attribute__ ((__format__ (__scanf__, 3, 0)));
+
+
+
+int fpurge (FILE *);
+ssize_t __getdelim (char **, size_t *, int, FILE *);
+ssize_t __getline (char **, size_t *, FILE *);
+# 577 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+int __srget_r (struct _reent *, FILE *);
+int __swbuf_r (struct _reent *, int, FILE *);
+# 687 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+static __inline__ int __sputc_r(struct _reent *_ptr, int _c, FILE *_p) {
+
+
+
+
+ if (--_p->_w >= 0 || (_p->_w >= _p->_lbfsize && (char)_c != '\n'))
+  return (*_p->_p++ = _c);
+ else
+  return (__swbuf_r(_ptr, _c, _p));
+}
+# 741 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+static __inline int
+_getchar_unlocked(void)
+{
+ struct _reent *_ptr;
+
+ _ptr = (__getreent());
+ return ((--(((_ptr)->_stdin))->_r < 0 ? __srget_r(_ptr, ((_ptr)->_stdin)) : (int)(*(((_ptr)->_stdin))->_p++)));
+}
+
+static __inline int
+_putchar_unlocked(int _c)
+{
+ struct _reent *_ptr;
+
+ _ptr = (__getreent());
+ return (__sputc_r(_ptr, _c, ((_ptr)->_stdout)));
+}
+# 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
+
+# 3 "battle.c" 2
 
 # 1 "print.h" 1
 # 36 "print.h"
@@ -821,7 +1232,7 @@ void mgba_printf(const char* string, ...);
 void mgba_break(void);
 uint8_t mgba_open(void);
 void mgba_close(void);
-# 4 "battle.c" 2
+# 5 "battle.c" 2
 # 1 "battle.h" 1
 
 
@@ -938,29 +1349,57 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 5 "battle.h" 2
-# 81 "battle.h"
-extern const int text_tile_lkup[];
-# 93 "battle.h"
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
-
-
-extern int lettersActive;
-void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
-
-
-void initBattle();
-
-
-void updateBattle();
-# 5 "battle.c" 2
 # 1 "game.h" 1
 
 
 
-extern int playerHp;
+extern int submarineHp;
+
+
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_combatant {
+    int exists;
+    int hp;
+    int damage;
+} COMBATANT;
+
+
+
+
+
+
+extern COMBATANT battleAllies[4];
+extern COMBATANT battleOpponents[4];
 
 
 void initGame();
+void initParty();
+# 6 "battle.h" 2
+# 82 "battle.h"
+extern const int text_tile_lkup[];
+# 94 "battle.h"
+enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
+
+
+extern int lettersActive;
+void eraseAllText();
+void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
+
+
+enum { LOST = -1, ONGOING = 0, WON = 1 };
+
+
+extern int battleStatus;
+
+
+void initBattle(int opponentType);
+void resetOpponents();
+
+
+void updateBattle();
+void drawCombatants();
 # 6 "battle.c" 2
 
 
@@ -973,7 +1412,367 @@ const int text_tile_lkup[] = {((16)*32 + (24)),((16)*32 + (25)),((16)*32 + (26))
 ((22)*32 + (24)),((22)*32 + (25)),((22)*32 + (26)),((22)*32 + (27)),((22)*32 + (28)),((22)*32 + (29)),((22)*32 + (30)),((22)*32 + (31)),((23)*32 + (24)),((23)*32 + (25)),((23)*32 + (26)),
 ((23)*32 + (27)),((23)*32 + (28)),((23)*32 + (29)),((23)*32 + (30)),((23)*32 + (31))};
 
-int lettersActive = 0;
+int lettersActive;
+int battleStatus;
+enum { ACTIONS, ATTACKS, TARGETSELECT };
+int menu;
+enum { PLAYERTURN, ENEMYTURN };
+int turn;
+int menuOption;
+enum { PASS = 1, PUNCH, KICK };
+int action;
+int target;
+int go;
+
+void initBattle(int opponentType) {
+    battleStatus = ONGOING;
+    lettersActive = 0;
+    turn = PLAYERTURN;
+    menu = ACTIONS;
+    menuOption = 0;
+    action = 0;
+    target = 0;
+    go = 0;
+
+
+    resetOpponents();
+
+    switch (opponentType)
+    {
+    case SHARK:
+        battleOpponents[0].exists = 1;
+        battleOpponents[0].hp = 14;
+        battleOpponents[0].damage = 6;
+        break;
+
+    default:
+        battleOpponents[0].exists = 1;
+        battleOpponents[0].hp = 8;
+        battleOpponents[0].damage = 5;
+        break;
+    }
+
+    drawCombatants();
+}
+
+void resetOpponents() {
+    for (int i = 0; i < 4; i++) {
+        battleOpponents[i].exists = 0;
+    }
+}
+
+char tsel(int cond) {
+    return cond ? '*' : ' ';
+}
+
+void updateBattle() {
+    static char buf[128];
+    static int turnwait = 120;
+    if (go && turnwait == 120) {
+        if (turn == PLAYERTURN) {
+            int oldhp = 0;
+            switch (action)
+            {
+            case PASS:
+                eraseAllText();
+                drawText("PLAYER PASSES", 59, 11, (121), (3 * 8));
+                break;
+            case PUNCH:
+                oldhp = battleOpponents[target].hp;
+                battleOpponents[target].hp -= battleAllies[0].damage;
+                eraseAllText();
+                sprintf(buf, "YOU ATTACK ENEMY %d", target);
+                drawText(buf, 59, 11, (121), (3 * 8));
+                sprintf(buf, "HP %d->%d", oldhp, battleOpponents[target].hp);
+                drawText(buf, 59, 123, (121), (3 * 8));
+                break;
+            case KICK:
+                oldhp = battleOpponents[target].hp;
+                battleOpponents[target].hp -= battleAllies[0].damage;
+                eraseAllText();
+                sprintf(buf, "YOU ATTACK ENEMY %d", target);
+                drawText(buf, 59, 11, (121), (3 * 8));
+                sprintf(buf, "HP %d->%d", oldhp, battleOpponents[target].hp);
+                drawText(buf, 59, 123, (121), (3 * 8));
+                break;
+            }
+        } else {
+            int oldhp = 0;
+            switch (action)
+            {
+            case PASS:
+                eraseAllText();
+                drawText("ENEMY PASSES", 59, 11, (121), (3 * 8));
+                break;
+            case PUNCH:
+                oldhp = battleAllies[target].hp;
+                battleAllies[target].hp -= battleOpponents[0].damage;
+                eraseAllText();
+                sprintf(buf, "ENEMY ATTACKS ALLY %d", target);
+                drawText(buf, 59, 11, (121), (3 * 8));
+                sprintf(buf, "HP %d->%d", oldhp, battleAllies[target].hp);
+                drawText(buf, 59, 123, (121), (3 * 8));
+                break;
+            case KICK:
+                oldhp = battleAllies[target].hp;
+                battleAllies[target].hp -= battleOpponents[0].damage;
+                eraseAllText();
+                sprintf(buf, "ENEMY ATTACKS ALLY %d", target);
+                drawText(buf, 59, 11, (121), (3 * 8));
+                sprintf(buf, "HP %d->%d", oldhp, battleAllies[target].hp);
+                drawText(buf, 59, 123, (121), (3 * 8));
+                break;
+            }
+        }
+        turnwait--;
+        return;
+    } else if (go && turnwait > 0) {
+        turnwait--;
+        return;
+    } else if (go) {
+        turnwait = 120;
+        if (turn == PLAYERTURN) {
+            turn = ENEMYTURN;
+        } else {
+            turn = PLAYERTURN;
+        }
+        menu = ACTIONS;
+        menuOption = 0;
+        action = 0;
+        target = 0;
+        go = 0;
+
+        int allyAlive = 0;
+        int playerAlive = battleAllies[0].hp > 0;
+        for (int i = 0; i < 4; i++) {
+            if (battleAllies[i].exists) {
+                if (battleAllies[i].hp > 0) {
+                    allyAlive = 1;
+                    break;
+                }
+            }
+        }
+        if (!allyAlive || !playerAlive) {
+            battleStatus = LOST;
+            return;
+        }
+        int enemyAlive = 0;
+        for (int i = 0; i < 4; i++) {
+            if (battleOpponents[i].exists) {
+                if (battleOpponents[i].hp > 0) {
+                    enemyAlive = 1;
+                    break;
+                }
+            }
+        }
+        if (!enemyAlive) {
+            battleStatus = WON;
+            return;
+        }
+    }
+
+    int enter = 0;
+    int leave = 0;
+
+    if (turn == PLAYERTURN) {
+        if ((!(~(oldButtons) & ((1 << 7))) && (~buttons & ((1 << 7))))) {
+            menuOption++;
+        } else if ((!(~(oldButtons) & ((1 << 6))) && (~buttons & ((1 << 6))))) {
+            menuOption--;
+        }
+        if ((!(~(oldButtons) & ((1 << 4))) && (~buttons & ((1 << 4))))) {
+            menuOption += 3;
+        } else if ((!(~(oldButtons) & ((1 << 5))) && (~buttons & ((1 << 5))))) {
+            menuOption -= 3;
+        }
+        if ((!(~(oldButtons) & ((1 << 0))) && (~buttons & ((1 << 0))))) {
+            enter = 1;
+        }
+        if ((!(~(oldButtons) & ((1 << 1))) && (~buttons & ((1 << 1))))) {
+            leave = 1;
+        }
+    }
+
+
+    if (turn == PLAYERTURN) {
+        switch (menu)
+        {
+        case ACTIONS:
+            if (menuOption > 1) {
+                menuOption = 1;
+            } else if (menuOption < 0) {
+                menuOption = 0;
+            }
+            if (enter) {
+                if (menuOption == 0) {
+                    menuOption = 0;
+                    menu = ATTACKS;
+                } else if (menuOption == 1) {
+                    action = PASS;
+                    go = 1;
+                }
+            }
+            if (leave) {
+
+            }
+            break;
+        case ATTACKS:
+            if (menuOption > 1) {
+                menuOption = 1;
+            } else if (menuOption < 0) {
+                menuOption = 0;
+            }
+            if (enter) {
+                if (menuOption == 0) {
+                    action = PUNCH;
+                    menuOption = 0;
+                    menu = TARGETSELECT;
+                } else if (menuOption == 1) {
+                    action = KICK;
+                    menuOption = 0;
+                    menu = TARGETSELECT;
+                }
+            }
+            if (leave) {
+                menuOption = 0;
+                menu = ACTIONS;
+            }
+            break;
+        case TARGETSELECT:
+            if (menuOption > 0) {
+                menuOption = 0;
+            } else if (menuOption < 0) {
+                menuOption = 0;
+            }
+            if (enter) {
+                if (menuOption == 0) {
+                    target = 0;
+                    go = 1;
+                }
+            }
+            if (leave) {
+                menuOption = 0;
+                menu = ATTACKS;
+            }
+        default:
+            break;
+        }
+    } else {
+        int randAct = rand() % 3;
+        if (randAct == 0) {
+            action = PASS;
+        } else if (randAct == 1) {
+            action = PUNCH;
+        } else if (randAct == 2) {
+            action = KICK;
+        }
+
+        int randTarget = rand() % 4;
+        for (int i = 0; i < 4; i++) {
+            if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                if (randTarget <= 0) {
+                    target = i;
+                }
+            }
+            randTarget--;
+        }
+
+        go = 1;
+    }
+
+
+    eraseAllText();
+    if (turn == PLAYERTURN) {
+        switch (menu)
+        {
+        case ACTIONS:
+            drawText("WHAT WILL YOU DO?", 59, 11, (121), (3 * 8));
+            sprintf(buf, "%cATTACK\n%cPASS", tsel(menuOption == 0), tsel(menuOption == 1));
+            drawText(buf, 59, 123, (121), (3 * 8));
+            break;
+        case ATTACKS:
+            drawText("CHOOSE AN ATTACK", 59, 11, (121), (3 * 8));
+            sprintf(buf, "%cPUNCH\n%cKICK", tsel(menuOption == 0), tsel(menuOption == 1));
+            drawText(buf, 59, 123, (121), (3 * 8));
+            break;
+        case TARGETSELECT:
+            drawText("CHOOSE A TARGET", 59, 11, (121), (3 * 8));
+            sprintf(buf, "%cENEMY1\n", tsel(menuOption == 0));
+            drawText(buf, 59, 123, (121), (3 * 8));
+            break;
+        }
+    }
+
+    drawCombatants();
+}
+
+void drawCombatants() {
+    if (battleAllies[0].exists && battleAllies[0].hp > 0) {
+        shadowOAM[ALLY1_B].attr0 = (15 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ALLY1_B].attr1 = (8 & 0x1FF) | (2 << 14);
+        shadowOAM[ALLY1_B].attr2 = ((0)*32 + (0));
+    } else {
+        shadowOAM[ALLY1_B].attr0 = (2 << 8);
+    }
+    if (battleAllies[1].exists && battleAllies[1].hp > 0) {
+        shadowOAM[ALLY2_B].attr0 = (55 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ALLY2_B].attr1 = (8 & 0x1FF) | (2 << 14);
+        shadowOAM[ALLY2_B].attr2 = ((0)*32 + (0));
+    } else {
+        shadowOAM[ALLY2_B].attr0 = (2 << 8);
+    }
+    if (battleAllies[2].exists && battleAllies[2].hp > 0) {
+        shadowOAM[ALLY3_B].attr0 = (95 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ALLY3_B].attr1 = (8 & 0x1FF) | (2 << 14);
+        shadowOAM[ALLY3_B].attr2 = ((0)*32 + (0));
+    } else {
+        shadowOAM[ALLY3_B].attr0 = (2 << 8);
+    }
+    if (battleAllies[3].exists && battleAllies[3].hp > 0) {
+        shadowOAM[ALLY4_B].attr0 = (135 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ALLY4_B].attr1 = (8 & 0x1FF) | (2 << 14);
+        shadowOAM[ALLY4_B].attr2 = ((0)*32 + (0));
+    } else {
+        shadowOAM[ALLY4_B].attr0 = (2 << 8);
+    }
+
+
+    if (battleOpponents[0].exists && battleOpponents[0].hp > 0) {
+        shadowOAM[ENEMY1_B].attr0 = (15 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ENEMY1_B].attr1 = (192 & 0x1FF) | (2 << 14);
+        shadowOAM[ENEMY1_B].attr2 = ((0)*32 + (16));
+    } else {
+        shadowOAM[ENEMY1_B].attr0 = (2 << 8);
+    }
+    if (battleOpponents[1].exists && battleOpponents[1].hp > 0) {
+        shadowOAM[ENEMY2_B].attr0 = (55 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ENEMY2_B].attr1 = (192 & 0x1FF) | (2 << 14);
+        shadowOAM[ENEMY2_B].attr2 = ((0)*32 + (16));
+    } else {
+        shadowOAM[ENEMY2_B].attr0 = (2 << 8);
+    }
+    if (battleOpponents[2].exists && battleOpponents[2].hp > 0) {
+        shadowOAM[ENEMY3_B].attr0 = (95 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ENEMY3_B].attr1 = (192 & 0x1FF) | (2 << 14);
+        shadowOAM[ENEMY3_B].attr2 = ((0)*32 + (16));
+    } else {
+        shadowOAM[ENEMY3_B].attr0 = (2 << 8);
+    }
+    if (battleOpponents[3].exists && battleOpponents[3].hp > 0) {
+        shadowOAM[ENEMY4_B].attr0 = (135 & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ENEMY4_B].attr1 = (192 & 0x1FF) | (2 << 14);
+        shadowOAM[ENEMY4_B].attr2 = ((0)*32 + (16));
+    } else {
+        shadowOAM[ENEMY4_B].attr0 = (2 << 8);
+    }
+}
+
+void eraseAllText() {
+    for (int i = TEXT_IDX; i < 128; i++) {
+        shadowOAM[i].attr0 = (2 << 8);
+    }
+    lettersActive = 0;
+}
 
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight) {
 
@@ -1013,14 +1812,4 @@ void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textb
 
         str++;
     }
-}
-
-void initBattle() {
-    lettersActive = 0;
-    drawText("BATTLE MODE\nTESTING A REALLY  LONG LINE OF TEXT", 59, 11, (121), (3 * 8));
-    drawText("L BUMPER:LOSE\nR BUMPER:WIN", 59, 123, (121), (3 * 8));
-}
-
-void updateBattle() {
-
 }

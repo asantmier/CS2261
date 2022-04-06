@@ -1348,6 +1348,35 @@ void mgba_close(void);
 
 
 
+# 1 "game.h" 1
+
+
+
+extern int submarineHp;
+
+
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_combatant {
+    int exists;
+    int hp;
+    int damage;
+} COMBATANT;
+
+
+
+
+
+
+extern COMBATANT battleAllies[4];
+extern COMBATANT battleOpponents[4];
+
+
+void initGame();
+void initParty();
+# 5 "world.h" 2
+
 
 enum {
     PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
@@ -1357,12 +1386,10 @@ enum {
 
 
 typedef int fp64;
-# 32 "world.h"
+# 34 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
-
-enum { FISH, SHARK, ANGLER, JIM };
 
 
 typedef struct tag_player {
@@ -1426,9 +1453,9 @@ void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 6 "main.c" 2
 # 1 "battle.h" 1
-# 81 "battle.h"
+# 82 "battle.h"
 extern const int text_tile_lkup[];
-# 93 "battle.h"
+# 94 "battle.h"
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
 
 
@@ -1436,20 +1463,20 @@ extern int lettersActive;
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
 
 
-void initBattle();
+enum { LOST = -1, ONGOING = 0, WON = 1 };
+
+
+extern int battleStatus;
+
+
+void initBattle(int opponentType);
+void resetOpponents();
 
 
 void updateBattle();
+void drawCombatants();
 # 7 "main.c" 2
-# 1 "game.h" 1
 
-
-
-extern int playerHp;
-
-
-void initGame();
-# 8 "main.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
 extern const unsigned short tempspritesheetTiles[16384];
@@ -1725,7 +1752,7 @@ void game() {
 
         hideSprites();
         DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
-        initBattle();
+        initBattle(enemies[opponentIdx].type);
         goToBattle();
     }
 }
@@ -1745,9 +1772,9 @@ void goToBattle() {
 void battle() {
     updateBattle();
 
-    if ((!(~(oldButtons) & ((1 << 9))) && (~buttons & ((1 << 9))))) {
+    if (battleStatus == LOST) {
         goToLose();
-    } else if ((!(~(oldButtons) & ((1 << 8))) && (~buttons & ((1 << 8))))) {
+    } else if (battleStatus == WON) {
 
         hideSprites();
         DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);

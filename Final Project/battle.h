@@ -2,6 +2,7 @@
 #define BATTLE_H
 
 #include "mode0.h"
+#include "game.h"
 
 // Letter sprites
 #define TILE_EXCLAMATION    ATTR2_TILEID(24, 16)
@@ -76,35 +77,52 @@
 #define TILE_UNDERSCORE     ATTR2_TILEID(30, 23)
 #define TILE_GRAVE          ATTR2_TILEID(31, 23) // custom icon for a little star in the top left
 
+// Character to sprite TILE lookup stuff
 // Take the character and subtract CHAR_START
 #define CHAR_START '!'
 extern const int text_tile_lkup[];
 
+// Sprite ID table
+enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
+
+// Some constants
 #define CHAR_WIDTH 7 // while text sprites are 8 wide, the rightmost column of pixels is always empty
 #define CHAR_HEIGHT 8 
-#define TEXTBOX_WIDTH (121)
-#define TEXTBOX_HEIGHT (3 * CHAR_HEIGHT)
+#define TEXTBOX_WIDTH (121) // that's 17 characters
+#define TEXTBOX_HEIGHT (3 * CHAR_HEIGHT) // that's 3 lines of text
 #define TEXT_TOP_X 59
 #define TEXT_TOP_Y 11
 #define TEXT_BOTTOM_X 59
 #define TEXT_BOTTOM_Y 123
 
-// Sprite ID table
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
-
 // Textbox functions
 extern int lettersActive;
+void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
 
+// Battle status enum
+enum { LOST = -1, ONGOING = 0, WON = 1 };
+
+// Battle status used by main to figure out how the battle is going
+extern int battleStatus;
+
 // Init functions
-void initBattle();
+void initBattle(int opponentType);
+void resetOpponents();
 
 // Update functions
 void updateBattle();
+void drawCombatants();
 
 // TODO for a healthbar you could theoretically make 8 healthbar sprites without reducing tiles
 // and when you want to change health, swap to mode 3 and modify the tile pixels (or would you even
 // need to change to mode 3 for that?)
+
+// I want the sprites to be bigger on the battle screen
+// Either we can have more sprites on the sprite sheet for this which might be ok
+// but if we can't we could use smaller sprites and use the affine matrix
+// We've got like 16(?) affine sprites to work with and we would need 8 for combatants
+// and maybe a few more for special effects
 
 // Health bars DEFINITLY take LESS space that numbers!
 

@@ -937,14 +937,45 @@ void mgba_close(void);
 
 
 
-extern int playerHp;
+extern int submarineHp;
+
+
+enum { FISH, SHARK, ANGLER, JIM };
+
+
+typedef struct tag_combatant {
+    int exists;
+    int hp;
+    int damage;
+} COMBATANT;
+
+
+
+
+
+
+extern COMBATANT battleAllies[4];
+extern COMBATANT battleOpponents[4];
 
 
 void initGame();
+void initParty();
 # 5 "game.c" 2
 
-int playerHp;
+int submarineHp;
+COMBATANT battleAllies[4];
+COMBATANT battleOpponents[4];
 
 void initGame() {
-    playerHp = 100;
+    submarineHp = 100;
+    initParty();
+}
+
+void initParty() {
+    battleAllies[0].exists = 1;
+    battleAllies[0].hp = 10;
+    battleAllies[0].damage = 8;
+    battleAllies[1].exists = 1;
+    battleAllies[1].hp = 6;
+    battleAllies[1].damage = 6;
 }

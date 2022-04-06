@@ -1,6 +1,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include "game.h"
+
 // Sprite ID table
 enum {
     PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
@@ -32,8 +34,6 @@ typedef int fp64;
 enum { LEFT, RIGHT };
 // AI types
 enum { PASSIVE, NEUTRAL, HOSTILE };
-// Enemy types
-enum { FISH, SHARK, ANGLER, JIM }; // don't mess with jim
 
 // Structs
 typedef struct tag_player {
@@ -95,20 +95,6 @@ void updateWorld();
 void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
-
-// TODO whats left
-// put an enemy on the screen
-// don't make it do anything i don't have time for that
-// hit enemy or collide to enter battle mode
-// in battle mode, hit a button to win and go back and remove the enemy
-// in battle mode, hit another button to go to the lose state
-// win state is still unimplemented. its only real purpose is after you beat the whole game
-// if there's time, implement a 1v1 battle system
-// you hit a button to hit the enemy, the enemy does random damage back
-// if you do enough damage you win, otherwise you lose yk
-// if there's still time, implement the text system
-// this seems like a lot of work and kinda art related so it might be excusable to not have in M2
-// don't bother turning in the text stuff more than a day late?
 
 // world.h the world part of the game
 // battle.h battle part of the game

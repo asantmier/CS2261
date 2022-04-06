@@ -2,7 +2,6 @@
 #include "mode0.h"
 #include "print.h"
 #include "world.h"
-#include "game.h"
 #include "tempbackground_collision.h"
 
 unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
@@ -16,7 +15,7 @@ LEVEL levels[NUM_LEVELS] = {
     { // start 1st LEVEL constructor
         { // start ENEMY list 
             { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH }, // 1
-            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, FISH }, // 2
+            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, SHARK }, // 2
             DISABLE_ENEMY, // 3
             DISABLE_ENEMY, // 4
             DISABLE_ENEMY, // 5

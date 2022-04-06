@@ -211,7 +211,7 @@ void game() {
         // Turn off all the sprites from the game state
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);
-        initBattle();
+        initBattle(enemies[opponentIdx].type); // tell the battle system what kind of enemy we're encountering
         goToBattle();
     }
 }
@@ -231,9 +231,9 @@ void goToBattle() {
 void battle() {
     updateBattle();
 
-    if (BUTTON_PRESSED(BUTTON_L)) {
+    if (battleStatus == LOST) {
         goToLose();
-    } else if (BUTTON_PRESSED(BUTTON_R)) {
+    } else if (battleStatus == WON) {
         // Turn off all the sprites from the battle state
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);
