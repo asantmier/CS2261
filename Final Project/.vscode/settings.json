@@ -12,6 +12,8 @@
         "print.h": "c",
         "mode0.h": "c",
         "tempbackground.h": "c",
-        "game.h": "c"
+        "game.h": "c",
+        "tempbackground_collision.h": "c",
+        "world1collision.h": "c"
     }
 }

@@ -3,8 +3,9 @@
 #include "print.h"
 #include "world.h"
 #include "tempbackground_collision.h"
+#include "world1collision.h"
 
-unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
+unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
 PLAYER player;
 BULLET bullets[NUM_BULLETS];
@@ -47,10 +48,10 @@ void initWorld() {
 }
 
 void initPlayer() {
-    player.int_x = 0;
-    player.int_y = 0;
-    player.x = 0;
-    player.y = 0;
+    player.int_x = 128 * 64;
+    player.int_y = 32 * 64;
+    player.x = 128;
+    player.y = 32;
     player.dx = 0;
     player.dy = 0;
     player.width = 16;

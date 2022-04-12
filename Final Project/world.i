@@ -952,12 +952,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-
-
-
-
-
-
+# 29 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1048,8 +1043,15 @@ extern const unsigned short tempbackground_collisionBitmap[524288];
 
 extern const unsigned short tempbackground_collisionPal[256];
 # 6 "world.c" 2
+# 1 "world1collision.h" 1
+# 21 "world1collision.h"
+extern const unsigned short world1collisionBitmap[524288];
 
-unsigned char* collisionMap = (unsigned char*) tempbackground_collisionBitmap;
+
+extern const unsigned short world1collisionPal[256];
+# 7 "world.c" 2
+
+unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
 PLAYER player;
 BULLET bullets[5];
@@ -1092,10 +1094,10 @@ void initWorld() {
 }
 
 void initPlayer() {
-    player.int_x = 0;
-    player.int_y = 0;
-    player.x = 0;
-    player.y = 0;
+    player.int_x = 128 * 64;
+    player.int_y = 32 * 64;
+    player.x = 128;
+    player.y = 32;
     player.dx = 0;
     player.dy = 0;
     player.width = 16;

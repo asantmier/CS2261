@@ -1364,12 +1364,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-
-
-
-
-
-
+# 29 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1377,12 +1372,12 @@ extern COMBATANT battleOpponents[4];
 void initGame();
 void initParty();
 # 6 "battle.h" 2
-# 82 "battle.h"
+# 83 "battle.h"
 extern const int text_tile_lkup[];
-# 94 "battle.h"
+
+
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
-
-
+# 99 "battle.h"
 extern int lettersActive;
 void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
@@ -1424,6 +1419,7 @@ int action;
 int target;
 int go;
 
+
 void initBattle(int opponentType) {
     battleStatus = ONGOING;
     lettersActive = 0;
@@ -1433,8 +1429,6 @@ void initBattle(int opponentType) {
     action = 0;
     target = 0;
     go = 0;
-
-
     resetOpponents();
 
     switch (opponentType)
@@ -1455,20 +1449,27 @@ void initBattle(int opponentType) {
     drawCombatants();
 }
 
+
 void resetOpponents() {
     for (int i = 0; i < 4; i++) {
         battleOpponents[i].exists = 0;
     }
 }
 
+
+
 char tsel(int cond) {
     return cond ? '*' : ' ';
 }
 
+
 void updateBattle() {
+
     static char buf[128];
     static int turnwait = 120;
+
     if (go && turnwait == 120) {
+
         if (turn == PLAYERTURN) {
             int oldhp = 0;
             switch (action)
@@ -1527,9 +1528,11 @@ void updateBattle() {
         turnwait--;
         return;
     } else if (go && turnwait > 0) {
+
         turnwait--;
         return;
     } else if (go) {
+
         turnwait = 120;
         if (turn == PLAYERTURN) {
             turn = ENEMYTURN;
@@ -1595,6 +1598,7 @@ void updateBattle() {
 
 
     if (turn == PLAYERTURN) {
+
         switch (menu)
         {
         case ACTIONS:
@@ -1658,6 +1662,7 @@ void updateBattle() {
             break;
         }
     } else {
+
         int randAct = rand() % 3;
         if (randAct == 0) {
             action = PASS;
@@ -1703,8 +1708,10 @@ void updateBattle() {
         }
     }
 
+
     drawCombatants();
 }
+
 
 void drawCombatants() {
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
@@ -1767,12 +1774,14 @@ void drawCombatants() {
     }
 }
 
+
 void eraseAllText() {
     for (int i = TEXT_IDX; i < 128; i++) {
         shadowOAM[i].attr0 = (2 << 8);
     }
     lettersActive = 0;
 }
+
 
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight) {
 

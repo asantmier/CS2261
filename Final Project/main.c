@@ -13,6 +13,8 @@
 #include "tempwin.h"
 #include "templose.h"
 #include "tempbattle.h"
+#include "world1.h"
+#include "world1parallax.h"
 
 // Prototypes.
 void initialize();
@@ -109,11 +111,12 @@ void initialize() {
     REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
     // BG1 contains the instructions. Later it will contain the parallax background
     DMANow(3, &tempinstructionsTiles, &CHARBLOCK[2], DMA_32 | (tempinstructionsTilesLen / 4));
-    DMANow(3, &tempinstructionsMap, &SCREENBLOCK[23], DMA_32 | (tempinstructionsMapLen / 4));
-    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(23) | BG_8BPP | BG_SIZE_SMALL;
+    DMANow(3, &tempinstructionsMap, &SCREENBLOCK[22], DMA_32 | (tempinstructionsMapLen / 4));
+    // Priority is set to 3 so that it draws below everything
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_8BPP | BG_SIZE_TALL | 3;
     // BG2 contains the world. It's a 128x tile map so it uses the entire 3rd charblock for its map
-    DMANow(3, &tempbackgroundTiles, &CHARBLOCK[0], DMA_32 | (tempbackgroundTilesLen / 4));
-    DMANow(3, &tempbackgroundMap, &SCREENBLOCK[24], DMA_32 | (tempbackgroundMapLen / 4));
+    DMANow(3, &world1Tiles, &CHARBLOCK[0], DMA_32 | (world1TilesLen / 4));
+    DMANow(3, &world1Map, &SCREENBLOCK[24], DMA_32 | (world1MapLen / 4));
     REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_8BPP | BG_SIZE_LARGE | BG_WRAP;
     *REG_BG2_AFFINE = bg_aff_default;
     // Move background back to its origin
@@ -158,6 +161,8 @@ void start() {
         srand(randTimer);
         initGame();
         initWorld();
+        DMANow(3, &world1parallaxTiles, &CHARBLOCK[2], DMA_32 | (world1parallaxTilesLen / 4));
+        DMANow(3, &world1parallaxMap, &SCREENBLOCK[22], DMA_32 | (world1parallaxMapLen / 4));
         goToGame();
     }
 
@@ -185,8 +190,8 @@ void instructions() {
 
 // Sets up the game state.
 void goToGame() {
-    DMANow(3, &tempbackgroundPal, PALETTE, 256);
-    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE;
+    DMANow(3, &world1Pal, PALETTE, 256);
+    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE | BG1_ENABLE;
 
     state = GAME;
 }

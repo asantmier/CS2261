@@ -1363,12 +1363,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-
-
-
-
-
-
+# 29 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1453,13 +1448,14 @@ void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
 # 6 "main.c" 2
 # 1 "battle.h" 1
-# 82 "battle.h"
+# 83 "battle.h"
 extern const int text_tile_lkup[];
-# 94 "battle.h"
+
+
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
-
-
+# 99 "battle.h"
 extern int lettersActive;
+void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
 
 
@@ -1554,6 +1550,26 @@ extern const unsigned short tempbattleMap[1024];
 
 extern const unsigned short tempbattlePal[256];
 # 16 "main.c" 2
+# 1 "world1.h" 1
+# 22 "world1.h"
+extern const unsigned short world1Tiles[1600];
+
+
+extern const unsigned short world1Map[8192];
+
+
+extern const unsigned short world1Pal[256];
+# 17 "main.c" 2
+# 1 "world1parallax.h" 1
+# 22 "world1parallax.h"
+extern const unsigned short world1parallaxTiles[256];
+
+
+extern const unsigned short world1parallaxMap[2048];
+
+
+extern const unsigned short world1parallaxPal[256];
+# 18 "main.c" 2
 
 
 void initialize();
@@ -1650,11 +1666,12 @@ void initialize() {
     (*(volatile unsigned short *)0x4000008) = ((1) << 2) | ((15) << 8) | (1 << 7) | (0 << 14);
 
     DMANow(3, &tempinstructionsTiles, &((charblock *)0x6000000)[2], (1 << 26) | (1408 / 4));
-    DMANow(3, &tempinstructionsMap, &((screenblock *)0x6000000)[23], (1 << 26) | (2048 / 4));
-    (*(volatile unsigned short *)0x400000A) = ((2) << 2) | ((23) << 8) | (1 << 7) | (0 << 14);
+    DMANow(3, &tempinstructionsMap, &((screenblock *)0x6000000)[22], (1 << 26) | (2048 / 4));
 
-    DMANow(3, &tempbackgroundTiles, &((charblock *)0x6000000)[0], (1 << 26) | (5824 / 4));
-    DMANow(3, &tempbackgroundMap, &((screenblock *)0x6000000)[24], (1 << 26) | (16384 / 4));
+    (*(volatile unsigned short *)0x400000A) = ((2) << 2) | ((22) << 8) | (1 << 7) | (2 << 14) | 3;
+
+    DMANow(3, &world1Tiles, &((charblock *)0x6000000)[0], (1 << 26) | (3200 / 4));
+    DMANow(3, &world1Map, &((screenblock *)0x6000000)[24], (1 << 26) | (16384 / 4));
     (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (1 << 7) | (3 << 14) | (1 << 13);
     *((BG_AFFINE *)(0x04000020)) = bg_aff_default;
 
@@ -1699,6 +1716,8 @@ void start() {
         srand(randTimer);
         initGame();
         initWorld();
+        DMANow(3, &world1parallaxTiles, &((charblock *)0x6000000)[2], (1 << 26) | (512 / 4));
+        DMANow(3, &world1parallaxMap, &((screenblock *)0x6000000)[22], (1 << 26) | (4096 / 4));
         goToGame();
     }
 
@@ -1726,8 +1745,8 @@ void instructions() {
 
 
 void goToGame() {
-    DMANow(3, &tempbackgroundPal, ((unsigned short *)0x5000000), 256);
-    (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 10);
+    DMANow(3, &world1Pal, ((unsigned short *)0x5000000), 256);
+    (*(volatile unsigned short *)0x4000000) = 1 | (1 << 12) | (1 << 10) | (1 << 9);
 
     state = GAME;
 }

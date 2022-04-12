@@ -948,12 +948,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-
-
-
-
-
-
+# 29 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -966,10 +961,12 @@ int submarineHp;
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
+
 void initGame() {
     submarineHp = 100;
     initParty();
 }
+
 
 void initParty() {
     battleAllies[0].exists = 1;

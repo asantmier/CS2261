@@ -147,14 +147,14 @@ initialize:
 	.word	67109216
 	.word	100696064
 	.word	tempinstructionsTiles
-	.word	100710400
+	.word	100708352
 	.word	tempinstructionsMap
-	.word	6024
-	.word	67110320
-	.word	tempbackgroundTiles
+	.word	-26997
+	.word	67109664
+	.word	world1Tiles
 	.word	67112960
 	.word	100712448
-	.word	tempbackgroundMap
+	.word	world1Map
 	.word	bg_aff_default
 	.word	-1920
 	.word	bg2xOff
@@ -267,15 +267,27 @@ start:
 	mov	lr, pc
 	bx	r3
 	ldr	r4, .L22+20
+	mov	r0, #3
+	ldr	r3, .L22+44
+	ldr	r2, .L22+48
+	ldr	r1, .L22+52
+	mov	lr, pc
+	bx	r4
+	mov	r0, #3
+	ldr	r3, .L22+56
+	ldr	r2, .L22+60
+	ldr	r1, .L22+64
+	mov	lr, pc
+	bx	r4
 	mov	r3, #256
 	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L22+44
+	ldr	r1, .L22+68
 	mov	lr, pc
 	bx	r4
 	mov	r1, #67108864
 	mov	r2, #2
-	ldr	r0, .L22+48
+	ldr	r0, .L22+72
 	ldr	r3, .L22+28
 	strh	r0, [r1]	@ movhi
 	str	r2, [r3]
@@ -294,8 +306,14 @@ start:
 	.word	srand
 	.word	initGame
 	.word	initWorld
-	.word	tempbackgroundPal
-	.word	5121
+	.word	67108992
+	.word	100696064
+	.word	world1parallaxTiles
+	.word	67109888
+	.word	100708352
+	.word	world1parallaxMap
+	.word	world1Pal
+	.word	5633
 	.size	start, .-start
 	.align	2
 	.global	goToInstructions
@@ -410,9 +428,9 @@ goToGame:
 .L40:
 	.align	2
 .L39:
-	.word	tempbackgroundPal
+	.word	world1Pal
 	.word	DMANow
-	.word	5121
+	.word	5633
 	.word	state
 	.size	goToGame, .-goToGame
 	.align	2
@@ -575,9 +593,9 @@ pause:
 	.word	oldButtons
 	.word	buttons
 	.word	waitForVBlank
-	.word	tempbackgroundPal
+	.word	world1Pal
 	.word	DMANow
-	.word	5121
+	.word	5633
 	.word	state
 	.size	pause, .-pause
 	.align	2
@@ -904,8 +922,8 @@ battle:
 	.word	bg2yOff
 	.word	hideSprites
 	.word	returnFromBattle
-	.word	tempbackgroundPal
-	.word	5121
+	.word	world1Pal
+	.word	5633
 	.word	state
 	.size	battle, .-battle
 	.section	.text.startup,"ax",%progbits
