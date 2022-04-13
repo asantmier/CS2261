@@ -1353,6 +1353,7 @@ int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int 
 
 
 
+extern int submarineMaxHp;
 extern int submarineHp;
 
 
@@ -1364,7 +1365,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-# 29 "game.h"
+# 30 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 

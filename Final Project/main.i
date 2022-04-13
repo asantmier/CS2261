@@ -1352,6 +1352,7 @@ void mgba_close(void);
 
 
 
+extern int submarineMaxHp;
 extern int submarineHp;
 
 
@@ -1363,7 +1364,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-# 29 "game.h"
+# 30 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1374,14 +1375,14 @@ void initParty();
 
 
 enum {
-    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5, ENEMY6, ENEMY7, ENEMY8, ENEMY9, ENEMY10,
+    HEALTHBAR1, HEALTHBAR2, HEALTHBAR3, HEALTHBAR4, HEALTHBAR5, HEALTHBAR6, HEALTHBAR7, HEALTHBAR8, MINE1, MINE2,
+    MINE3, MINE4, MINE5, MINE6, MINE7, MINE8, MINE9, MINE10
 };
 
 
-
-
 typedef int fp64;
-# 34 "world.h"
+# 48 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
@@ -1410,14 +1411,23 @@ typedef struct tag_enemy {
     fp64 dx, dy;
     int width, height;
     int active;
-    int spriteIdx;
     int ai;
     int type;
 } ENEMY;
 
+typedef struct tag_mine {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int damage;
+} MINE;
+
 typedef struct tag_level {
 
-    ENEMY enemyList[5];
+    ENEMY enemyList[50];
+    MINE mineList[50];
 } LEVEL;
 
 
@@ -1426,11 +1436,16 @@ LEVEL levels[1];
 
 extern PLAYER player;
 extern BULLET bullets[5];
-extern ENEMY enemies[5];
+extern ENEMY enemies[50];
+extern MINE mines[50];
 
 
 extern int doBattle;
 extern int opponentIdx;
+
+
+extern int drawnEnemies;
+extern int drawnMines;
 
 
 void returnFromBattle(int victory);
@@ -1440,12 +1455,23 @@ void initWorld();
 void initPlayer();
 void initBullets();
 void initEnemies();
+void initMines();
 
 
 void updateWorld();
 void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
+void updateMine(MINE* mine);
+
+
+void freeEnemySprites();
+void drawEnemy(ENEMY* enemy);
+void freeMineSprites();
+void drawMine(MINE* mine);
+
+
+void updateHealthBar();
 # 6 "main.c" 2
 # 1 "battle.h" 1
 # 83 "battle.h"
@@ -1766,6 +1792,10 @@ void game() {
     DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
     (*(volatile unsigned int *) 0x04000028) = ((bg2xOff) << 8);
     (*(volatile unsigned int *) 0x0400002C) = ((bg2yOff) << 8);
+
+    if (submarineHp <= 0) {
+        goToLose();
+    }
 
     if (doBattle) {
 

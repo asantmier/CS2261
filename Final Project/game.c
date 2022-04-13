@@ -3,13 +3,15 @@
 #include "print.h"
 #include "game.h"
 
+int submarineMaxHp;
 int submarineHp;
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
 // Initialize the game
 void initGame() {
-    submarineHp = 100;
+    submarineMaxHp = 100;
+    submarineHp = submarineMaxHp;
     initParty();
 }
 

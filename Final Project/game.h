@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+extern int submarineMaxHp;
 extern int submarineHp; // Player health
 
 // Enemy types

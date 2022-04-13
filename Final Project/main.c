@@ -212,6 +212,10 @@ void game() {
     REG_BG2X = ENCODE24_8(bg2xOff);
     REG_BG2Y = ENCODE24_8(bg2yOff);
 
+    if (submarineHp <= 0) {
+        goToLose();
+    }
+
     if (doBattle) {
         // Turn off all the sprites from the game state
         hideSprites();

@@ -1,18 +1,20 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-04-12, 17:29:32
+STATUS: Started run at: 2022-04-12, 21:23:48
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
-STATUS: Work-DIB creation complete: 1024x1024@8.
+STATUS: Work-DIB creation complete: 256x256@8.
 STATUS: Tile preparation.
+STATUS:   tiling to 8x8 tiles.
 STATUS: Tile preparation complete.
 STATUS: Graphics preparation.
+STATUS:   Bitpacking: 8 -> 4.
 STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: world1collision into C:\Users\Allen\Documents\CS2261\Final Project\world1collision.c .
+STATUS: Export to C: tempspritesheet into C:\Users\Allen\Documents\CS2261\Final Project\tempspritesheet.c .
 STATUS: Run completed :).

@@ -941,6 +941,7 @@ void mgba_close(void);
 
 
 
+extern int submarineMaxHp;
 extern int submarineHp;
 
 
@@ -952,7 +953,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-# 29 "game.h"
+# 30 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -963,14 +964,14 @@ void initParty();
 
 
 enum {
-    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5, ENEMY6, ENEMY7, ENEMY8, ENEMY9, ENEMY10,
+    HEALTHBAR1, HEALTHBAR2, HEALTHBAR3, HEALTHBAR4, HEALTHBAR5, HEALTHBAR6, HEALTHBAR7, HEALTHBAR8, MINE1, MINE2,
+    MINE3, MINE4, MINE5, MINE6, MINE7, MINE8, MINE9, MINE10
 };
 
 
-
-
 typedef int fp64;
-# 34 "world.h"
+# 48 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
@@ -999,14 +1000,23 @@ typedef struct tag_enemy {
     fp64 dx, dy;
     int width, height;
     int active;
-    int spriteIdx;
     int ai;
     int type;
 } ENEMY;
 
+typedef struct tag_mine {
+    fp64 int_x, int_y;
+    int x, y;
+    fp64 dx, dy;
+    int width, height;
+    int active;
+    int damage;
+} MINE;
+
 typedef struct tag_level {
 
-    ENEMY enemyList[5];
+    ENEMY enemyList[50];
+    MINE mineList[50];
 } LEVEL;
 
 
@@ -1015,11 +1025,16 @@ LEVEL levels[1];
 
 extern PLAYER player;
 extern BULLET bullets[5];
-extern ENEMY enemies[5];
+extern ENEMY enemies[50];
+extern MINE mines[50];
 
 
 extern int doBattle;
 extern int opponentIdx;
+
+
+extern int drawnEnemies;
+extern int drawnMines;
 
 
 void returnFromBattle(int victory);
@@ -1029,12 +1044,23 @@ void initWorld();
 void initPlayer();
 void initBullets();
 void initEnemies();
+void initMines();
 
 
 void updateWorld();
 void updatePlayer();
 void updateBullet(BULLET* bullet);
 void updateEnemy(ENEMY* enemy);
+void updateMine(MINE* mine);
+
+
+void freeEnemySprites();
+void drawEnemy(ENEMY* enemy);
+void freeMineSprites();
+void drawMine(MINE* mine);
+
+
+void updateHealthBar();
 # 5 "world.c" 2
 # 1 "tempbackground_collision.h" 1
 # 21 "tempbackground_collision.h"
@@ -1055,17 +1081,113 @@ unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
 PLAYER player;
 BULLET bullets[5];
-ENEMY enemies[5];
-const ENEMY _disable_enemy_ = { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH };
+ENEMY enemies[50];
+MINE mines[50];
+
+
 
 LEVEL levels[1] = {
     {
         {
-            { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, ENEMY1, PASSIVE, FISH },
-            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, ENEMY2, PASSIVE, SHARK },
-            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
-            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
-            { 0, 0, 0, 0, 0, 0, 16, 8, 0, ENEMY1, PASSIVE, FISH },
+            { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, PASSIVE, FISH },
+            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, PASSIVE, SHARK },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        },
+        {
+            { .int_x = 100 * 64, .int_y = 80 * 64, .active = 1, .damage = 90 },
+            { .int_x = 100 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 },
+            { .int_x = 120 * 64, .int_y = 80 * 64, .active = 1, .damage = 10 },
+            { .int_x = 120 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         }
     }
 };
@@ -1073,12 +1195,13 @@ LEVEL levels[1] = {
 int level = 0;
 int doBattle = 0;
 int opponentIdx;
+int drawnEnemies = 0;
+int drawnMines = 0;
 
 void returnFromBattle(int victory) {
     if (victory) {
         doBattle = 0;
         enemies[opponentIdx].active = 0;
-        shadowOAM[enemies[opponentIdx].spriteIdx].attr0 = (2 << 8);
     } else {
 
     }
@@ -1091,6 +1214,7 @@ void initWorld() {
     initPlayer();
     initBullets();
     initEnemies();
+    initMines();
 }
 
 void initPlayer() {
@@ -1121,7 +1245,7 @@ void initBullets() {
 }
 
 void initEnemies() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 50; i++) {
         enemies[i].int_x = levels[level].enemyList[i].int_x;
         enemies[i].int_y = levels[level].enemyList[i].int_y;
         enemies[i].x = ((enemies[i].int_x) >> 6) - bg2xOff;
@@ -1131,14 +1255,30 @@ void initEnemies() {
         enemies[i].width = levels[level].enemyList[i].width;
         enemies[i].height = levels[level].enemyList[i].height;
         enemies[i].active = levels[level].enemyList[i].active;
-        enemies[i].spriteIdx = ENEMY1 + i;
         enemies[i].ai = levels[level].enemyList[i].ai;
         enemies[i].type = levels[level].enemyList[i].type;
     }
 }
 
+void initMines() {
+    for (int i = 0; i < 50; i++) {
+        mines[i].int_x = levels[level].mineList[i].int_x;
+        mines[i].int_y = levels[level].mineList[i].int_y;
+        mines[i].x = ((mines[i].int_x) >> 6) - bg2xOff;
+        mines[i].y = ((mines[i].int_y) >> 6) - bg2yOff;
+        mines[i].dx = levels[level].mineList[i].dx;
+        mines[i].dy = levels[level].mineList[i].dy;
+
+
+        mines[i].width = 16;
+        mines[i].height = 16;
+        mines[i].active = levels[level].mineList[i].active;
+        mines[i].damage = levels[level].mineList[i].damage;
+    }
+}
+
 void doCollision() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 50; i++) {
         if (enemies[i].active) {
             if (collision(player.int_x, player.int_y, ((player.width) << 6), ((player.height) << 6),
             enemies[i].int_x, enemies[i].int_y, ((enemies[i].width) << 6), ((enemies[i].height) << 6))) {
@@ -1146,6 +1286,16 @@ void doCollision() {
                 doBattle = 1;
                 opponentIdx = i;
                 return;
+            }
+        }
+    }
+    for (int i = 0; i < 50; i++) {
+        if (mines[i].active) {
+            if (collision(player.int_x, player.int_y, ((player.width) << 6), ((player.height) << 6),
+            mines[i].int_x, mines[i].int_y, ((mines[i].width) << 6), ((mines[i].height) << 6))) {
+
+                mines[i].active = 0;
+                submarineHp -= mines[i].damage;
             }
         }
     }
@@ -1158,12 +1308,22 @@ void updateWorld() {
             updateBullet(&bullets[i]);
         }
     }
-    for (int i = 0; i < 5; i++) {
+    freeEnemySprites();
+    for (int i = 0; i < 50; i++) {
         if (enemies[i].active) {
             updateEnemy(&enemies[i]);
         }
     }
+    freeMineSprites();
+    for (int i = 0; i < 50; i++) {
+        if (mines[i].active) {
+            updateMine(&mines[i]);
+        }
+    }
+
     doCollision();
+
+    updateHealthBar();
 }
 
 
@@ -1296,7 +1456,7 @@ void movePlayer() {
 void drawPlayer() {
     shadowOAM[PLAYER_IDX].attr0 = (player.y & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[PLAYER_IDX].attr1 = (player.x & 0x1FF) | (0 << 14);
-    shadowOAM[PLAYER_IDX].attr2 = ((0)*32 + (0));
+    shadowOAM[PLAYER_IDX].attr2 = ((0)*32 + (0)) | ((2) << 10);
 }
 
 
@@ -1402,7 +1562,7 @@ void updateBullet(BULLET* bullet) {
         shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & 0xFF) | (0 << 8) | (0 << 14);
         shadowOAM[bullet->spriteIdx].attr1 = (bullet->x & 0x1FF) | (0 << 14);
 
-        shadowOAM[bullet->spriteIdx].attr2 = ((16)*32 + (8));
+        shadowOAM[bullet->spriteIdx].attr2 = ((16)*32 + (8)) | ((2) << 10);
     } else {
         shadowOAM[bullet->spriteIdx].attr0 = (2 << 8);
     }
@@ -1422,10 +1582,130 @@ void updateEnemy(ENEMY* enemy) {
         (enemy->y + enemy->height - 1 < 0) ||
         (enemy->y > 160)))
     {
-        shadowOAM[enemy->spriteIdx].attr0 = (enemy->y & 0xFF) | (0 << 8) | (1 << 14);
-        shadowOAM[enemy->spriteIdx].attr1 = (enemy->x & 0x1FF) | (0 << 14);
-        shadowOAM[enemy->spriteIdx].attr2 = ((0)*32 + (16));
+        drawEnemy(enemy);
+    }
+}
+
+
+void updateMine(MINE* mine) {
+    mine->int_x += mine->dx;
+    mine->int_y += mine->dy;
+    mine->x = ((mine->int_x) >> 6) - bg2xOff;
+    mine->y = ((mine->int_y) >> 6) - bg2yOff;
+
+    if (mine->active && !(
+        (mine->x + mine->width - 1 < 0) ||
+        (mine->x > 240) ||
+        (mine->y + mine->height - 1 < 0) ||
+        (mine->y > 160)))
+    {
+        drawMine(mine);
+    }
+}
+
+
+void freeEnemySprites() {
+    for (int i = 0; i < 10; i++) {
+        shadowOAM[ENEMY1 + i].attr0 = (2 << 8);
+    }
+    drawnEnemies = 0;
+}
+
+
+void drawEnemy(ENEMY* enemy) {
+
+    if (drawnEnemies < 10) {
+        shadowOAM[ENEMY1 + drawnEnemies].attr0 = (enemy->y & 0xFF) | (0 << 8) | (1 << 14);
+        shadowOAM[ENEMY1 + drawnEnemies].attr1 = (enemy->x & 0x1FF) | (0 << 14);
+        shadowOAM[ENEMY1 + drawnEnemies].attr2 = ((0)*32 + (16)) | ((2) << 10);
+        drawnEnemies++;
+    }
+}
+
+
+void freeMineSprites() {
+    for (int i = 0; i < 10; i++) {
+        shadowOAM[MINE1 + i].attr0 = (2 << 8);
+    }
+    drawnMines = 0;
+}
+
+
+void drawMine(MINE* mine) {
+
+    if (drawnMines < 10) {
+        shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & 0xFF) | (0 << 8) | (0 << 14);
+        shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & 0x1FF) | (1 << 14);
+        shadowOAM[MINE1 + drawnMines].attr2 = ((8)*32 + (24)) | ((2) << 10);
+        drawnMines++;
+    }
+}
+
+
+int tilesRed(int tile1) {
+    if (submarineHp > (((tile1) * submarineMaxHp) / 26)) {
+        if (submarineHp > (((tile1+1) * submarineMaxHp) / 26)) {
+            if (submarineHp > (((tile1+2) * submarineMaxHp) / 26)) {
+                if (submarineHp > (((tile1+3) * submarineMaxHp) / 26)) {
+                    return 4;
+                } else {
+                    return 3;
+                }
+            } else {
+                return 2;
+            }
+        } else {
+            return 1;
+        }
     } else {
-        shadowOAM[enemy->spriteIdx].attr0 = (2 << 8);
+        return 0;
+    }
+}
+
+
+void updateHealthBar() {
+
+
+
+    shadowOAM[HEALTHBAR1].attr0 = (2 & 0xFF) | (0 << 8) | (0 << 14);
+    shadowOAM[HEALTHBAR1].attr1 = (16 & 0x1FF) | (0 << 14);
+    if (submarineHp > 0) {
+        shadowOAM[HEALTHBAR1].attr2 = ((24)*32 + (0));
+    } else {
+        shadowOAM[HEALTHBAR1].attr2 = ((25)*32 + (0));
+    }
+
+
+    shadowOAM[HEALTHBAR2].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR2].attr1 = ((24 + 32 * 0) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR2].attr2 = ((24)*32 + (5 - tilesRed(1)));
+
+    shadowOAM[HEALTHBAR3].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR3].attr1 = ((24 + 32 * 1) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR3].attr2 = ((24)*32 + (5 - tilesRed(5)));
+
+    shadowOAM[HEALTHBAR4].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR4].attr1 = ((24 + 32 * 2) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR4].attr2 = ((24)*32 + (5 - tilesRed(9)));
+
+    shadowOAM[HEALTHBAR5].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR5].attr1 = ((24 + 32 * 3) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR5].attr2 = ((24)*32 + (5 - tilesRed(13)));
+
+    shadowOAM[HEALTHBAR6].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR6].attr1 = ((24 + 32 * 4) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR6].attr2 = ((24)*32 + (5 - tilesRed(17)));
+
+    shadowOAM[HEALTHBAR7].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
+    shadowOAM[HEALTHBAR7].attr1 = ((24 + 32 * 5) & 0x1FF) | (1 << 14);
+    shadowOAM[HEALTHBAR7].attr2 = ((24)*32 + (5 - tilesRed(21)));
+
+
+    shadowOAM[HEALTHBAR8].attr0 = (2 & 0xFF) | (0 << 8) | (0 << 14);
+    shadowOAM[HEALTHBAR8].attr1 = ((24 + 32 * 6) & 0x1FF) | (0 << 14) | (1 << 12);
+    if (submarineHp > ((25 * submarineMaxHp) / 26)) {
+        shadowOAM[HEALTHBAR8].attr2 = ((24)*32 + (0));
+    } else {
+        shadowOAM[HEALTHBAR8].attr2 = ((25)*32 + (0));
     }
 }

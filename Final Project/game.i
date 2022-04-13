@@ -937,6 +937,7 @@ void mgba_close(void);
 
 
 
+extern int submarineMaxHp;
 extern int submarineHp;
 
 
@@ -948,7 +949,7 @@ typedef struct tag_combatant {
     int hp;
     int damage;
 } COMBATANT;
-# 29 "game.h"
+# 30 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -957,13 +958,15 @@ void initGame();
 void initParty();
 # 5 "game.c" 2
 
+int submarineMaxHp;
 int submarineHp;
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
 
 void initGame() {
-    submarineHp = 100;
+    submarineMaxHp = 100;
+    submarineHp = submarineMaxHp;
     initParty();
 }
 

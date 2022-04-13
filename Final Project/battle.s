@@ -1157,15 +1157,15 @@ text_tile_lkup:
 	.data
 	.align	2
 	.set	.LANCHOR1,. + 0
-	.type	turnwait.5254, %object
-	.size	turnwait.5254, 4
-turnwait.5254:
+	.type	turnwait.5255, %object
+	.size	turnwait.5255, 4
+turnwait.5255:
 	.word	120
 	.bss
 	.align	2
 	.set	.LANCHOR2,. + 0
-	.type	buf.5253, %object
-	.size	buf.5253, 128
-buf.5253:
+	.type	buf.5254, %object
+	.size	buf.5254, 128
+buf.5254:
 	.space	128
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

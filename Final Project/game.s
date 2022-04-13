@@ -21,15 +21,17 @@ initGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	str	lr, [sp, #-4]!
-	mov	lr, #100
+	mov	r3, #100
 	mov	r1, #1
 	mov	r2, #6
 	mov	ip, #10
 	mov	r0, #8
-	ldr	r3, .L4
-	str	lr, [r3]
-	ldr	r3, .L4+4
+	str	lr, [sp, #-4]!
+	ldr	lr, .L4
+	str	r3, [lr]
+	ldr	lr, .L4+4
+	str	r3, [lr]
+	ldr	r3, .L4+8
 	ldr	lr, [sp], #4
 	str	r1, [r3]
 	str	r1, [r3, #12]
@@ -41,6 +43,7 @@ initGame:
 .L5:
 	.align	2
 .L4:
+	.word	submarineMaxHp
 	.word	submarineHp
 	.word	battleAllies
 	.size	initGame, .-initGame
@@ -75,4 +78,5 @@ initParty:
 	.comm	battleOpponents,48,4
 	.comm	battleAllies,48,4
 	.comm	submarineHp,4,4
+	.comm	submarineMaxHp,4,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"
