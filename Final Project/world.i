@@ -941,6 +941,27 @@ void mgba_close(void);
 
 
 
+# 1 "moves.h" 1
+
+
+
+
+enum { OPPONENT, ALLY };
+
+typedef struct tag_move {
+    char text[10];
+    char flavorText[61];
+    int damage;
+    int hitAll;
+    int targeting;
+    int healing;
+} MOVE;
+
+extern MOVE MOVE_SLASH;
+extern MOVE MOVE_BLAST;
+extern MOVE MOVE_HEAL;
+# 5 "game.h" 2
+
 extern int submarineMaxHp;
 extern int submarineHp;
 
@@ -948,18 +969,26 @@ extern int submarineHp;
 enum { FISH, SHARK, ANGLER, JIM };
 
 
+
+
 typedef struct tag_combatant {
+    char name[10];
     int exists;
+    int maxHp;
     int hp;
-    int damage;
+    int numMoves;
+    MOVE moves[6];
 } COMBATANT;
-# 30 "game.h"
+# 37 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
 
 void initGame();
 void initParty();
+
+
+int tilesRed(int tile1, int hp, int maxHp, int segments);
 # 5 "world.h" 2
 
 
@@ -1062,20 +1091,13 @@ void drawMine(MINE* mine);
 
 void updateHealthBar();
 # 5 "world.c" 2
-# 1 "tempbackground_collision.h" 1
-# 21 "tempbackground_collision.h"
-extern const unsigned short tempbackground_collisionBitmap[524288];
-
-
-extern const unsigned short tempbackground_collisionPal[256];
-# 6 "world.c" 2
 # 1 "world1collision.h" 1
 # 21 "world1collision.h"
 extern const unsigned short world1collisionBitmap[524288];
 
 
 extern const unsigned short world1collisionPal[256];
-# 7 "world.c" 2
+# 6 "world.c" 2
 
 unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
@@ -1199,12 +1221,12 @@ int drawnEnemies = 0;
 int drawnMines = 0;
 
 void returnFromBattle(int victory) {
-    if (victory) {
+
         doBattle = 0;
         enemies[opponentIdx].active = 0;
-    } else {
 
-    }
+
+
 }
 
 void initWorld() {
@@ -1640,29 +1662,7 @@ void drawMine(MINE* mine) {
         drawnMines++;
     }
 }
-
-
-int tilesRed(int tile1) {
-    if (submarineHp > (((tile1) * submarineMaxHp) / 26)) {
-        if (submarineHp > (((tile1+1) * submarineMaxHp) / 26)) {
-            if (submarineHp > (((tile1+2) * submarineMaxHp) / 26)) {
-                if (submarineHp > (((tile1+3) * submarineMaxHp) / 26)) {
-                    return 4;
-                } else {
-                    return 3;
-                }
-            } else {
-                return 2;
-            }
-        } else {
-            return 1;
-        }
-    } else {
-        return 0;
-    }
-}
-
-
+# 593 "world.c"
 void updateHealthBar() {
 
 
@@ -1678,27 +1678,27 @@ void updateHealthBar() {
 
     shadowOAM[HEALTHBAR2].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR2].attr1 = ((24 + 32 * 0) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR2].attr2 = ((24)*32 + (5 - tilesRed(1)));
+    shadowOAM[HEALTHBAR2].attr2 = ((24)*32 + (5 - tilesRed(1, submarineHp, submarineMaxHp, 26)));
 
     shadowOAM[HEALTHBAR3].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR3].attr1 = ((24 + 32 * 1) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR3].attr2 = ((24)*32 + (5 - tilesRed(5)));
+    shadowOAM[HEALTHBAR3].attr2 = ((24)*32 + (5 - tilesRed(5, submarineHp, submarineMaxHp, 26)));
 
     shadowOAM[HEALTHBAR4].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR4].attr1 = ((24 + 32 * 2) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR4].attr2 = ((24)*32 + (5 - tilesRed(9)));
+    shadowOAM[HEALTHBAR4].attr2 = ((24)*32 + (5 - tilesRed(9, submarineHp, submarineMaxHp, 26)));
 
     shadowOAM[HEALTHBAR5].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR5].attr1 = ((24 + 32 * 3) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR5].attr2 = ((24)*32 + (5 - tilesRed(13)));
+    shadowOAM[HEALTHBAR5].attr2 = ((24)*32 + (5 - tilesRed(13, submarineHp, submarineMaxHp, 26)));
 
     shadowOAM[HEALTHBAR6].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR6].attr1 = ((24 + 32 * 4) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR6].attr2 = ((24)*32 + (5 - tilesRed(17)));
+    shadowOAM[HEALTHBAR6].attr2 = ((24)*32 + (5 - tilesRed(17, submarineHp, submarineMaxHp, 26)));
 
     shadowOAM[HEALTHBAR7].attr0 = (2 & 0xFF) | (0 << 8) | (1 << 14);
     shadowOAM[HEALTHBAR7].attr1 = ((24 + 32 * 5) & 0x1FF) | (1 << 14);
-    shadowOAM[HEALTHBAR7].attr2 = ((24)*32 + (5 - tilesRed(21)));
+    shadowOAM[HEALTHBAR7].attr2 = ((24)*32 + (5 - tilesRed(21, submarineHp, submarineMaxHp, 26)));
 
 
     shadowOAM[HEALTHBAR8].attr0 = (2 & 0xFF) | (0 << 8) | (0 << 14);

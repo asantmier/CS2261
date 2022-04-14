@@ -13592,12 +13592,18 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	48
 	.short	0
+	.short	768
 	.short	0
+	.short	12288
 	.short	0
 	.short	0
+	.short	3
 	.short	0
+	.short	48
 	.short	0
+	.short	768
 	.short	0
 	.short	0
 	.short	0
@@ -14095,20 +14101,14 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	48
 	.short	0
+	.short	3
+	.short	12288
 	.short	0
+	.short	768
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	48
 	.short	0
 	.short	0
 	.short	0

@@ -2,6 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
+# 21 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -810,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 2 "main.c" 2
+# 22 "main.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1221,7 +1222,7 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 3 "main.c" 2
+# 23 "main.c" 2
 # 1 "mode0.h" 1
 
 
@@ -1335,7 +1336,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
-# 4 "main.c" 2
+# 24 "main.c" 2
 # 1 "print.h" 1
 # 36 "print.h"
 void mgba_printf_level(int level, const char* ptr, ...);
@@ -1343,7 +1344,7 @@ void mgba_printf(const char* string, ...);
 void mgba_break(void);
 uint8_t mgba_open(void);
 void mgba_close(void);
-# 5 "main.c" 2
+# 25 "main.c" 2
 # 1 "world.h" 1
 
 
@@ -1352,6 +1353,27 @@ void mgba_close(void);
 
 
 
+# 1 "moves.h" 1
+
+
+
+
+enum { OPPONENT, ALLY };
+
+typedef struct tag_move {
+    char text[10];
+    char flavorText[61];
+    int damage;
+    int hitAll;
+    int targeting;
+    int healing;
+} MOVE;
+
+extern MOVE MOVE_SLASH;
+extern MOVE MOVE_BLAST;
+extern MOVE MOVE_HEAL;
+# 5 "game.h" 2
+
 extern int submarineMaxHp;
 extern int submarineHp;
 
@@ -1359,18 +1381,26 @@ extern int submarineHp;
 enum { FISH, SHARK, ANGLER, JIM };
 
 
+
+
 typedef struct tag_combatant {
+    char name[10];
     int exists;
+    int maxHp;
     int hp;
-    int damage;
+    int numMoves;
+    MOVE moves[6];
 } COMBATANT;
-# 30 "game.h"
+# 37 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
 
 void initGame();
 void initParty();
+
+
+int tilesRed(int tile1, int hp, int maxHp, int segments);
 # 5 "world.h" 2
 
 
@@ -1472,23 +1502,36 @@ void drawMine(MINE* mine);
 
 
 void updateHealthBar();
-# 6 "main.c" 2
+# 26 "main.c" 2
 # 1 "battle.h" 1
 # 83 "battle.h"
 extern const int text_tile_lkup[];
 
 
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
-# 99 "battle.h"
+enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
+ HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4,
+ TURNICON1, TURNICON2, TURNICON3, TURNICON4, TEXT_IDX };
+# 104 "battle.h"
 extern int lettersActive;
 void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
+void setTopText(char* str);
+void setBottomText(char* str);
+char tsel(int cond);
 
 
 enum { LOST = -1, ONGOING = 0, WON = 1 };
-
-
 extern int battleStatus;
+
+
+enum { PLAYERTURN, ENEMYTURN };
+extern int turn;
+
+
+enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU };
+
+
+enum { PLAYERTEAM, ENEMYTEAM };
 
 
 void initBattle(int opponentType);
@@ -1497,7 +1540,20 @@ void resetOpponents();
 
 void updateBattle();
 void drawCombatants();
-# 7 "main.c" 2
+void checkBattleStatus();
+
+
+void goToFrontMenu();
+void goToAttackMenu();
+void goToTargetMenu();
+void goToInspectMenu();
+void frontMenu();
+void attackMenu();
+void targetMenu();
+void inspectMenu();
+void executeMove(MOVE* m, COMBATANT* t);
+void finishTurn();
+# 27 "main.c" 2
 
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
@@ -1505,17 +1561,7 @@ extern const unsigned short tempspritesheetTiles[16384];
 
 
 extern const unsigned short tempspritesheetPal[256];
-# 9 "main.c" 2
-# 1 "tempbackground.h" 1
-# 22 "tempbackground.h"
-extern const unsigned short tempbackgroundTiles[2912];
-
-
-extern const unsigned short tempbackgroundMap[8192];
-
-
-extern const unsigned short tempbackgroundPal[256];
-# 10 "main.c" 2
+# 29 "main.c" 2
 # 1 "tempsplash.h" 1
 # 22 "tempsplash.h"
 extern const unsigned short tempsplashTiles[1664];
@@ -1525,7 +1571,7 @@ extern const unsigned short tempsplashMap[1024];
 
 
 extern const unsigned short tempsplashPal[256];
-# 11 "main.c" 2
+# 30 "main.c" 2
 # 1 "tempinstructions.h" 1
 # 22 "tempinstructions.h"
 extern const unsigned short tempinstructionsTiles[704];
@@ -1535,7 +1581,7 @@ extern const unsigned short tempinstructionsMap[1024];
 
 
 extern const unsigned short tempinstructionsPal[256];
-# 12 "main.c" 2
+# 31 "main.c" 2
 # 1 "temppause.h" 1
 # 22 "temppause.h"
 extern const unsigned short temppauseTiles[1504];
@@ -1545,7 +1591,7 @@ extern const unsigned short temppauseMap[1024];
 
 
 extern const unsigned short temppausePal[256];
-# 13 "main.c" 2
+# 32 "main.c" 2
 # 1 "tempwin.h" 1
 # 22 "tempwin.h"
 extern const unsigned short tempwinTiles[480];
@@ -1555,7 +1601,7 @@ extern const unsigned short tempwinMap[1024];
 
 
 extern const unsigned short tempwinPal[256];
-# 14 "main.c" 2
+# 33 "main.c" 2
 # 1 "templose.h" 1
 # 22 "templose.h"
 extern const unsigned short temploseTiles[704];
@@ -1565,7 +1611,7 @@ extern const unsigned short temploseMap[1024];
 
 
 extern const unsigned short templosePal[256];
-# 15 "main.c" 2
+# 34 "main.c" 2
 # 1 "tempbattle.h" 1
 # 22 "tempbattle.h"
 extern const unsigned short tempbattleTiles[3904];
@@ -1575,7 +1621,7 @@ extern const unsigned short tempbattleMap[1024];
 
 
 extern const unsigned short tempbattlePal[256];
-# 16 "main.c" 2
+# 35 "main.c" 2
 # 1 "world1.h" 1
 # 22 "world1.h"
 extern const unsigned short world1Tiles[1600];
@@ -1585,7 +1631,7 @@ extern const unsigned short world1Map[8192];
 
 
 extern const unsigned short world1Pal[256];
-# 17 "main.c" 2
+# 36 "main.c" 2
 # 1 "world1parallax.h" 1
 # 22 "world1parallax.h"
 extern const unsigned short world1parallaxTiles[256];
@@ -1595,7 +1641,7 @@ extern const unsigned short world1parallaxMap[2048];
 
 
 extern const unsigned short world1parallaxPal[256];
-# 18 "main.c" 2
+# 37 "main.c" 2
 
 
 void initialize();
@@ -1822,8 +1868,16 @@ void battle() {
     updateBattle();
 
     if (battleStatus == LOST) {
-        goToLose();
+        submarineHp -= 10;
+        hideSprites();
+        DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);
+        returnFromBattle(0);
+        goToGame();
+
     } else if (battleStatus == WON) {
+        for (int i = 0; i < 4; i++) {
+            battleAllies[i].hp = battleAllies[i].maxHp;
+        }
 
         hideSprites();
         DMANow(3, &shadowOAM, ((OBJ_ATTR *)(0x7000000)), 128 * 4);

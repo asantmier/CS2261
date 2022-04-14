@@ -3,6 +3,7 @@
 // #include "mode0.h"
 #include "print.h"
 #include "battle.h"
+#include <string.h>
 
 // Take the character and subtract CHAR_START. -1 is invalid
 const int text_tile_lkup[] = {TILE_EXCLAMATION,TILE_QUOTE,TILE_POUND,TILE_CURRENCY,
@@ -14,45 +15,552 @@ TILE_E,TILE_F,TILE_G,TILE_H,TILE_I,TILE_J,TILE_K,TILE_L,TILE_M,TILE_N,TILE_O,TIL
 TILE_Q,TILE_R,TILE_S,TILE_T,TILE_U,TILE_V,TILE_W,TILE_X,TILE_Y,TILE_Z,TILE_LSQUARE,
 TILE_BSLASH,TILE_RSQUARE,TILE_CARROT,TILE_UNDERSCORE,TILE_GRAVE};
 
-int lettersActive;
+int lettersActive; // Used internally by text functions
+
 int battleStatus;
-enum { ACTIONS, ATTACKS, TARGETSELECT };
-int menu;
-enum { PLAYERTURN, ENEMYTURN };
 int turn;
-int menuOption;
-enum { PASS = 1, PUNCH, KICK };
-int action;
-int target;
-int go;
+int targetTeam; // Team the targeting menu is targeting
+COMBATANT* fighter; // Combatant whose turn it is
+int fighterIdx;
+MOVE* move; // The move to be executed
+int turnPoints;
+// Menu tracking
+int menu;
+int selOpt;
+int numOpt;
+int waitTimer;
+// Player input variables
+int enter;
+int leave;
+// Character buffers for displaying text
+char topBuf[63];
+char botBuf[63];
 
 // Sets up the battle state
 void initBattle(int opponentType) {
     battleStatus = ONGOING;
     lettersActive = 0;
+    goToFrontMenu();
+    waitTimer = 0;
+    enter = 0;
+    leave = 0;
+    topBuf[0] = '\0';
+    botBuf[0] = '\0';
+
     turn = PLAYERTURN;
-    menu = ACTIONS;
-    menuOption = 0;
-    action = 0;
-    target = 0;
-    go = 0;
+    fighter = &battleAllies[0];
+    fighterIdx = 0;
+    move = NULL;
+    turnPoints = 0;
+    for (int i = 0; i < 4; i++) {
+        if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+            turnPoints++;
+        }
+    }
+
     resetOpponents();
     // Figure out who started the fight and put them on the enemy team
     switch (opponentType)
     {
     case SHARK:
+        strncpy(battleOpponents[0].name, "SHARK1", NAME_LEN);
         battleOpponents[0].exists = 1;
-        battleOpponents[0].hp = 14;
-        battleOpponents[0].damage = 6;
+        battleOpponents[0].maxHp = 6;
+        battleOpponents[0].hp = battleOpponents[0].maxHp;
+        battleOpponents[0].moves[0] = MOVE_SLASH;
+        battleOpponents[0].numMoves = 1;
+
+        strncpy(battleOpponents[1].name, "SHARK2", NAME_LEN);
+        battleOpponents[1].exists = 1;
+        battleOpponents[1].maxHp = 6;
+        battleOpponents[1].hp = battleOpponents[1].maxHp;
+        battleOpponents[1].moves[0] = MOVE_SLASH;
+        battleOpponents[1].numMoves = 1;
+
+        strncpy(battleOpponents[2].name, "SHARK3", NAME_LEN);
+        battleOpponents[2].exists = 1;
+        battleOpponents[2].maxHp = 6;
+        battleOpponents[2].hp = battleOpponents[2].maxHp;
+        battleOpponents[2].moves[0] = MOVE_SLASH;
+        battleOpponents[2].numMoves = 1;
+        
+        battleOpponents[3].exists = 0;
         break;
     // case FISH: // by default all enemies are a fish
     default:
+        strncpy(battleOpponents[0].name, "FISH1", NAME_LEN);
         battleOpponents[0].exists = 1;
-        battleOpponents[0].hp = 8;
-        battleOpponents[0].damage = 5;
+        battleOpponents[0].maxHp = 6;
+        battleOpponents[0].hp = battleOpponents[0].maxHp;
+        battleOpponents[0].moves[0] = MOVE_SLASH;
+        battleOpponents[0].numMoves = 1;
+
+        strncpy(battleOpponents[1].name, "FISH2", NAME_LEN);
+        battleOpponents[1].exists = 1;
+        battleOpponents[1].maxHp = 6;
+        battleOpponents[1].hp = battleOpponents[1].maxHp;
+        battleOpponents[1].moves[0] = MOVE_SLASH;
+        battleOpponents[1].numMoves = 1;
+
+        battleOpponents[2].exists = 0;
+
+        battleOpponents[3].exists = 0;
         break;
     }
     // Then draw the teams
+    drawCombatants();
+}
+
+void goToFrontMenu() {
+    menu = FRONTMENU;
+    numOpt = 3;
+    selOpt = 0;
+}
+
+void goToAttackMenu() {
+    menu = ATTACKMENU;
+    numOpt = fighter->numMoves;
+    selOpt = 0;
+}
+
+void goToTargetMenu() {
+    menu = TARGETMENU;
+    numOpt = 4;
+    if (targetTeam == ENEMYTEAM) {
+        for (int i = 0; i < 4; i++) {
+            if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                selOpt = i;
+                break;
+            }
+        }
+    } else {
+        for (int i = 0; i < 4; i++) {
+            if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                selOpt = i;
+                break;
+            }
+        }
+    }
+    
+}
+
+void goToInspectMenu() {
+    menu = INSPECTMENU;
+    numOpt = 4;
+    for (int i = 0; i < 4; i++) {
+        if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+            selOpt = i;
+            break;
+        }
+    }
+    targetTeam = ENEMYTEAM;
+}
+
+void inspectMenu() {
+    strncpy(topBuf, "CHOOSE A COMBATANT\nTO INSPECT.", 61);
+    if (targetTeam == ENEMYTEAM) {
+        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+        shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
+        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+        sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
+    } else {
+        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+        shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+        sprintf(botBuf, "%s:%d/%d", battleAllies[selOpt].name, battleAllies[selOpt].hp, battleAllies[selOpt].maxHp);
+    }
+
+    if (leave) {
+        shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
+        goToFrontMenu();
+    }
+}
+
+void frontMenu() {
+    strncpy(topBuf, "WHAT WILL YOU DO?", 61);
+    sprintf(botBuf, "%cATTACK\n%cPASS\n%cINSPECT", tsel(selOpt == 0), tsel(selOpt == 1), tsel(selOpt == 2));
+    if (enter) {
+        switch (selOpt)
+        {
+        case 0:
+            goToAttackMenu();
+            break;
+        case 1:
+            sprintf(topBuf, "%s PASSED", fighter->name);
+            botBuf[0] = '\0';
+            finishTurn();
+            break;
+        case 2:
+            goToInspectMenu();
+            break;
+        }
+    }
+}
+
+void attackMenu() {
+    strncpy(topBuf, "CHOOSE AN ATTACK.", 61);
+    sprintf(botBuf, "%c%-9s%c%-9s%c%-9s%c%-9s%c%-9s%c%-9s", 
+            tsel(selOpt == 0), fighter->moves[0].text, tsel(selOpt == 3), fighter->moves[3].text,
+            tsel(selOpt == 1), fighter->moves[1].text, tsel(selOpt == 4), fighter->moves[4].text,
+            tsel(selOpt == 2), fighter->moves[2].text, tsel(selOpt == 5), fighter->moves[5].text);
+    if (leave) {
+        goToFrontMenu();
+    } else if (enter) {
+        move = &fighter->moves[selOpt];
+        targetTeam = move->targeting == OPPONENT ? ENEMYTEAM : PLAYERTEAM;
+        goToTargetMenu();
+    }
+}
+
+void targetMenu() {
+    strncpy(topBuf, "CHOOSE A TARGET.", 61);
+    if (targetTeam == ENEMYTEAM) {
+        if (move->hitAll) {
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 1].attr1 = (192 & COLMASK) | ATTR1_TINY;
+            shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 2].attr1 = (192 & COLMASK) | ATTR1_TINY;
+            shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 3].attr1 = (192 & COLMASK) | ATTR1_TINY;
+            shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID(0, 26);
+            sprintf(botBuf, "%s WILL AFFECT\nALL ENEMIES", move->text);
+        } else {
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
+        }
+    } else {
+        if (move->hitAll) {
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 1].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+            shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 2].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+            shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW + 3].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+            shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID(0, 26);
+            sprintf(botBuf, "%s WILL AFFECT\nALL ALLIES", move->text);
+        } else {
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            sprintf(botBuf, "%s:%d/%d", battleAllies[selOpt].name, battleAllies[selOpt].hp, battleAllies[selOpt].maxHp);
+        }
+    }
+
+    if (leave) {
+        shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 1].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 2].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 3].attr0 = ATTR0_HIDE;
+        goToAttackMenu();
+    } else if (enter) {
+        shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 1].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 2].attr0 = ATTR0_HIDE;
+        shadowOAM[TARGETING_ARROW + 3].attr0 = ATTR0_HIDE;
+        if (targetTeam == ENEMYTEAM) {
+            executeMove(move, &battleOpponents[selOpt]);
+        } else {
+            executeMove(move, &battleAllies[selOpt]);
+        }
+    }
+}
+
+void executeMove(MOVE* m, COMBATANT* t) {
+    mgba_printf("Executing move! Enemy turn: %d, Fighter %s, Target: %s", turn, fighter->name, t->name);
+    if (m->hitAll) {
+        if (targetTeam == ENEMYTEAM) {
+            for (int i = 0; i < 4; i++) {
+                if (battleOpponents[i].exists) {
+                    battleOpponents[i].hp -= m->damage;
+                    battleOpponents[i].hp += m->healing;
+                    if (battleOpponents[i].hp > battleOpponents[i].maxHp) {
+                        battleOpponents[i].hp = battleOpponents[i].maxHp;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                if (battleAllies[i].exists) {
+                    battleAllies[i].hp -= m->damage;
+                    battleAllies[i].hp += m->healing;
+                    if (battleAllies[i].hp > battleAllies[i].maxHp) {
+                        battleAllies[i].hp = battleAllies[i].maxHp;
+                    }
+                }
+            }
+        }
+    } else {
+        t->hp -= m->damage;
+        t->hp += m->healing;
+        if (t->hp > t->maxHp) {
+            t->hp = t->maxHp;
+        }
+    }
+    
+    sprintf(topBuf, m->flavorText, fighter->name, t->name);
+    botBuf[0] = '\0';
+    
+    finishTurn();
+}
+
+void finishTurn() {
+    goToFrontMenu();
+    mgba_printf("Ending turn...");
+    turnPoints--;
+
+    if (turnPoints == 0) {  // Swap turns
+        if (turn == PLAYERTURN) {
+            turn = ENEMYTURN;
+            for (int i = 0; i < 4; i++) {
+                if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                    turnPoints++;
+                }
+            }
+            for (int i = 0; i < 4; i++) {
+                if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                    fighterIdx = i;
+                    fighter = &battleOpponents[i];
+                    break;
+                }
+            }
+        } else {
+            turn = PLAYERTURN;
+            for (int i = 0; i < 4; i++) {
+                if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                    turnPoints++;
+                }
+            }
+            for (int i = 0; i < 4; i++) {
+                if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                    fighterIdx = i;
+                    fighter = &battleAllies[i];
+                    break;
+                }
+            }
+        }
+    } else {  // Move to next fighter in list
+        if (turn == PLAYERTURN) {
+            for (int i = 1; i < 5; i++) {
+                if (battleAllies[(fighterIdx + i) % 4].exists && battleAllies[(fighterIdx + i) % 4].hp > 0) {
+                    fighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleAllies[fighterIdx];
+                    break;
+                }
+            }
+        } else {
+            for (int i = 1; i < 5; i++) {
+                if (battleOpponents[(fighterIdx + i) % 4].exists && battleOpponents[(fighterIdx + i) % 4].hp > 0) {
+                    fighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleOpponents[fighterIdx];
+                    break;
+                }
+            }
+        }
+    }
+    
+    waitTimer = 100;
+}
+
+void checkBattleStatus() {
+    int winTest = 1;
+    for (int i = 0; i < 4; i++) {
+        if (battleOpponents[i].hp > 0) {
+            winTest = 0;
+            break;
+        }
+    }
+    if (winTest) {
+        battleStatus = WON;
+    }
+    int loseTest = 1;
+    for (int i = 0; i < 4; i++) {
+        if (battleAllies[i].hp > 0) {
+            loseTest = 0;
+            break;
+        }
+    }
+    if (loseTest) {
+        battleStatus = LOST;
+    }
+}
+
+void updateBattle() {
+    if (waitTimer) {
+        mgba_printf("%d", waitTimer);
+        waitTimer--;
+        return;
+    }
+    checkBattleStatus();
+    if (battleStatus != ONGOING) { return; }
+    enter = 0;
+    leave = 0;
+    if (turn == PLAYERTURN) {
+        // Get input. Some menus have different logic for this
+        if (menu == TARGETMENU || menu == INSPECTMENU) {
+            if (BUTTON_PRESSED(BUTTON_DOWN)) {
+                if (targetTeam == ENEMYTEAM) {
+                    for (int i = selOpt + 1; i < 4; i++) {
+                        if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = selOpt + 1; i < 4; i++) {
+                        if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                }
+            } else if (BUTTON_PRESSED(BUTTON_UP)) {
+                if (targetTeam == ENEMYTEAM) {
+                    for (int i = selOpt - 1; i >= 0; i--) {
+                        if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = selOpt - 1; i >= 0; i--) {
+                        if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (menu == INSPECTMENU) {
+                if (BUTTON_PRESSED(BUTTON_RIGHT) && targetTeam == PLAYERTEAM) {
+                    targetTeam = ENEMYTEAM;
+                    for (int i = 0; i < 4; i++) {
+                        if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                } else if (BUTTON_PRESSED(BUTTON_LEFT) && targetTeam == ENEMYTEAM) {
+                    targetTeam = PLAYERTEAM;
+                    for (int i = 0; i < 4; i++) {
+                        if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                            selOpt = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (BUTTON_PRESSED(BUTTON_DOWN)) {
+                if (selOpt < numOpt - 1) {
+                    if (selOpt != 2 && selOpt != 5) {
+                        selOpt += 1;
+                    }
+                }
+            } else if (BUTTON_PRESSED(BUTTON_UP)) {
+                if (selOpt != 0 && selOpt != 3) {
+                    selOpt -= 1;
+                }
+            }
+            if (BUTTON_PRESSED(BUTTON_RIGHT)) {
+                if (selOpt < numOpt - 3) {
+                    if (selOpt < 3) {
+                        selOpt += 3;
+                    }
+                } 
+            } else if (BUTTON_PRESSED(BUTTON_LEFT)) {
+                if (selOpt > 2) {
+                    selOpt -= 3;
+                }
+            }
+        }
+
+        if (BUTTON_PRESSED(BUTTON_A)) {
+            enter = 1;
+        }
+        if (BUTTON_PRESSED(BUTTON_B)) {
+            leave = 1;
+        }
+
+        // Do stuff
+        switch (menu)
+        {
+        case FRONTMENU:
+            frontMenu();
+            break;
+        case ATTACKMENU:
+            attackMenu();
+            break;
+        case TARGETMENU:
+            targetMenu();
+            break;
+        case INSPECTMENU:
+            inspectMenu();
+            break;
+        }
+    } else {
+        int skip = rand() % 7;
+        if (skip == 6) {
+            sprintf(topBuf, "%s PASSED", fighter->name);
+            finishTurn();
+        } else {
+            int mi = rand() % fighter->numMoves;
+            if (fighter->moves[mi].targeting == OPPONENT) {
+                targetTeam = PLAYERTEAM;
+                int numopps = 0;
+                for (int i = 0; i < 4; i++) {
+                    if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                        numopps++;
+                    }
+                }
+                int ta = rand() % numopps;
+                for (int i = 0; i < 4; i++) {
+                    if (battleAllies[i].exists && battleAllies[i].hp > 0) {
+                        if (ta == 0) {
+                            executeMove(&fighter->moves[mi], &battleAllies[i]);
+                            break;
+                        } else {
+                            ta--;
+                        }
+                    }
+                }
+            } else {
+                targetTeam = ENEMYTEAM;
+                int numfriends = 0;
+                for (int i = 0; i < 4; i++) {
+                    if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                        numfriends++;
+                    }
+                }
+                int ta = rand() % numfriends;
+                for (int i = 0; i < 4; i++) {
+                    if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
+                        if (ta == 0) {
+                            executeMove(&fighter->moves[mi], &battleOpponents[i]);
+                            break;
+                        } else {
+                            ta--;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    eraseAllText();
+    setTopText(topBuf);
+    setBottomText(botBuf);
     drawCombatants();
 }
 
@@ -69,315 +577,99 @@ char tsel(int cond) {
     return cond ? '*' : ' ';
 }
 
-// Updates the battle state every frame
-void updateBattle() {
-    // Be warned this is super in progress and more of a proof of concept
-    static char buf[128]; // buffer for sprintf
-    static int turnwait = 120; // timer between turns
-    // First off, if the active team is ready to take its action, do it
-    if (go && turnwait == 120) {
-        // This is the first frame of the action, set up the visuals and do the things
-        if (turn == PLAYERTURN) {
-            int oldhp = 0;
-            switch (action)
-            {
-            case PASS:
-                eraseAllText();
-                drawText("PLAYER PASSES", TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            case PUNCH:
-                oldhp = battleOpponents[target].hp;
-                battleOpponents[target].hp -= battleAllies[0].damage;
-                eraseAllText();
-                sprintf(buf, "YOU ATTACK ENEMY %d", target);
-                drawText(buf, TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                sprintf(buf, "HP %d->%d", oldhp, battleOpponents[target].hp);
-                drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            case KICK:
-                oldhp = battleOpponents[target].hp;
-                battleOpponents[target].hp -= battleAllies[0].damage;
-                eraseAllText();
-                sprintf(buf, "YOU ATTACK ENEMY %d", target);
-                drawText(buf, TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                sprintf(buf, "HP %d->%d", oldhp, battleOpponents[target].hp);
-                drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            }
-        } else { // ENEMYTURN
-            int oldhp = 0;
-            switch (action)
-            {
-            case PASS:
-                eraseAllText();
-                drawText("ENEMY PASSES", TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            case PUNCH:
-                oldhp = battleAllies[target].hp;
-                battleAllies[target].hp -= battleOpponents[0].damage;
-                eraseAllText();
-                sprintf(buf, "ENEMY ATTACKS ALLY %d", target);
-                drawText(buf, TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                sprintf(buf, "HP %d->%d", oldhp, battleAllies[target].hp);
-                drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            case KICK:
-                oldhp = battleAllies[target].hp;
-                battleAllies[target].hp -= battleOpponents[0].damage;
-                eraseAllText();
-                sprintf(buf, "ENEMY ATTACKS ALLY %d", target);
-                drawText(buf, TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                sprintf(buf, "HP %d->%d", oldhp, battleAllies[target].hp);
-                drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-                break;
-            }
-        }
-        turnwait--;
-        return;
-    } else if (go && turnwait > 0) {
-        // Now we just wait a bit so the player can see what happened
-        turnwait--;
-        return;
-    } else if (go) {
-        // Now we reset everything for the next turn to start
-        turnwait = 120;
-        if (turn == PLAYERTURN) {
-            turn = ENEMYTURN;
-        } else {
-            turn = PLAYERTURN;
-        }
-        menu = ACTIONS;
-        menuOption = 0;
-        action = 0;
-        target = 0;
-        go = 0;
-        // Check to see if combat has been won
-        int allyAlive = 0;
-        int playerAlive = battleAllies[0].hp > 0;
-        for (int i = 0; i < 4; i++) {
-            if (battleAllies[i].exists) {
-                if (battleAllies[i].hp > 0) {
-                    allyAlive = 1;
-                    break;
-                }
-            }
-        }
-        if (!allyAlive || !playerAlive) {
-            battleStatus = LOST;
-            return;
-        }
-        int enemyAlive = 0;
-        for (int i = 0; i < 4; i++) {
-            if (battleOpponents[i].exists) {
-                if (battleOpponents[i].hp > 0) {
-                    enemyAlive = 1;
-                    break;
-                }
-            }
-        }
-        if (!enemyAlive) {
-            battleStatus = WON;
-            return;
-        }
-    }
-    
-    int enter = 0;
-    int leave = 0;
-    // take player input
-    if (turn == PLAYERTURN) {
-        if (BUTTON_PRESSED(BUTTON_DOWN)) {
-            menuOption++;
-        } else if (BUTTON_PRESSED(BUTTON_UP)) {
-            menuOption--;
-        }
-        if (BUTTON_PRESSED(BUTTON_RIGHT)) {
-            menuOption += 3;
-        } else if (BUTTON_PRESSED(BUTTON_LEFT)) {
-            menuOption -= 3;
-        }
-        if (BUTTON_PRESSED(BUTTON_A)) {
-            enter = 1;
-        }
-        if (BUTTON_PRESSED(BUTTON_B)) {
-            leave = 1;
-        }
-    }
-    
-    // Choose an action
-    if (turn == PLAYERTURN) {
-        // Interpret the player's input
-        switch (menu)
-        {
-        case ACTIONS:
-            if (menuOption > 1) {
-                menuOption = 1;
-            } else if (menuOption < 0) {
-                menuOption = 0;
-            }
-            if (enter) {
-                if (menuOption == 0) {
-                    menuOption = 0;
-                    menu = ATTACKS;
-                } else if (menuOption == 1) {
-                    action = PASS;
-                    go = 1;
-                }
-            }
-            if (leave) {
-                // Do nothing
-            }
-            break;
-        case ATTACKS:
-            if (menuOption > 1) {
-                menuOption = 1;
-            } else if (menuOption < 0) {
-                menuOption = 0;
-            }
-            if (enter) {
-                if (menuOption == 0) {
-                    action = PUNCH;
-                    menuOption = 0;
-                    menu = TARGETSELECT;
-                } else if (menuOption == 1) {
-                    action = KICK;
-                    menuOption = 0;
-                    menu = TARGETSELECT;
-                }
-            }
-            if (leave) {
-                menuOption = 0;
-                menu = ACTIONS;
-            }
-            break;
-        case TARGETSELECT:
-            if (menuOption > 0) {
-                menuOption = 0;
-            } else if (menuOption < 0) {
-                menuOption = 0;
-            }
-            if (enter) {
-                if (menuOption == 0) {
-                    target = 0;
-                    go = 1;
-                }
-            }
-            if (leave) {
-                menuOption = 0;
-                menu = ATTACKS;
-            }
-        default:
-            break;
-        }
-    } else {
-        // Randomly decide what to do
-        int randAct = rand() % 3;
-        if (randAct == 0) {
-            action = PASS;
-        } else if (randAct == 1) {
-            action = PUNCH;
-        } else if (randAct == 2) {
-            action = KICK;
-        }
-
-        int randTarget = rand() % 4;
-        for (int i = 0; i < 4; i++) {
-            if (battleAllies[i].exists && battleAllies[i].hp > 0) {
-                if (randTarget <= 0) { // this is the one
-                    target = i;
-                }
-            }
-            randTarget--;
-        }
-
-        go = 1;
-    }
-
-    // Draw text
-    eraseAllText();
-    if (turn == PLAYERTURN) {
-        switch (menu)
-        {
-        case ACTIONS:
-            drawText("WHAT WILL YOU DO?", TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            sprintf(buf, "%cATTACK\n%cPASS", tsel(menuOption == 0), tsel(menuOption == 1));
-            drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            break;
-        case ATTACKS:
-            drawText("CHOOSE AN ATTACK", TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            sprintf(buf, "%cPUNCH\n%cKICK", tsel(menuOption == 0), tsel(menuOption == 1));
-            drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            break;
-        case TARGETSELECT:
-            drawText("CHOOSE A TARGET", TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            sprintf(buf, "%cENEMY1\n", tsel(menuOption == 0));
-            drawText(buf, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
-            break;
-        }
-    }
-    // We don't need to draw anything on the enemy's turn for now
-
-    drawCombatants();
+// Draws a healthbar for a combatant
+void drawHealthbar(int x, int y, COMBATANT* c, int spriteIdx) {
+    // TODO we could increase the accuracy of the healthbar by directly modifying the sprite's pixels
+    shadowOAM[spriteIdx].attr0 = ((y) & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[spriteIdx].attr1 = ((x) & COLMASK) | ATTR1_SMALL;
+    shadowOAM[spriteIdx].attr2 = ATTR2_TILEID(5 - tilesRed(0, c->hp, c->maxHp, 4), 24);
 }
 
 // Draws all of the combatants
 void drawCombatants() {
+    shadowOAM[TURNICON1].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON2].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON3].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON4].attr0 = ATTR0_HIDE;
+    for (int i = turnPoints - 1; i >= 0; i--) {
+        shadowOAM[TURNICON4 - i].attr0 = (41 & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+        shadowOAM[TURNICON4 - i].attr1 = ((57 + 9 * i) & COLMASK) | ATTR1_TINY;
+        shadowOAM[TURNICON4 - i].attr2 = ATTR2_TILEID(8, 0);
+    }
+
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
         shadowOAM[ALLY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
         shadowOAM[ALLY1_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ALLY1_B].attr2 = ATTR2_TILEID(0, 0);
+        drawHealthbar(8, 15 - 8, &battleAllies[0], HB1);
     } else {
         shadowOAM[ALLY1_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB1].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[1].exists && battleAllies[1].hp > 0) {
         shadowOAM[ALLY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
         shadowOAM[ALLY2_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ALLY2_B].attr2 = ATTR2_TILEID(0, 0);
+        drawHealthbar(8, 55 - 8, &battleAllies[1], HB2);
     } else {
         shadowOAM[ALLY2_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB2].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[2].exists && battleAllies[2].hp > 0) {
         shadowOAM[ALLY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
         shadowOAM[ALLY3_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ALLY3_B].attr2 = ATTR2_TILEID(0, 0);
+        drawHealthbar(8, 95 - 8, &battleAllies[2], HB3);
     } else {
         shadowOAM[ALLY3_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB3].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[3].exists && battleAllies[3].hp > 0) {
         shadowOAM[ALLY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
         shadowOAM[ALLY4_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ALLY4_B].attr2 = ATTR2_TILEID(0, 0);
+        drawHealthbar(8, 135 - 8, &battleAllies[3], HB4);
     } else {
         shadowOAM[ALLY4_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB4].attr0 = ATTR0_HIDE;
     }
 
     
     if (battleOpponents[0].exists && battleOpponents[0].hp > 0) {
         shadowOAM[ENEMY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY1_B].attr1 = (192 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ENEMY1_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ENEMY1_B].attr2 = ATTR2_TILEID(16, 0);
+        drawHealthbar(200, 15 - 8, &battleOpponents[0], HB5);
     } else {
         shadowOAM[ENEMY1_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB5].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[1].exists && battleOpponents[1].hp > 0) {
         shadowOAM[ENEMY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY2_B].attr1 = (192 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ENEMY2_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ENEMY2_B].attr2 = ATTR2_TILEID(16, 0);
+        drawHealthbar(200, 55 - 8, &battleOpponents[1], HB6);
     } else {
         shadowOAM[ENEMY2_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB6].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[2].exists && battleOpponents[2].hp > 0) {
         shadowOAM[ENEMY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY3_B].attr1 = (192 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ENEMY3_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ENEMY3_B].attr2 = ATTR2_TILEID(16, 0);
+        drawHealthbar(200, 95 - 8, &battleOpponents[2], HB7);
     } else {
         shadowOAM[ENEMY3_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB7].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[3].exists && battleOpponents[3].hp > 0) {
         shadowOAM[ENEMY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY4_B].attr1 = (192 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ENEMY4_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
         shadowOAM[ENEMY4_B].attr2 = ATTR2_TILEID(16, 0);
+        drawHealthbar(200, 135 - 8, &battleOpponents[3], HB8);
     } else {
         shadowOAM[ENEMY4_B].attr0 = ATTR0_HIDE;
+        shadowOAM[HB8].attr0 = ATTR0_HIDE;
     }
 }
 
@@ -429,3 +721,12 @@ void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textb
         str++;
     }
 }
+
+void setTopText(char* str) {
+    drawText(str, TEXT_TOP_X, TEXT_TOP_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
+}
+
+void setBottomText(char* str) {
+    drawText(str, TEXT_BOTTOM_X, TEXT_BOTTOM_Y, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
+}
+

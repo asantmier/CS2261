@@ -2,7 +2,6 @@
 #include "mode0.h"
 #include "print.h"
 #include "world.h"
-#include "tempbackground_collision.h"
 #include "world1collision.h"
 
 unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
@@ -127,12 +126,12 @@ int drawnEnemies = 0;
 int drawnMines = 0;
 
 void returnFromBattle(int victory) {
-    if (victory) {
+    // if (victory) {
         doBattle = 0;
         enemies[opponentIdx].active = 0;
-    } else {
+    // } else {
         // lose the game
-    }
+    // }
 }
 
 void initWorld() {
@@ -569,26 +568,26 @@ void drawMine(MINE* mine) {
     }
 }
 
-// Returns the number of tiles to be red in a section of the healthbar given the index of the starting tile
-int tilesRed(int tile1) {
-    if (submarineHp > (((tile1) * submarineMaxHp) / 26)) {
-        if (submarineHp > (((tile1+1) * submarineMaxHp) / 26)) {
-            if (submarineHp > (((tile1+2) * submarineMaxHp) / 26)) {
-                if (submarineHp > (((tile1+3) * submarineMaxHp) / 26)) {
-                    return 4;
-                } else {
-                    return 3;
-                }
-            } else {
-                return 2;
-            }
-        } else {
-            return 1;
-        }
-    } else {
-        return 0;
-    }
-}
+// // Returns the number of tiles to be red in a section of the healthbar given the index of the starting tile
+// int tilesRed(int tile1) {
+//     if (submarineHp > (((tile1) * submarineMaxHp) / 26)) {
+//         if (submarineHp > (((tile1+1) * submarineMaxHp) / 26)) {
+//             if (submarineHp > (((tile1+2) * submarineMaxHp) / 26)) {
+//                 if (submarineHp > (((tile1+3) * submarineMaxHp) / 26)) {
+//                     return 4;
+//                 } else {
+//                     return 3;
+//                 }
+//             } else {
+//                 return 2;
+//             }
+//         } else {
+//             return 1;
+//         }
+//     } else {
+//         return 0;
+//     }
+// }
 
 // Display the submarine's healthbar
 void updateHealthBar() {
@@ -606,27 +605,27 @@ void updateHealthBar() {
     // Middle section
     shadowOAM[HEALTHBAR2].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR2].attr1 = ((24 + 32 * 0) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR2].attr2 = ATTR2_TILEID(5 - tilesRed(1), 24);
+    shadowOAM[HEALTHBAR2].attr2 = ATTR2_TILEID(5 - tilesRed(1, submarineHp, submarineMaxHp, 26), 24);
     
     shadowOAM[HEALTHBAR3].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR3].attr1 = ((24 + 32 * 1) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR3].attr2 = ATTR2_TILEID(5 - tilesRed(5), 24);
+    shadowOAM[HEALTHBAR3].attr2 = ATTR2_TILEID(5 - tilesRed(5, submarineHp, submarineMaxHp, 26), 24);
 
     shadowOAM[HEALTHBAR4].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR4].attr1 = ((24 + 32 * 2) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR4].attr2 = ATTR2_TILEID(5 - tilesRed(9), 24);
+    shadowOAM[HEALTHBAR4].attr2 = ATTR2_TILEID(5 - tilesRed(9, submarineHp, submarineMaxHp, 26), 24);
 
     shadowOAM[HEALTHBAR5].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR5].attr1 = ((24 + 32 * 3) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR5].attr2 = ATTR2_TILEID(5 - tilesRed(13), 24);
+    shadowOAM[HEALTHBAR5].attr2 = ATTR2_TILEID(5 - tilesRed(13, submarineHp, submarineMaxHp, 26), 24);
 
     shadowOAM[HEALTHBAR6].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR6].attr1 = ((24 + 32 * 4) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR6].attr2 = ATTR2_TILEID(5 - tilesRed(17), 24);
+    shadowOAM[HEALTHBAR6].attr2 = ATTR2_TILEID(5 - tilesRed(17, submarineHp, submarineMaxHp, 26), 24);
 
     shadowOAM[HEALTHBAR7].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[HEALTHBAR7].attr1 = ((24 + 32 * 5) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR7].attr2 = ATTR2_TILEID(5 - tilesRed(21), 24);
+    shadowOAM[HEALTHBAR7].attr2 = ATTR2_TILEID(5 - tilesRed(21, submarineHp, submarineMaxHp, 26), 24);
 
     // Right nub
     shadowOAM[HEALTHBAR8].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;

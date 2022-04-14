@@ -1,17 +1,24 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "moves.h"
+
 extern int submarineMaxHp;
 extern int submarineHp; // Player health
 
 // Enemy types
 enum { FISH, SHARK, ANGLER, JIM }; // don't mess with jim
 
+#define NAME_LEN 10
+
 // Structs
 typedef struct tag_combatant {
+    char name[NAME_LEN];
     int exists;
+    int maxHp;
     int hp;
-    int damage;
+    int numMoves;
+    MOVE moves[6];
 } COMBATANT;
 
 // TODO idea
@@ -33,5 +40,8 @@ extern COMBATANT battleOpponents[4];
 // Initialize game
 void initGame();
 void initParty();
+
+// Utility functions used in both world and battle
+int tilesRed(int tile1, int hp, int maxHp, int segments);
 
 #endif

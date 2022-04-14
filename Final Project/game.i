@@ -937,6 +937,27 @@ void mgba_close(void);
 
 
 
+# 1 "moves.h" 1
+
+
+
+
+enum { OPPONENT, ALLY };
+
+typedef struct tag_move {
+    char text[10];
+    char flavorText[61];
+    int damage;
+    int hitAll;
+    int targeting;
+    int healing;
+} MOVE;
+
+extern MOVE MOVE_SLASH;
+extern MOVE MOVE_BLAST;
+extern MOVE MOVE_HEAL;
+# 5 "game.h" 2
+
 extern int submarineMaxHp;
 extern int submarineHp;
 
@@ -944,20 +965,79 @@ extern int submarineHp;
 enum { FISH, SHARK, ANGLER, JIM };
 
 
+
+
 typedef struct tag_combatant {
+    char name[10];
     int exists;
+    int maxHp;
     int hp;
-    int damage;
+    int numMoves;
+    MOVE moves[6];
 } COMBATANT;
-# 30 "game.h"
+# 37 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
 
 void initGame();
 void initParty();
-# 5 "game.c" 2
 
+
+int tilesRed(int tile1, int hp, int maxHp, int segments);
+# 5 "game.c" 2
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 1 3
+# 17 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+# 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
+# 18 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 2 3
+# 27 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+
+
+
+# 29 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+void * memchr (const void *, int, size_t);
+int memcmp (const void *, const void *, size_t);
+void * memcpy (void *restrict, const void *restrict, size_t);
+void * memmove (void *, const void *, size_t);
+void * memset (void *, int, size_t);
+char *strcat (char *restrict, const char *restrict);
+char *strchr (const char *, int);
+int strcmp (const char *, const char *);
+int strcoll (const char *, const char *);
+char *strcpy (char *restrict, const char *restrict);
+size_t strcspn (const char *, const char *);
+char *strerror (int);
+size_t strlen (const char *);
+char *strncat (char *restrict, const char *restrict, size_t);
+int strncmp (const char *, const char *, size_t);
+char *strncpy (char *restrict, const char *restrict, size_t);
+char *strpbrk (const char *, const char *);
+char *strrchr (const char *, int);
+size_t strspn (const char *, const char *);
+char *strstr (const char *, const char *);
+
+char *strtok (char *restrict, const char *restrict);
+
+size_t strxfrm (char *restrict, const char *restrict, size_t);
+# 86 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char *_strdup_r (struct _reent *, const char *);
+
+
+
+char *_strndup_r (struct _reent *, const char *, size_t);
+# 112 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char * _strerror_r (struct _reent *, int, int, int *);
+# 134 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char *strsignal (int __signo);
+# 175 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/string.h" 1 3
+# 176 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 2 3
+
+
+# 6 "game.c" 2
+
+
+# 7 "game.c"
 int submarineMaxHp;
 int submarineHp;
 COMBATANT battleAllies[4];
@@ -972,10 +1052,39 @@ void initGame() {
 
 
 void initParty() {
+    strncpy(battleAllies[0].name, "PLAYER", 10);
     battleAllies[0].exists = 1;
-    battleAllies[0].hp = 10;
-    battleAllies[0].damage = 8;
+    battleAllies[0].maxHp = 10;
+    battleAllies[0].hp = battleAllies[0].maxHp;
+    battleAllies[0].moves[0] = MOVE_SLASH;
+    battleAllies[0].moves[1] = MOVE_BLAST;
+    battleAllies[0].moves[2] = MOVE_HEAL;
+    battleAllies[0].numMoves = 3;
+    strncpy(battleAllies[1].name, "DUDE", 10);
     battleAllies[1].exists = 1;
-    battleAllies[1].hp = 6;
-    battleAllies[1].damage = 6;
+    battleAllies[1].maxHp = 10;
+    battleAllies[1].hp = battleAllies[1].maxHp;
+    battleAllies[1].moves[0] = MOVE_SLASH;
+    battleAllies[1].numMoves = 1;
+}
+
+
+int tilesRed(int tile1, int hp, int maxHp, int segments) {
+    if (hp > (((tile1) * maxHp) / segments)) {
+        if (hp > (((tile1+1) * maxHp) / segments)) {
+            if (hp > (((tile1+2) * maxHp) / segments)) {
+                if (hp > (((tile1+3) * maxHp) / segments)) {
+                    return 4;
+                } else {
+                    return 3;
+                }
+            } else {
+                return 2;
+            }
+        } else {
+            return 1;
+        }
+    } else {
+        return 0;
+    }
 }

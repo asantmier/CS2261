@@ -83,10 +83,15 @@
 extern const int text_tile_lkup[];
 
 // Sprite ID table
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, TEXT_IDX };
+enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
+ HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4, 
+ TURNICON1, TURNICON2, TURNICON3, TURNICON4, TEXT_IDX };
 
 // Some constants
-#define CHAR_WIDTH 7 // while text sprites are 8 wide, the rightmost column of pixels is always empty
+// At 7 width text looks good. At 6 it looks kinda compressed with QWM#$& but it gives us 20 characters
+// At 6 width and 3 lines we have 60 letters per box (120 sprites) which is definitely extreme
+// Definitely try to keep text short
+#define CHAR_WIDTH 6 // while text sprites are 8 wide, the rightmost column of pixels is always empty
 #define CHAR_HEIGHT 8 
 #define TEXTBOX_WIDTH (121) // that's 17 characters
 #define TEXTBOX_HEIGHT (3 * CHAR_HEIGHT) // that's 3 lines of text
@@ -99,12 +104,23 @@ enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENE
 extern int lettersActive;
 void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
-
-// Battle status enum
-enum { LOST = -1, ONGOING = 0, WON = 1 };
+void setTopText(char* str);
+void setBottomText(char* str);
+char tsel(int cond);
 
 // Battle status used by main to figure out how the battle is going
+enum { LOST = -1, ONGOING = 0, WON = 1 };
 extern int battleStatus;
+
+// Turn tracking
+enum { PLAYERTURN, ENEMYTURN };
+extern int turn;
+
+// Menu tracking
+enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU };
+
+// Team tracking
+enum { PLAYERTEAM, ENEMYTEAM };
 
 // Init functions
 void initBattle(int opponentType);
@@ -113,17 +129,24 @@ void resetOpponents();
 // Update functions
 void updateBattle();
 void drawCombatants();
+void checkBattleStatus();
 
-// TODO for a healthbar you could theoretically make 8 healthbar sprites without reducing tiles
-// and when you want to change health, swap to mode 3 and modify the tile pixels (or would you even
-// need to change to mode 3 for that?)
+// Menuing
+void goToFrontMenu();
+void goToAttackMenu();
+void goToTargetMenu();
+void goToInspectMenu();
+void frontMenu();
+void attackMenu();
+void targetMenu();
+void inspectMenu();
+void executeMove(MOVE* m, COMBATANT* t);
+void finishTurn();
 
 // I want the sprites to be bigger on the battle screen
 // Either we can have more sprites on the sprite sheet for this which might be ok
 // but if we can't we could use smaller sprites and use the affine matrix
 // We've got like 16(?) affine sprites to work with and we would need 8 for combatants
 // and maybe a few more for special effects
-
-// Health bars DEFINITLY take LESS space that numbers!
 
 #endif

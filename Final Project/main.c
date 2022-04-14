@@ -1,3 +1,27 @@
+/* PROGRESS REPORT
+ * So far the core gameplay mechanics of the game are complete, or at least are programmed and just need to be used.
+ * All world exploration mechanics are in place, with the exception of items you can pick up to heal yourself.
+ * The world design is also done, but I haven't taken the time to place all the enemies and mines that pose a threat to
+ * the player. I have not yet implemented a parallax effect for the background (the blue one behind the level).
+ * The combat system is functional enough to consider done (it's very basic, but that's perfectly fine at this point),
+ * but I still need to add enemy and move diversity ans the ability to capture wounded enemies as teammates.
+ * Basically, most of the programming is done, I just need to make more entries in the lists that already exist.
+ * (Also I need to do art, sound, state backgrounds, and other milestone 4 stuff).
+ * 
+ * BUGS: Right now, bullets just don't work at all. I forgot they existed for a bit and so they broke. (*MAJOR)
+ *       When one team finishes their turns in combat, the turn count display immediately switches to the other team's
+ *         turns instead of remaining empty during the wait animation. (*minor)
+ * 
+ * HOW TO PLAY: Directional pad to move, right bumper to move slower, don't worry about shooting (see above)
+ *     If you collide with the red boxes (enemy dev art) you will enter combat.
+ *     If you collide with the pink boxes (mine dev art) you will take damage.
+ *     Your health bar is at the top of your screen, if it runs out you lose.
+ *     Use the directional pad, A (select), and B (go back) to navigate the menus in combat. Defeat all the enemies to win.
+ *     If the enemies defeat your team, you will lose the battle and take damage. Your team's health currently resets back
+ *     to maximum after combat to account for the absolute lack of gameplay balance.
+*/
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "mode0.h"
@@ -6,7 +30,6 @@
 #include "battle.h"
 #include "game.h"
 #include "tempspritesheet.h"
-#include "tempbackground.h"
 #include "tempsplash.h"
 #include "tempinstructions.h"
 #include "temppause.h"
@@ -241,8 +264,16 @@ void battle() {
     updateBattle();
 
     if (battleStatus == LOST) {
-        goToLose();
+        submarineHp -= 10;
+        hideSprites();
+        DMANow(3, &shadowOAM, OAM, 128 * 4);
+        returnFromBattle(0);
+        goToGame();
+        // goToLose();
     } else if (battleStatus == WON) {
+        for (int i = 0; i < 4; i++) {
+            battleAllies[i].hp = battleAllies[i].maxHp;
+        }
         // Turn off all the sprites from the battle state
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);

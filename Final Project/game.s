@@ -10,45 +10,17 @@
 	.eabi_attribute 18, 4
 	.file	"game.c"
 	.text
+	.section	.rodata.str1.4,"aMS",%progbits,1
 	.align	2
-	.global	initGame
-	.arch armv4t
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	initGame, %function
-initGame:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	r3, #100
-	mov	r1, #1
-	mov	r2, #6
-	mov	ip, #10
-	mov	r0, #8
-	str	lr, [sp, #-4]!
-	ldr	lr, .L4
-	str	r3, [lr]
-	ldr	lr, .L4+4
-	str	r3, [lr]
-	ldr	r3, .L4+8
-	ldr	lr, [sp], #4
-	str	r1, [r3]
-	str	r1, [r3, #12]
-	str	ip, [r3, #4]
-	str	r0, [r3, #8]
-	str	r2, [r3, #16]
-	str	r2, [r3, #20]
-	bx	lr
-.L5:
+.LC0:
+	.ascii	"PLAYER\000"
 	.align	2
-.L4:
-	.word	submarineMaxHp
-	.word	submarineHp
-	.word	battleAllies
-	.size	initGame, .-initGame
+.LC1:
+	.ascii	"DUDE\000"
+	.text
 	.align	2
 	.global	initParty
+	.arch armv4t
 	.syntax unified
 	.arm
 	.fpu softvfp
@@ -57,26 +29,147 @@ initParty:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	mov	r1, #1
-	mov	r2, #6
-	mov	ip, #10
-	mov	r0, #8
-	ldr	r3, .L7
-	str	r1, [r3]
-	str	r1, [r3, #12]
-	str	ip, [r3, #4]
-	str	r0, [r3, #8]
-	str	r2, [r3, #16]
-	str	r2, [r3, #20]
+	push	{r4, r5, r6, r7, r8, r9, r10, lr}
+	mov	r5, #10
+	mov	r7, #88
+	mov	r8, #1
+	ldr	r4, .L4
+	ldr	r9, .L4+4
+	mov	r2, r5
+	ldr	r10, .L4+8
+	mov	r0, r4
+	ldr	r1, .L4+12
+	mov	lr, pc
+	bx	r10
+	ldr	r6, .L4+16
+	mov	r2, r7
+	mov	r1, r9
+	add	r0, r4, #28
+	str	r8, [r4, #12]
+	str	r5, [r4, #16]
+	str	r5, [r4, #20]
+	mov	lr, pc
+	bx	r6
+	mov	r2, r7
+	ldr	r1, .L4+20
+	add	r0, r4, #116
+	mov	lr, pc
+	bx	r6
+	mov	r2, r7
+	ldr	r1, .L4+24
+	add	r0, r4, #204
+	mov	lr, pc
+	bx	r6
+	mov	r3, #3
+	mov	r2, r5
+	ldr	r1, .L4+28
+	add	r0, r4, #556
+	str	r3, [r4, #24]
+	mov	lr, pc
+	bx	r10
+	mov	r2, r7
+	mov	r1, r9
+	add	r0, r4, #584
+	str	r8, [r4, #568]
+	str	r5, [r4, #572]
+	str	r5, [r4, #576]
+	mov	lr, pc
+	bx	r6
+	str	r8, [r4, #580]
+	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
+.L5:
+	.align	2
+.L4:
+	.word	battleAllies
+	.word	MOVE_SLASH
+	.word	strncpy
+	.word	.LC0
+	.word	memcpy
+	.word	MOVE_BLAST
+	.word	MOVE_HEAL
+	.word	.LC1
+	.size	initParty, .-initParty
+	.align	2
+	.global	initGame
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	initGame, %function
+initGame:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	mov	r3, #100
+	ldr	r1, .L7
+	ldr	r2, .L7+4
+	str	r3, [r1]
+	str	r3, [r2]
+	b	initParty
 .L8:
 	.align	2
 .L7:
-	.word	battleAllies
-	.size	initParty, .-initParty
-	.comm	battleOpponents,48,4
-	.comm	battleAllies,48,4
+	.word	submarineMaxHp
+	.word	submarineHp
+	.size	initGame, .-initGame
+	.global	__aeabi_idiv
+	.align	2
+	.global	tilesRed
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	tilesRed, %function
+tilesRed:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, r5, r6, r7, r8, lr}
+	mul	r4, r2, r0
+	mov	r5, r1
+	mov	r0, r4
+	mov	r1, r3
+	ldr	r8, .L16
+	mov	r6, r2
+	mov	r7, r3
+	mov	lr, pc
+	bx	r8
+	cmp	r0, r5
+	movge	r0, #0
+	bge	.L9
+	add	r4, r4, r6
+	mov	r0, r4
+	mov	r1, r7
+	mov	lr, pc
+	bx	r8
+	cmp	r0, r5
+	movge	r0, #1
+	bge	.L9
+	add	r4, r4, r6
+	mov	r0, r4
+	mov	r1, r7
+	mov	lr, pc
+	bx	r8
+	cmp	r0, r5
+	movge	r0, #2
+	bge	.L9
+	mov	r1, r7
+	add	r0, r4, r6
+	mov	lr, pc
+	bx	r8
+	cmp	r0, r5
+	movlt	r0, #4
+	movge	r0, #3
+.L9:
+	pop	{r4, r5, r6, r7, r8, lr}
+	bx	lr
+.L17:
+	.align	2
+.L16:
+	.word	__aeabi_idiv
+	.size	tilesRed, .-tilesRed
+	.comm	battleOpponents,2224,4
+	.comm	battleAllies,2224,4
 	.comm	submarineHp,4,4
 	.comm	submarineMaxHp,4,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"
