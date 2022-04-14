@@ -961,8 +961,10 @@ extern MOVE MOVE_HEAL;
 extern int submarineMaxHp;
 extern int submarineHp;
 
+extern int gameVictory;
 
-enum { FISH, SHARK, ANGLER, JIM };
+
+enum { FISH, SHARK, ANGLER, PUFFER, BOSS };
 
 
 
@@ -975,7 +977,7 @@ typedef struct tag_combatant {
     int numMoves;
     MOVE moves[6];
 } COMBATANT;
-# 37 "game.h"
+# 39 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1040,6 +1042,7 @@ char *strsignal (int __signo);
 # 7 "game.c"
 int submarineMaxHp;
 int submarineHp;
+int gameVictory;
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
@@ -1047,6 +1050,7 @@ COMBATANT battleOpponents[4];
 void initGame() {
     submarineMaxHp = 100;
     submarineHp = submarineMaxHp;
+    gameVictory = 0;
     initParty();
 }
 
@@ -1065,7 +1069,8 @@ void initParty() {
     battleAllies[1].maxHp = 10;
     battleAllies[1].hp = battleAllies[1].maxHp;
     battleAllies[1].moves[0] = MOVE_SLASH;
-    battleAllies[1].numMoves = 1;
+    battleAllies[0].moves[1] = MOVE_HEAL;
+    battleAllies[1].numMoves = 2;
 }
 
 

@@ -965,8 +965,10 @@ extern MOVE MOVE_HEAL;
 extern int submarineMaxHp;
 extern int submarineHp;
 
+extern int gameVictory;
 
-enum { FISH, SHARK, ANGLER, JIM };
+
+enum { FISH, SHARK, ANGLER, PUFFER, BOSS };
 
 
 
@@ -979,7 +981,7 @@ typedef struct tag_combatant {
     int numMoves;
     MOVE moves[6];
 } COMBATANT;
-# 37 "game.h"
+# 39 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1044,8 +1046,8 @@ typedef struct tag_mine {
 
 typedef struct tag_level {
 
-    ENEMY enemyList[50];
-    MINE mineList[50];
+    ENEMY enemyList[60];
+    MINE mineList[60];
 } LEVEL;
 
 
@@ -1054,8 +1056,8 @@ LEVEL levels[1];
 
 extern PLAYER player;
 extern BULLET bullets[5];
-extern ENEMY enemies[50];
-extern MINE mines[50];
+extern ENEMY enemies[60];
+extern MINE mines[60];
 
 
 extern int doBattle;
@@ -1103,47 +1105,57 @@ unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
 PLAYER player;
 BULLET bullets[5];
-ENEMY enemies[50];
-MINE mines[50];
+ENEMY enemies[60];
+MINE mines[60];
 
 
 
 LEVEL levels[1] = {
     {
         {
-            { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, PASSIVE, FISH },
-            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, PASSIVE, SHARK },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            {.int_x=32*64, .int_y=160*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=337*64, .int_y=128*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=440*64, .int_y=72*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=608*64, .int_y=88*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=624*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=744*64, .int_y=120*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=832*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=705*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=848*64, .int_y=312*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=648*64, .int_y=321*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=776*64, .int_y=472*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=656*64, .int_y=512*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=753*64, .int_y=536*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=648*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=817*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=704*64, .int_y=697*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=936*64, .int_y=672*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=976*64, .int_y=568*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=832*64, .int_y=760*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=776*64, .int_y=808*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER},
+            {.int_x=880*64, .int_y=952*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=544*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=424*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=560*64, .int_y=664*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER},
+            {.int_x=528*64, .int_y=496*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=546*64, .int_y=400*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=392*64, .int_y=520*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=472*64, .int_y=553*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=449*64, .int_y=625*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=329*64, .int_y=569*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=360*64, .int_y=648*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=360*64, .int_y=696*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=272*64, .int_y=647*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=240*64, .int_y=584*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH},
+            {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER},
+            {.int_x=168*64, .int_y=928*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BOSS},
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1163,48 +1175,61 @@ LEVEL levels[1] = {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         },
         {
-            { .int_x = 100 * 64, .int_y = 80 * 64, .active = 1, .damage = 90 },
-            { .int_x = 100 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 },
-            { .int_x = 120 * 64, .int_y = 80 * 64, .active = 1, .damage = 10 },
-            { .int_x = 120 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { .int_x = 152 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 },
+            { .int_x = 176 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 },
+            { .int_x = 200 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 },
+            { .int_x = 256 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 392 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 464 * 64, .int_y = 312 * 64, .active = 1, .damage = 10 },
+            { .int_x = 520 * 64, .int_y = 184 * 64, .active = 1, .damage = 10 },
+            { .int_x = 488 * 64, .int_y = 216 * 64, .active = 1, .damage = 10 },
+            { .int_x = 472 * 64, .int_y = 216 * 64, .active = 1, .damage = 10 },
+            { .int_x = 736 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 },
+            { .int_x = 752 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 768 * 64, .int_y = 334 * 64, .active = 1, .damage = 10 },
+            { .int_x = 784 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 },
+            { .int_x = 800 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 },
+            { .int_x = 816 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 },
+            { .int_x = 832 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 848 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 864 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 },
+            { .int_x = 792 * 64, .int_y = 488 * 64, .active = 1, .damage = 10 },
+            { .int_x = 960 * 64, .int_y = 416 * 64, .active = 1, .damage = 10 },
+            { .int_x = 976 * 64, .int_y = 416 * 64, .active = 1, .damage = 10 },
+            { .int_x = 960 * 64, .int_y = 376 * 64, .active = 1, .damage = 10 },
+            { .int_x = 1000 * 64, .int_y = 376 * 64, .active = 1, .damage = 10 },
+            { .int_x = 976 * 64, .int_y = 344 * 64, .active = 1, .damage = 10 },
+            { .int_x = 992 * 64, .int_y = 312 * 64, .active = 1, .damage = 10 },
+            { .int_x = 968 * 64, .int_y = 280 * 64, .active = 1, .damage = 10 },
+            { .int_x = 984 * 64, .int_y = 256 * 64, .active = 1, .damage = 10 },
+            { .int_x = 1000 * 64, .int_y = 240 * 64, .active = 1, .damage = 10 },
+            { .int_x = 976 * 64, .int_y = 208 * 64, .active = 1, .damage = 10 },
+            { .int_x = 984 * 64, .int_y = 200 * 64, .active = 1, .damage = 10 },
+            { .int_x = 968 * 64, .int_y = 160 * 64, .active = 1, .damage = 10 },
+            { .int_x = 992 * 64, .int_y = 128 * 64, .active = 1, .damage = 10 },
+            { .int_x = 968 * 64, .int_y = 112 * 64, .active = 1, .damage = 10 },
+            { .int_x = 984 * 64, .int_y = 88 * 64, .active = 1, .damage = 10 },
+            { .int_x = 1000 * 64, .int_y = 88 * 64, .active = 1, .damage = 10 },
+            { .int_x = 752 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 },
+            { .int_x = 704 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 },
+            { .int_x = 648 * 64, .int_y = 744 * 64, .active = 1, .damage = 10 },
+            { .int_x = 672 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 },
+            { .int_x = 624 * 64, .int_y = 784 * 64, .active = 1, .damage = 10 },
+            { .int_x = 600 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 },
+            { .int_x = 592 * 64, .int_y = 824 * 64, .active = 1, .damage = 10 },
+            { .int_x = 560 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 },
+            { .int_x = 520 * 64, .int_y = 792 * 64, .active = 1, .damage = 10 },
+            { .int_x = 504 * 64, .int_y = 824 * 64, .active = 1, .damage = 10 },
+            { .int_x = 472 * 64, .int_y = 768 * 64, .active = 1, .damage = 10 },
+            { .int_x = 448 * 64, .int_y = 816 * 64, .active = 1, .damage = 10 },
+            { .int_x = 432 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 },
+            { .int_x = 360 * 64, .int_y = 816 * 64, .active = 1, .damage = 10 },
+            { .int_x = 336 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 },
+            { .int_x = 472 * 64, .int_y = 672 * 64, .active = 1, .damage = 10 },
+            { .int_x = 272 * 64, .int_y = 704 * 64, .active = 1, .damage = 10 },
+            { .int_x = 200 * 64, .int_y = 616 * 64, .active = 1, .damage = 10 },
+            { .int_x = 448 * 64, .int_y = 456 * 64, .active = 1, .damage = 10 },
+            { .int_x = 448 * 64, .int_y = 424 * 64, .active = 1, .damage = 10 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1267,7 +1292,7 @@ void initBullets() {
 }
 
 void initEnemies() {
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         enemies[i].int_x = levels[level].enemyList[i].int_x;
         enemies[i].int_y = levels[level].enemyList[i].int_y;
         enemies[i].x = ((enemies[i].int_x) >> 6) - bg2xOff;
@@ -1283,7 +1308,7 @@ void initEnemies() {
 }
 
 void initMines() {
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         mines[i].int_x = levels[level].mineList[i].int_x;
         mines[i].int_y = levels[level].mineList[i].int_y;
         mines[i].x = ((mines[i].int_x) >> 6) - bg2xOff;
@@ -1292,15 +1317,15 @@ void initMines() {
         mines[i].dy = levels[level].mineList[i].dy;
 
 
-        mines[i].width = 16;
-        mines[i].height = 16;
+        mines[i].width = 8;
+        mines[i].height = 8;
         mines[i].active = levels[level].mineList[i].active;
         mines[i].damage = levels[level].mineList[i].damage;
     }
 }
 
 void doCollision() {
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         if (enemies[i].active) {
             if (collision(player.int_x, player.int_y, ((player.width) << 6), ((player.height) << 6),
             enemies[i].int_x, enemies[i].int_y, ((enemies[i].width) << 6), ((enemies[i].height) << 6))) {
@@ -1309,9 +1334,23 @@ void doCollision() {
                 opponentIdx = i;
                 return;
             }
+            for (int j = 0; j < 5; j++) {
+                if (bullets[j].active) {
+                    if (collision(bullets[j].int_x, bullets[j].int_y, ((bullets[j].width) << 6), ((bullets[j].height) << 6),
+                    enemies[i].int_x, enemies[i].int_y, ((enemies[i].width) << 6), ((enemies[i].height) << 6))) {
+
+                        bullets[j].active = 0;
+                        shadowOAM[bullets[j].spriteIdx].attr0 = (2 << 8);
+
+                        doBattle = 1;
+                        opponentIdx = i;
+                        return;
+                    }
+                }
+            }
         }
     }
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         if (mines[i].active) {
             if (collision(player.int_x, player.int_y, ((player.width) << 6), ((player.height) << 6),
             mines[i].int_x, mines[i].int_y, ((mines[i].width) << 6), ((mines[i].height) << 6))) {
@@ -1331,13 +1370,13 @@ void updateWorld() {
         }
     }
     freeEnemySprites();
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         if (enemies[i].active) {
             updateEnemy(&enemies[i]);
         }
     }
     freeMineSprites();
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 60; i++) {
         if (mines[i].active) {
             updateMine(&mines[i]);
         }
@@ -1572,6 +1611,10 @@ void updateBullet(BULLET* bullet) {
     {
         bullet->active = 0;
     }
+    if (collisionCheck(collisionMap, 1024, ((bullet->int_x) >> 6), ((bullet->int_y) >> 6), bullet->width, bullet->height)) {
+        bullet->active = 0;
+    }
+
     bullet->x = ((bullet->int_x) >> 6) - bg2xOff;
     bullet->y = ((bullet->int_y) >> 6) - bg2yOff;
 
@@ -1657,14 +1700,14 @@ void drawMine(MINE* mine) {
 
     if (drawnMines < 10) {
         shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & 0xFF) | (0 << 8) | (0 << 14);
-        shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & 0x1FF) | (1 << 14);
+        shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & 0x1FF) | (0 << 14);
         shadowOAM[MINE1 + drawnMines].attr2 = ((8)*32 + (24)) | ((2) << 10);
         drawnMines++;
     }
 }
-# 593 "world.c"
-void updateHealthBar() {
 
+
+void updateHealthBar() {
 
 
     shadowOAM[HEALTHBAR1].attr0 = (2 & 0xFF) | (0 << 8) | (0 << 14);

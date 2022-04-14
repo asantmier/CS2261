@@ -1,26 +1,26 @@
 /* PROGRESS REPORT
- * So far the core gameplay mechanics of the game are complete, or at least are programmed and just need to be used.
+ * So far the core gameplay mechanics of the game are complete.
  * All world exploration mechanics are in place, with the exception of items you can pick up to heal yourself.
- * The world design is also done, but I haven't taken the time to place all the enemies and mines that pose a threat to
- * the player. I have not yet implemented a parallax effect for the background (the blue one behind the level).
- * The combat system is functional enough to consider done (it's very basic, but that's perfectly fine at this point),
- * but I still need to add enemy and move diversity ans the ability to capture wounded enemies as teammates.
- * Basically, most of the programming is done, I just need to make more entries in the lists that already exist.
+ * The world design is also done. 
+ * I have not yet implemented a parallax effect for the background (the blue one behind the level).
+ * The combat system is functional enough to consider done (it's very basic, but that's perfectly fine at this point), 
+ *      but I still need to add enemy and move diversity.
+ * Enemies don't move around or follow the player right now. At the very least I want to make them move back and forth.
  * (Also I need to do art, sound, state backgrounds, and other milestone 4 stuff).
  * 
- * BUGS: Right now, bullets just don't work at all. I forgot they existed for a bit and so they broke. (*MAJOR)
- *       When one team finishes their turns in combat, the turn count display immediately switches to the other team's
- *         turns instead of remaining empty during the wait animation. (*minor)
+ * BUGS: When one team finishes their turns in combat, the turn count display immediately switches to the other team's
+ *         turns instead of remaining empty during the wait animation.
  * 
- * HOW TO PLAY: Directional pad to move, right bumper to move slower, don't worry about shooting (see above)
- *     If you collide with the red boxes (enemy dev art) you will enter combat.
- *     If you collide with the pink boxes (mine dev art) you will take damage.
+ * HOW TO PLAY: Directional pad to move, right bumper to move slower, A to shoot.
+ *     If you collide with or shoot the enemies (red box) you will enter combat.
+ *     If you collide with the mines (pink box) you will take damage.
  *     Your health bar is at the top of your screen, if it runs out you lose.
  *     Use the directional pad, A (select), and B (go back) to navigate the menus in combat. Defeat all the enemies to win.
- *     If the enemies defeat your team, you will lose the battle and take damage. Your team's health currently resets back
- *     to maximum after combat to account for the absolute lack of gameplay balance.
+ *     If the enemies defeat your team, you will lose the battle and take damage.
+ *     Your team starts at full health in every battle. You can expand or upgrade your team by capturing enemies.
+ *     Capturing enemies is easier the lower their health is. You can replace an empty slot on your team to expand it, but if
+ *     your team is full you will have to replace a teammate or hit B to just not use the captured enemy.
 */
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -225,7 +225,8 @@ void game() {
 
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         goToPause();
-    } else if (BUTTON_PRESSED(BUTTON_L)) {
+    }
+    if (gameVictory) {
         goToWin();
     }
     

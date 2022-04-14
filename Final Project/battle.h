@@ -117,7 +117,7 @@ enum { PLAYERTURN, ENEMYTURN };
 extern int turn;
 
 // Menu tracking
-enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU };
+enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU, CAPTUREMENU, REPLACEMENU };
 
 // Team tracking
 enum { PLAYERTEAM, ENEMYTEAM };
@@ -136,10 +136,14 @@ void goToFrontMenu();
 void goToAttackMenu();
 void goToTargetMenu();
 void goToInspectMenu();
+void goToCaptureMenu();
+void goToReplaceMenu();
 void frontMenu();
 void attackMenu();
 void targetMenu();
 void inspectMenu();
+void captureMenu();
+void replaceMenu();
 void executeMove(MOVE* m, COMBATANT* t);
 void finishTurn();
 

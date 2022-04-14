@@ -870,85 +870,84 @@ game:
 	ldrh	r3, [r3]
 	tst	r3, #4
 	beq	.L91
-	ldr	r2, .L106+8
-	ldrh	r2, [r2]
-	tst	r2, #4
+	ldr	r3, .L106+8
+	ldrh	r3, [r3]
+	tst	r3, #4
 	beq	.L102
 .L91:
-	tst	r3, #512
+	ldr	r3, .L106+12
+	ldr	r3, [r3]
+	cmp	r3, #0
 	bne	.L103
 .L92:
-	ldr	r3, .L106+12
+	ldr	r3, .L106+16
 	mov	lr, pc
 	bx	r3
-	ldr	r4, .L106+16
+	ldr	r4, .L106+20
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L106+20
+	ldr	r1, .L106+24
 	mov	lr, pc
 	bx	r4
 	mov	r2, #67108864
-	ldr	r3, .L106+24
-	ldr	r3, [r3]
-	lsl	r3, r3, #8
-	str	r3, [r2, #40]
 	ldr	r3, .L106+28
 	ldr	r3, [r3]
 	lsl	r3, r3, #8
-	str	r3, [r2, #44]
+	str	r3, [r2, #40]
 	ldr	r3, .L106+32
+	ldr	r3, [r3]
+	lsl	r3, r3, #8
+	str	r3, [r2, #44]
+	ldr	r3, .L106+36
 	ldr	r3, [r3]
 	cmp	r3, #0
 	ble	.L104
 .L93:
-	ldr	r3, .L106+36
+	ldr	r3, .L106+40
 	ldr	r3, [r3]
 	cmp	r3, #0
 	bne	.L105
 	pop	{r4, lr}
 	bx	lr
-.L103:
-	ldr	r3, .L106+8
-	ldrh	r3, [r3]
-	tst	r3, #512
-	bne	.L92
-	bl	goToWin
-	b	.L92
 .L105:
-	ldr	r3, .L106+40
+	ldr	r3, .L106+44
 	mov	lr, pc
 	bx	r3
 	mov	r3, #512
 	mov	r2, #117440512
 	mov	r0, #3
-	ldr	r1, .L106+20
+	ldr	r1, .L106+24
 	mov	lr, pc
 	bx	r4
-	ldr	r3, .L106+44
+	ldr	r3, .L106+48
 	ldr	r3, [r3]
-	ldr	r2, .L106+48
+	ldr	r2, .L106+52
 	add	r1, r3, r3, lsl #2
 	add	r3, r3, r1, lsl #1
 	add	r3, r2, r3, lsl #2
 	ldr	r0, [r3, #40]
-	ldr	r3, .L106+52
+	ldr	r3, .L106+56
 	mov	lr, pc
 	bx	r3
 	pop	{r4, lr}
 	b	goToBattle
+.L103:
+	bl	goToWin
+	b	.L92
 .L104:
 	bl	goToLose
 	b	.L93
 .L102:
 	bl	goToPause
-	b	.L92
+	b	.L91
 .L107:
 	.align	2
 .L106:
 	.word	updateWorld
 	.word	oldButtons
 	.word	buttons
+	.word	gameVictory
 	.word	waitForVBlank
 	.word	DMANow
 	.word	shadowOAM
@@ -1069,5 +1068,5 @@ lose:
 	.comm	oldButtons,2,2
 	.comm	buttons,2,2
 	.comm	state,4,4
-	.comm	levels,4200,4
+	.comm	levels,5040,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

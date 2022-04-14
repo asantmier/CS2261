@@ -30,8 +30,8 @@ typedef int fp64;
 #define BULLET_MAX_V 96
 // Pooling stuff
 #define NUM_BULLETS 5
-#define NUM_ENEMIES 50 // there needs to be an entry for every enemy in the level
-#define NUM_MINES 50
+#define NUM_ENEMIES 60 // there needs to be an entry for every enemy in the level
+#define NUM_MINES 60
 #define NUM_LEVELS 1
 // Sprite priorities
 #define ENEMY_PRIORITY 2

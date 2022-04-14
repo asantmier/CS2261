@@ -16,49 +16,49 @@ MINE mines[NUM_MINES];
 LEVEL levels[NUM_LEVELS] = {
     { // start 1st LEVEL constructor
         { // start ENEMY list 
-            { 50 * 64, 50 * 64, 50, 50, 0, 0, 16, 8, 1, PASSIVE, FISH }, // 1
-            { 60 * 64, 190 * 64, 60, 190, 0, 0, 16, 8, 1, PASSIVE, SHARK }, // 2
-            DISABLE_ENEMY, // 3
-            DISABLE_ENEMY, // 4
-            DISABLE_ENEMY, // 5
-            DISABLE_ENEMY, // 6
-            DISABLE_ENEMY, // 7
-            DISABLE_ENEMY, // 8
-            DISABLE_ENEMY, // 9
-            DISABLE_ENEMY, // 10
-            DISABLE_ENEMY, // 11
-            DISABLE_ENEMY, // 12
-            DISABLE_ENEMY, // 13
-            DISABLE_ENEMY, // 14
-            DISABLE_ENEMY, // 15
-            DISABLE_ENEMY, // 16
-            DISABLE_ENEMY, // 17
-            DISABLE_ENEMY, // 18
-            DISABLE_ENEMY, // 19
-            DISABLE_ENEMY, // 20
-            DISABLE_ENEMY, // 21
-            DISABLE_ENEMY, // 22
-            DISABLE_ENEMY, // 23
-            DISABLE_ENEMY, // 24
-            DISABLE_ENEMY, // 25
-            DISABLE_ENEMY, // 26
-            DISABLE_ENEMY, // 27
-            DISABLE_ENEMY, // 28
-            DISABLE_ENEMY, // 29
-            DISABLE_ENEMY, // 30
-            DISABLE_ENEMY, // 31
-            DISABLE_ENEMY, // 32
-            DISABLE_ENEMY, // 33
-            DISABLE_ENEMY, // 34
-            DISABLE_ENEMY, // 35
-            DISABLE_ENEMY, // 36
-            DISABLE_ENEMY, // 37
-            DISABLE_ENEMY, // 38
-            DISABLE_ENEMY, // 39
-            DISABLE_ENEMY, // 40
-            DISABLE_ENEMY, // 41
-            DISABLE_ENEMY, // 42
-            DISABLE_ENEMY, // 43
+            {.int_x=32*64, .int_y=160*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 1
+            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 2
+            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 3
+            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 4
+            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 5
+            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 6
+            {.int_x=337*64, .int_y=128*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 7
+            {.int_x=440*64, .int_y=72*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 8
+            {.int_x=608*64, .int_y=88*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 9
+            {.int_x=624*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 10
+            {.int_x=744*64, .int_y=120*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 11
+            {.int_x=832*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 12
+            {.int_x=705*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 13
+            {.int_x=848*64, .int_y=312*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 14
+            {.int_x=648*64, .int_y=321*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 15
+            {.int_x=776*64, .int_y=472*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 16
+            {.int_x=656*64, .int_y=512*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 17
+            {.int_x=753*64, .int_y=536*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 18
+            {.int_x=648*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 19
+            {.int_x=817*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 20
+            {.int_x=704*64, .int_y=697*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 21
+            {.int_x=936*64, .int_y=672*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 22
+            {.int_x=976*64, .int_y=568*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 23
+            {.int_x=832*64, .int_y=760*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 24
+            {.int_x=776*64, .int_y=808*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 25
+            {.int_x=880*64, .int_y=952*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 26
+            {.int_x=544*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 27
+            {.int_x=424*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 28
+            {.int_x=560*64, .int_y=664*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 29
+            {.int_x=528*64, .int_y=496*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 30
+            {.int_x=546*64, .int_y=400*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 31
+            {.int_x=392*64, .int_y=520*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 32
+            {.int_x=472*64, .int_y=553*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 33
+            {.int_x=449*64, .int_y=625*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 34
+            {.int_x=329*64, .int_y=569*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 35
+            {.int_x=360*64, .int_y=648*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 36
+            {.int_x=360*64, .int_y=696*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 37
+            {.int_x=272*64, .int_y=647*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 38
+            {.int_x=240*64, .int_y=584*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 39
+            {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 40
+            {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 41
+            {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 42
+            {.int_x=168*64, .int_y=928*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BOSS}, // 43
             DISABLE_ENEMY, // 44
             DISABLE_ENEMY, // 45
             DISABLE_ENEMY, // 46
@@ -66,55 +66,78 @@ LEVEL levels[NUM_LEVELS] = {
             DISABLE_ENEMY, // 48
             DISABLE_ENEMY, // 49
             DISABLE_ENEMY, // 50
+            DISABLE_ENEMY, // 51
+            DISABLE_ENEMY, // 52
+            DISABLE_ENEMY, // 53
+            DISABLE_ENEMY, // 54
+            DISABLE_ENEMY, // 55
+            DISABLE_ENEMY, // 56
+            DISABLE_ENEMY, // 57
+            DISABLE_ENEMY, // 58
+            DISABLE_ENEMY, // 59
+            DISABLE_ENEMY, // 60
         },
         { // start MINE list
-            { .int_x = 100 * 64, .int_y = 80 * 64, .active = 1, .damage = 90 }, // 1
-            { .int_x = 100 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 }, // 2
-            { .int_x = 120 * 64, .int_y = 80 * 64, .active = 1, .damage = 10 }, // 3
-            { .int_x = 120 * 64, .int_y = 100 * 64, .active = 1, .damage = 10 }, // 4
-            DISABLE_MINE, // 5
-            DISABLE_MINE, // 6
-            DISABLE_MINE, // 7
-            DISABLE_MINE, // 8
-            DISABLE_MINE, // 9
-            DISABLE_MINE, // 10
-            DISABLE_MINE, // 11
-            DISABLE_MINE, // 12
-            DISABLE_MINE, // 13
-            DISABLE_MINE, // 14
-            DISABLE_MINE, // 15
-            DISABLE_MINE, // 16
-            DISABLE_MINE, // 17
-            DISABLE_MINE, // 18
-            DISABLE_MINE, // 19
-            DISABLE_MINE, // 21
-            DISABLE_MINE, // 22
-            DISABLE_MINE, // 23
-            DISABLE_MINE, // 24
-            DISABLE_MINE, // 25
-            DISABLE_MINE, // 26
-            DISABLE_MINE, // 27
-            DISABLE_MINE, // 28
-            DISABLE_MINE, // 29
-            DISABLE_MINE, // 31
-            DISABLE_MINE, // 32
-            DISABLE_MINE, // 33
-            DISABLE_MINE, // 34
-            DISABLE_MINE, // 35
-            DISABLE_MINE, // 36
-            DISABLE_MINE, // 37
-            DISABLE_MINE, // 38
-            DISABLE_MINE, // 39
-            DISABLE_MINE, // 41
-            DISABLE_MINE, // 42
-            DISABLE_MINE, // 43
-            DISABLE_MINE, // 44
-            DISABLE_MINE, // 45
-            DISABLE_MINE, // 46
-            DISABLE_MINE, // 47
-            DISABLE_MINE, // 48
-            DISABLE_MINE, // 49
-            DISABLE_MINE, // 50
+            { .int_x = 152 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 }, // 1
+            { .int_x = 176 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 }, // 2
+            { .int_x = 200 * 64, .int_y = 352 * 64, .active = 1, .damage = 10 }, // 3
+            { .int_x = 256 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 4
+            { .int_x = 392 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 5
+            { .int_x = 464 * 64, .int_y = 312 * 64, .active = 1, .damage = 10 }, // 6
+            { .int_x = 520 * 64, .int_y = 184 * 64, .active = 1, .damage = 10 }, // 7
+            { .int_x = 488 * 64, .int_y = 216 * 64, .active = 1, .damage = 10 }, // 8
+            { .int_x = 472 * 64, .int_y = 216 * 64, .active = 1, .damage = 10 }, // 9
+            { .int_x = 736 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 }, // 10
+            { .int_x = 752 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 11
+            { .int_x = 768 * 64, .int_y = 334 * 64, .active = 1, .damage = 10 }, // 12
+            { .int_x = 784 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 }, // 13
+            { .int_x = 800 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 }, // 14
+            { .int_x = 816 * 64, .int_y = 336 * 64, .active = 1, .damage = 10 }, // 15
+            { .int_x = 832 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 16
+            { .int_x = 848 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 17
+            { .int_x = 864 * 64, .int_y = 328 * 64, .active = 1, .damage = 10 }, // 18
+            { .int_x = 792 * 64, .int_y = 488 * 64, .active = 1, .damage = 10 }, // 19
+            { .int_x = 960 * 64, .int_y = 416 * 64, .active = 1, .damage = 10 }, // 20
+            { .int_x = 976 * 64, .int_y = 416 * 64, .active = 1, .damage = 10 }, // 21
+            { .int_x = 960 * 64, .int_y = 376 * 64, .active = 1, .damage = 10 }, // 22
+            { .int_x = 1000 * 64, .int_y = 376 * 64, .active = 1, .damage = 10 }, // 23
+            { .int_x = 976 * 64, .int_y = 344 * 64, .active = 1, .damage = 10 }, // 24
+            { .int_x = 992 * 64, .int_y = 312 * 64, .active = 1, .damage = 10 }, // 25
+            { .int_x = 968 * 64, .int_y = 280 * 64, .active = 1, .damage = 10 }, // 26
+            { .int_x = 984 * 64, .int_y = 256 * 64, .active = 1, .damage = 10 }, // 27
+            { .int_x = 1000 * 64, .int_y = 240 * 64, .active = 1, .damage = 10 }, // 28
+            { .int_x = 976 * 64, .int_y = 208 * 64, .active = 1, .damage = 10 }, // 29
+            { .int_x = 984 * 64, .int_y = 200 * 64, .active = 1, .damage = 10 }, // 30
+            { .int_x = 968 * 64, .int_y = 160 * 64, .active = 1, .damage = 10 }, // 31
+            { .int_x = 992 * 64, .int_y = 128 * 64, .active = 1, .damage = 10 }, // 32
+            { .int_x = 968 * 64, .int_y = 112 * 64, .active = 1, .damage = 10 }, // 33
+            { .int_x = 984 * 64, .int_y = 88 * 64, .active = 1, .damage = 10 }, // 34
+            { .int_x = 1000 * 64, .int_y = 88 * 64, .active = 1, .damage = 10 }, // 35
+            { .int_x = 752 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 }, // 36
+            { .int_x = 704 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 }, // 37
+            { .int_x = 648 * 64, .int_y = 744 * 64, .active = 1, .damage = 10 }, // 38
+            { .int_x = 672 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 }, // 39
+            { .int_x = 624 * 64, .int_y = 784 * 64, .active = 1, .damage = 10 }, // 40
+            { .int_x = 600 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 }, // 41
+            { .int_x = 592 * 64, .int_y = 824 * 64, .active = 1, .damage = 10 }, // 42
+            { .int_x = 560 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 }, // 43
+            { .int_x = 520 * 64, .int_y = 792 * 64, .active = 1, .damage = 10 }, // 44
+            { .int_x = 504 * 64, .int_y = 824 * 64, .active = 1, .damage = 10 }, // 45
+            { .int_x = 472 * 64, .int_y = 768 * 64, .active = 1, .damage = 10 }, // 46
+            { .int_x = 448 * 64, .int_y = 816 * 64, .active = 1, .damage = 10 }, // 47
+            { .int_x = 432 * 64, .int_y = 760 * 64, .active = 1, .damage = 10 }, // 48
+            { .int_x = 360 * 64, .int_y = 816 * 64, .active = 1, .damage = 10 }, // 49
+            { .int_x = 336 * 64, .int_y = 808 * 64, .active = 1, .damage = 10 }, // 50
+            { .int_x = 472 * 64, .int_y = 672 * 64, .active = 1, .damage = 10 }, // 51
+            { .int_x = 272 * 64, .int_y = 704 * 64, .active = 1, .damage = 10 }, // 52
+            { .int_x = 200 * 64, .int_y = 616 * 64, .active = 1, .damage = 10 }, // 53
+            { .int_x = 448 * 64, .int_y = 456 * 64, .active = 1, .damage = 10 }, // 54
+            { .int_x = 448 * 64, .int_y = 424 * 64, .active = 1, .damage = 10 }, // 55
+            DISABLE_MINE, // 56
+            DISABLE_MINE, // 57
+            DISABLE_MINE, // 58
+            DISABLE_MINE, // 59
+            DISABLE_MINE, // 60
         }
     } 
 };
@@ -197,8 +220,8 @@ void initMines() {
         mines[i].dy = levels[level].mineList[i].dy;
         // mines[i].width = levels[level].mineList[i].width;
         // mines[i].height = levels[level].mineList[i].height;
-        mines[i].width = 16;
-        mines[i].height = 16;
+        mines[i].width = 8;
+        mines[i].height = 8;
         mines[i].active = levels[level].mineList[i].active;
         mines[i].damage = levels[level].mineList[i].damage;
     }
@@ -213,6 +236,20 @@ void doCollision() {
                 doBattle = 1;
                 opponentIdx = i;
                 return;
+            }
+            for (int j = 0; j < NUM_BULLETS; j++) {
+                if (bullets[j].active) {
+                    if (collision(bullets[j].int_x, bullets[j].int_y, ENCODE26_6(bullets[j].width), ENCODE26_6(bullets[j].height),
+                    enemies[i].int_x, enemies[i].int_y, ENCODE26_6(enemies[i].width), ENCODE26_6(enemies[i].height))) {
+                        // Disable bullet
+                        bullets[j].active = 0;
+                        shadowOAM[bullets[j].spriteIdx].attr0 = ATTR0_HIDE;
+                        // DO BATTLE
+                        doBattle = 1;
+                        opponentIdx = i;
+                        return;
+                    }
+                }
             }
         }
     }
@@ -477,6 +514,10 @@ void updateBullet(BULLET* bullet) {
     {
         bullet->active = 0;
     }
+    if (collisionCheck(collisionMap, 1024, DECODE26_6(bullet->int_x), DECODE26_6(bullet->int_y), bullet->width, bullet->height)) {
+        bullet->active = 0;
+    }
+
     bullet->x = DECODE26_6(bullet->int_x) - bg2xOff;
     bullet->y = DECODE26_6(bullet->int_y) - bg2yOff;
     // Only draw the bullet if any part of it is onscreen
@@ -562,37 +603,15 @@ void drawMine(MINE* mine) {
     // Only draw as many mines as we have sprites for
     if (drawnMines < NUM_MINE_SPRITES) {
         shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
-        shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & COLMASK) | ATTR1_SMALL;
+        shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & COLMASK) | ATTR1_TINY;
         shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(24, 8) | ATTR2_PRIORITY(MINE_PRIORITY);
         drawnMines++;
     }
 }
 
-// // Returns the number of tiles to be red in a section of the healthbar given the index of the starting tile
-// int tilesRed(int tile1) {
-//     if (submarineHp > (((tile1) * submarineMaxHp) / 26)) {
-//         if (submarineHp > (((tile1+1) * submarineMaxHp) / 26)) {
-//             if (submarineHp > (((tile1+2) * submarineMaxHp) / 26)) {
-//                 if (submarineHp > (((tile1+3) * submarineMaxHp) / 26)) {
-//                     return 4;
-//                 } else {
-//                     return 3;
-//                 }
-//             } else {
-//                 return 2;
-//             }
-//         } else {
-//             return 1;
-//         }
-//     } else {
-//         return 0;
-//     }
-// }
-
 // Display the submarine's healthbar
 void updateHealthBar() {
     // There are 26 tiles of healthbar
-
     // Left nub
     shadowOAM[HEALTHBAR1].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
     shadowOAM[HEALTHBAR1].attr1 = (16 & COLMASK) | ATTR1_TINY;

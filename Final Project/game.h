@@ -6,8 +6,10 @@
 extern int submarineMaxHp;
 extern int submarineHp; // Player health
 
+extern int gameVictory; // Set to 1 when the game is won
+
 // Enemy types
-enum { FISH, SHARK, ANGLER, JIM }; // don't mess with jim
+enum { FISH, SHARK, ANGLER, PUFFER, BOSS };
 
 #define NAME_LEN 10
 

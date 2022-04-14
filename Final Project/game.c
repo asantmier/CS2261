@@ -6,6 +6,7 @@
 
 int submarineMaxHp;
 int submarineHp;
+int gameVictory;
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
@@ -13,6 +14,7 @@ COMBATANT battleOpponents[4];
 void initGame() {
     submarineMaxHp = 100;
     submarineHp = submarineMaxHp;
+    gameVictory = 0;
     initParty();
 }
 
@@ -31,7 +33,8 @@ void initParty() {
     battleAllies[1].maxHp = 10;
     battleAllies[1].hp = battleAllies[1].maxHp;
     battleAllies[1].moves[0] = MOVE_SLASH;
-    battleAllies[1].numMoves = 1;
+    battleAllies[0].moves[1] = MOVE_HEAL;
+    battleAllies[1].numMoves = 2;
 }
 
 // Returns the number of tiles to be red in a section of the healthbar

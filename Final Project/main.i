@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 21 "main.c"
+# 25 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -811,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 22 "main.c" 2
+# 26 "main.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1222,7 +1222,7 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 23 "main.c" 2
+# 27 "main.c" 2
 # 1 "mode0.h" 1
 
 
@@ -1336,7 +1336,7 @@ void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
-# 24 "main.c" 2
+# 28 "main.c" 2
 # 1 "print.h" 1
 # 36 "print.h"
 void mgba_printf_level(int level, const char* ptr, ...);
@@ -1344,7 +1344,7 @@ void mgba_printf(const char* string, ...);
 void mgba_break(void);
 uint8_t mgba_open(void);
 void mgba_close(void);
-# 25 "main.c" 2
+# 29 "main.c" 2
 # 1 "world.h" 1
 
 
@@ -1377,8 +1377,10 @@ extern MOVE MOVE_HEAL;
 extern int submarineMaxHp;
 extern int submarineHp;
 
+extern int gameVictory;
 
-enum { FISH, SHARK, ANGLER, JIM };
+
+enum { FISH, SHARK, ANGLER, PUFFER, BOSS };
 
 
 
@@ -1391,7 +1393,7 @@ typedef struct tag_combatant {
     int numMoves;
     MOVE moves[6];
 } COMBATANT;
-# 37 "game.h"
+# 39 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1456,8 +1458,8 @@ typedef struct tag_mine {
 
 typedef struct tag_level {
 
-    ENEMY enemyList[50];
-    MINE mineList[50];
+    ENEMY enemyList[60];
+    MINE mineList[60];
 } LEVEL;
 
 
@@ -1466,8 +1468,8 @@ LEVEL levels[1];
 
 extern PLAYER player;
 extern BULLET bullets[5];
-extern ENEMY enemies[50];
-extern MINE mines[50];
+extern ENEMY enemies[60];
+extern MINE mines[60];
 
 
 extern int doBattle;
@@ -1502,7 +1504,7 @@ void drawMine(MINE* mine);
 
 
 void updateHealthBar();
-# 26 "main.c" 2
+# 30 "main.c" 2
 # 1 "battle.h" 1
 # 83 "battle.h"
 extern const int text_tile_lkup[];
@@ -1528,7 +1530,7 @@ enum { PLAYERTURN, ENEMYTURN };
 extern int turn;
 
 
-enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU };
+enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU, CAPTUREMENU, REPLACEMENU };
 
 
 enum { PLAYERTEAM, ENEMYTEAM };
@@ -1547,13 +1549,17 @@ void goToFrontMenu();
 void goToAttackMenu();
 void goToTargetMenu();
 void goToInspectMenu();
+void goToCaptureMenu();
+void goToReplaceMenu();
 void frontMenu();
 void attackMenu();
 void targetMenu();
 void inspectMenu();
+void captureMenu();
+void replaceMenu();
 void executeMove(MOVE* m, COMBATANT* t);
 void finishTurn();
-# 27 "main.c" 2
+# 31 "main.c" 2
 
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
@@ -1561,7 +1567,7 @@ extern const unsigned short tempspritesheetTiles[16384];
 
 
 extern const unsigned short tempspritesheetPal[256];
-# 29 "main.c" 2
+# 33 "main.c" 2
 # 1 "tempsplash.h" 1
 # 22 "tempsplash.h"
 extern const unsigned short tempsplashTiles[1664];
@@ -1571,7 +1577,7 @@ extern const unsigned short tempsplashMap[1024];
 
 
 extern const unsigned short tempsplashPal[256];
-# 30 "main.c" 2
+# 34 "main.c" 2
 # 1 "tempinstructions.h" 1
 # 22 "tempinstructions.h"
 extern const unsigned short tempinstructionsTiles[704];
@@ -1581,7 +1587,7 @@ extern const unsigned short tempinstructionsMap[1024];
 
 
 extern const unsigned short tempinstructionsPal[256];
-# 31 "main.c" 2
+# 35 "main.c" 2
 # 1 "temppause.h" 1
 # 22 "temppause.h"
 extern const unsigned short temppauseTiles[1504];
@@ -1591,7 +1597,7 @@ extern const unsigned short temppauseMap[1024];
 
 
 extern const unsigned short temppausePal[256];
-# 32 "main.c" 2
+# 36 "main.c" 2
 # 1 "tempwin.h" 1
 # 22 "tempwin.h"
 extern const unsigned short tempwinTiles[480];
@@ -1601,7 +1607,7 @@ extern const unsigned short tempwinMap[1024];
 
 
 extern const unsigned short tempwinPal[256];
-# 33 "main.c" 2
+# 37 "main.c" 2
 # 1 "templose.h" 1
 # 22 "templose.h"
 extern const unsigned short temploseTiles[704];
@@ -1611,7 +1617,7 @@ extern const unsigned short temploseMap[1024];
 
 
 extern const unsigned short templosePal[256];
-# 34 "main.c" 2
+# 38 "main.c" 2
 # 1 "tempbattle.h" 1
 # 22 "tempbattle.h"
 extern const unsigned short tempbattleTiles[3904];
@@ -1621,7 +1627,7 @@ extern const unsigned short tempbattleMap[1024];
 
 
 extern const unsigned short tempbattlePal[256];
-# 35 "main.c" 2
+# 39 "main.c" 2
 # 1 "world1.h" 1
 # 22 "world1.h"
 extern const unsigned short world1Tiles[1600];
@@ -1631,7 +1637,7 @@ extern const unsigned short world1Map[8192];
 
 
 extern const unsigned short world1Pal[256];
-# 36 "main.c" 2
+# 40 "main.c" 2
 # 1 "world1parallax.h" 1
 # 22 "world1parallax.h"
 extern const unsigned short world1parallaxTiles[256];
@@ -1641,7 +1647,7 @@ extern const unsigned short world1parallaxMap[2048];
 
 
 extern const unsigned short world1parallaxPal[256];
-# 37 "main.c" 2
+# 41 "main.c" 2
 
 
 void initialize();
@@ -1829,7 +1835,8 @@ void game() {
 
     if ((!(~(oldButtons) & ((1 << 2))) && (~buttons & ((1 << 2))))) {
         goToPause();
-    } else if ((!(~(oldButtons) & ((1 << 9))) && (~buttons & ((1 << 9))))) {
+    }
+    if (gameVictory) {
         goToWin();
     }
 

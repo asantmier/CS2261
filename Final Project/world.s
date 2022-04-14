@@ -126,18 +126,16 @@ initEnemies:
 	ldr	r3, .L19
 	ldr	r1, [r3, #4]
 	ldr	ip, .L19+4
-	ldr	r3, .L19+8
-	ldr	r0, .L19+12
+	ldr	r0, .L19+8
+	ldr	r2, .L19+12
+	ldr	r3, .L19+16
 	add	r1, r1, r1, lsl #2
-	ldr	r2, .L19+16
-	rsb	r1, r1, r1, lsl #3
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	rsb	r1, r1, r1, lsl #4
-	add	r9, r3, #2192
+	rsb	r1, r1, r1, lsl #6
 	ldr	fp, [ip]
 	ldr	r10, [r0]
-	add	r2, r2, r1, lsl #3
-	add	r9, r9, #8
+	add	r2, r2, r1, lsl #4
+	add	r9, r3, #2640
 .L16:
 	ldr	r1, [r2]
 	ldr	r0, [r2, #4]
@@ -172,9 +170,9 @@ initEnemies:
 .L19:
 	.word	.LANCHOR0
 	.word	bg2xOff
-	.word	enemies
 	.word	bg2yOff
 	.word	levels
+	.word	enemies
 	.size	initEnemies, .-initEnemies
 	.align	2
 	.global	initMines
@@ -186,28 +184,27 @@ initMines:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	ip, #16
+	mov	ip, #8
 	ldr	r3, .L25
 	ldr	r1, [r3, #4]
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	ldr	r0, .L25+4
 	ldr	lr, .L25+8
-	add	r1, r1, r1, lsl #2
 	ldr	r2, .L25+12
 	ldr	r3, .L25+16
-	rsb	r1, r1, r1, lsl #3
-	rsb	r1, r1, r1, lsl #4
+	add	r1, r1, r1, lsl #2
+	rsb	r1, r1, r1, lsl #6
 	ldr	r10, [lr]
 	ldr	r9, [r0]
-	add	r2, r2, r1, lsl #3
-	add	fp, r3, #2000
+	add	r2, r2, r1, lsl #4
+	add	fp, r3, #2400
 .L22:
-	ldr	r0, [r2, #2200]
-	ldr	r1, [r2, #2204]
-	ldr	r6, [r2, #2216]
-	ldr	r5, [r2, #2220]
-	ldr	r4, [r2, #2232]
-	ldr	lr, [r2, #2236]
+	add	r0, r2, #2640
+	ldm	r0, {r0, r1}
+	add	r4, r2, #2672
+	ldr	r6, [r2, #2656]
+	ldr	r5, [r2, #2660]
+	ldm	r4, {r4, lr}
 	rsb	r8, r10, r0, asr #6
 	rsb	r7, r9, r1, asr #6
 	str	ip, [r3, #24]
@@ -305,26 +302,27 @@ doCollision:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, r8, lr}
-	mov	r5, #0
-	ldr	r4, .L54
-	ldr	r6, .L54+4
-	ldr	r7, .L54+8
+	push	{r4, r5, r6, r7, r8, r9, r10, lr}
+	mov	r6, #0
+	ldr	r4, .L64
+	ldr	r8, .L64+4
+	ldr	r10, .L64+8
+	ldr	r9, .L64+12
 	sub	sp, sp, #16
-	b	.L36
+	b	.L39
 .L34:
-	add	r5, r5, #1
-	cmp	r5, #50
+	add	r6, r6, #1
+	cmp	r6, #60
 	add	r4, r4, #44
-	beq	.L53
-.L36:
+	beq	.L61
+.L39:
 	ldr	r3, [r4, #32]
 	cmp	r3, #0
 	beq	.L34
 	ldr	r0, [r4, #28]
 	ldr	r1, [r4, #24]
 	ldm	r4, {ip, lr}
-	add	r2, r6, #24
+	add	r2, r8, #24
 	ldm	r2, {r2, r3}
 	lsl	r0, r0, #6
 	stm	sp, {ip, lr}
@@ -332,37 +330,25 @@ doCollision:
 	str	r0, [sp, #12]
 	str	r1, [sp, #8]
 	lsl	r3, r3, #6
-	ldm	r6, {r0, r1}
+	ldm	r8, {r0, r1}
 	lsl	r2, r2, #6
 	mov	lr, pc
-	bx	r7
-	cmp	r0, #0
-	beq	.L34
-	mov	r1, #1
-	ldr	r2, .L54+12
-	ldr	r3, .L54+16
-	str	r1, [r2]
-	str	r5, [r3]
-.L33:
-	add	sp, sp, #16
-	@ sp needed
-	pop	{r4, r5, r6, r7, r8, lr}
-	bx	lr
-.L53:
-	ldr	r4, .L54+20
-	ldr	r5, .L54+4
-	ldr	r7, .L54+8
-	ldr	r8, .L54+24
-	add	r6, r4, #2000
-	b	.L40
-.L38:
-	add	r4, r4, #40
-	cmp	r4, r6
-	beq	.L33
-.L40:
-	ldr	r3, [r4, #32]
+	bx	r10
+	subs	r7, r0, #0
+	bne	.L62
+	ldr	r5, .L64+12
+	ldr	r3, [r5, #32]
 	cmp	r3, #0
-	beq	.L38
+	bne	.L63
+.L37:
+	add	r7, r7, #1
+	cmp	r7, #5
+	add	r5, r5, #40
+	beq	.L34
+	ldr	r3, [r5, #32]
+	cmp	r3, #0
+	beq	.L37
+.L63:
 	ldr	r0, [r4, #28]
 	ldr	r1, [r4, #24]
 	ldm	r4, {ip, lr}
@@ -377,22 +363,85 @@ doCollision:
 	ldm	r5, {r0, r1}
 	lsl	r2, r2, #6
 	mov	lr, pc
-	bx	r7
+	bx	r10
 	cmp	r0, #0
-	beq	.L38
+	beq	.L37
 	mov	r2, #0
-	ldr	r3, [r8]
+	mov	ip, #512
+	mov	r1, #1
+	add	r7, r7, r7, lsl #2
+	add	r7, r9, r7, lsl #3
+	ldr	r3, [r7, #36]
+	ldr	r0, .L64+16
+	lsl	r3, r3, #3
+	str	r2, [r7, #32]
+	strh	ip, [r0, r3]	@ movhi
+	ldr	r2, .L64+20
+	ldr	r3, .L64+24
+	str	r1, [r2]
+	str	r6, [r3]
+.L33:
+	add	sp, sp, #16
+	@ sp needed
+	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
+	bx	lr
+.L61:
+	ldr	r4, .L64+28
+	ldr	r5, .L64+4
+	ldr	r8, .L64+8
+	ldr	r7, .L64+32
+	add	r6, r4, #2400
+	b	.L43
+.L41:
+	add	r4, r4, #40
+	cmp	r4, r6
+	beq	.L33
+.L43:
+	ldr	r3, [r4, #32]
+	cmp	r3, #0
+	beq	.L41
+	ldr	r0, [r4, #28]
+	ldr	r1, [r4, #24]
+	ldm	r4, {ip, lr}
+	add	r2, r5, #24
+	ldm	r2, {r2, r3}
+	lsl	r0, r0, #6
+	stm	sp, {ip, lr}
+	lsl	r1, r1, #6
+	str	r0, [sp, #12]
+	str	r1, [sp, #8]
+	lsl	r3, r3, #6
+	ldm	r5, {r0, r1}
+	lsl	r2, r2, #6
+	mov	lr, pc
+	bx	r8
+	cmp	r0, #0
+	beq	.L41
+	mov	r2, #0
+	ldr	r3, [r7]
 	ldr	r1, [r4, #36]
 	sub	r3, r3, r1
-	str	r3, [r8]
+	str	r3, [r7]
 	str	r2, [r4, #32]
-	b	.L38
-.L55:
+	b	.L41
+.L62:
+	mov	r1, #1
+	ldr	r2, .L64+20
+	ldr	r3, .L64+24
+	str	r1, [r2]
+	str	r6, [r3]
+	add	sp, sp, #16
+	@ sp needed
+	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
+	bx	lr
+.L65:
 	.align	2
-.L54:
+.L64:
 	.word	enemies
 	.word	player
 	.word	collision
+	.word	bullets
+	.word	shadowOAM
 	.word	.LANCHOR0
 	.word	opponentIdx
 	.word	mines
@@ -409,7 +458,7 @@ movePlayer:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, r7, r8, r9, r10, lr}
-	ldr	r4, .L99
+	ldr	r4, .L109
 	ldr	r8, [r4, #16]
 	ldr	r3, [r4]
 	add	r7, r4, #20
@@ -418,20 +467,20 @@ movePlayer:
 	ldm	r7, {r7, ip}
 	sub	sp, sp, #8
 	rsbmi	r8, r3, #0
-	bmi	.L58
+	bmi	.L68
 	add	r1, r2, ip, lsl #6
 	cmp	r1, #65536
 	subgt	r1, r1, #65536
 	subgt	r8, r8, r1
 	addgt	r2, r3, r8
 	asr	r2, r2, #6
-.L58:
+.L68:
 	ldr	r1, [r4, #4]
 	adds	r3, r1, r7
 	movmi	r3, #0
 	ldr	r0, [r4, #28]
 	rsbmi	r7, r1, #0
-	bmi	.L61
+	bmi	.L71
 	add	lr, r1, r0, lsl #6
 	cmp	lr, #65536
 	lsl	lr, r0, #6
@@ -440,17 +489,17 @@ movePlayer:
 	subgt	r7, r7, r3
 	addgt	r3, r1, r7
 	asr	r3, r3, #6
-.L61:
-	ldr	r10, .L99+4
+.L71:
+	ldr	r10, .L109+4
 	str	r0, [sp, #4]
 	mov	r1, #1024
 	str	ip, [sp]
 	ldr	r0, [r10]
-	ldr	r9, .L99+8
+	ldr	r9, .L109+8
 	mov	lr, pc
 	bx	r9
 	cmp	r0, #0
-	bgt	.L93
+	bgt	.L103
 	ldr	r3, [r4]
 	eor	r6, r8, r8, asr #31
 	sub	r6, r6, r8, asr #31
@@ -461,7 +510,7 @@ movePlayer:
 	str	r8, [r4]
 	str	r3, [r4, #4]
 	sub	r5, r5, r7, asr #31
-.L67:
+.L77:
 	ldr	r2, [r4, #16]
 	cmp	r2, #0
 	rsblt	r2, r2, #0
@@ -473,7 +522,7 @@ movePlayer:
 	rsblt	r2, r2, #0
 	cmp	r2, r5
 	movgt	r2, #0
-	ldr	r5, .L99+12
+	ldr	r5, .L109+12
 	ldr	r0, [r5]
 	strgt	r2, [r4, #20]
 	rsb	r1, r0, r8, asr #6
@@ -482,7 +531,7 @@ movePlayer:
 	movle	r2, #0
 	cmp	r1, #78
 	movgt	r2, #0
-	ldr	lr, .L99+16
+	ldr	lr, .L109+16
 	ldr	ip, [lr]
 	cmp	r2, #0
 	rsb	r2, ip, r3, asr #6
@@ -491,12 +540,12 @@ movePlayer:
 	ldr	r6, [r4, #24]
 	asr	r8, r8, #6
 	asr	r3, r3, #6
-	bne	.L94
-.L70:
+	bne	.L104
+.L80:
 	add	r0, r1, r6
 	cmp	r0, #159
-	bgt	.L95
-.L73:
+	bgt	.L105
+.L83:
 	cmp	r2, #51
 	movle	r1, #1
 	movgt	r1, #0
@@ -504,24 +553,24 @@ movePlayer:
 	movle	r1, #0
 	cmp	r1, #0
 	ldr	r1, [r4, #28]
-	bne	.L96
-.L76:
+	bne	.L106
+.L86:
 	add	r3, r2, r1
 	cmp	r3, #105
-	ble	.L56
+	ble	.L66
 	ldr	r0, [lr]
 	cmp	r0, #864
-	blt	.L78
-.L56:
+	blt	.L88
+.L66:
 	add	sp, sp, #8
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
-.L95:
+.L105:
 	ldr	r7, [r5]
 	cmp	r7, #784
-	bge	.L73
-.L72:
+	bge	.L83
+.L82:
 	sub	r0, r0, #159
 	add	r8, r0, r7
 	cmp	r8, #784
@@ -534,19 +583,19 @@ movePlayer:
 	strle	r8, [r5]
 	strgt	r0, [r5]
 	strgt	r8, [r4, #8]
-	b	.L73
-.L96:
+	b	.L83
+.L106:
 	rsb	r5, r2, #52
 	cmp	ip, r5
-	bge	.L97
+	bge	.L107
 	mov	r0, #0
 	sub	r2, r3, r5
 	add	r3, r2, r1
 	cmp	r3, #105
 	str	r2, [r4, #12]
 	str	r0, [lr]
-	ble	.L56
-.L78:
+	ble	.L66
+.L88:
 	sub	r3, r3, #105
 	add	ip, r3, r0
 	cmp	ip, #864
@@ -563,7 +612,7 @@ movePlayer:
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
-.L93:
+.L103:
 	add	r6, r8, r8, lsl #1
 	add	r5, r7, r7, lsl #1
 	add	r2, r6, #3
@@ -588,8 +637,8 @@ movePlayer:
 	cmp	r0, #0
 	asr	r6, r6, #2
 	asr	r5, r5, #2
-	bgt	.L98
-.L64:
+	bgt	.L108
+.L74:
 	ldr	r8, [r4]
 	ldr	r3, [r4, #4]
 	add	r8, r6, r8
@@ -602,32 +651,32 @@ movePlayer:
 	str	r8, [r4]
 	str	r3, [r4, #4]
 	rsblt	r5, r5, #0
-	b	.L67
-.L94:
+	b	.L77
+.L104:
 	rsb	r9, r1, #79
 	cmp	r0, r9
-	blt	.L71
+	blt	.L81
 	mov	r1, #79
 	sub	r0, r0, r9
 	str	r0, [r5]
 	str	r1, [r4, #8]
-	b	.L70
-.L71:
+	b	.L80
+.L81:
 	mov	r7, #0
 	sub	r1, r8, r9
 	add	r0, r1, r6
 	cmp	r0, #159
 	str	r1, [r4, #8]
 	str	r7, [r5]
-	bgt	.L72
-	b	.L73
-.L97:
+	bgt	.L82
+	b	.L83
+.L107:
 	mov	r2, #52
 	sub	r3, ip, r5
 	str	r3, [lr]
 	str	r2, [r4, #12]
-	b	.L76
-.L98:
+	b	.L86
+.L108:
 	ldm	r4, {r2, r3}
 	ldr	r0, [r4, #28]
 	ldr	r1, [r4, #24]
@@ -646,7 +695,7 @@ movePlayer:
 	cmp	r0, #0
 	asr	r5, r5, #1
 	asr	r6, r6, #1
-	ble	.L64
+	ble	.L74
 	add	r6, r8, #3
 	cmp	r8, #0
 	movlt	r8, r6
@@ -668,13 +717,13 @@ movePlayer:
 	cmp	r0, #0
 	asr	r6, r8, #2
 	asr	r7, r7, #2
-	ble	.L66
+	ble	.L76
 	mov	r5, #0
 	ldr	r8, [r4]
 	mov	r6, r5
 	ldr	r3, [r4, #4]
-	b	.L67
-.L66:
+	b	.L77
+.L76:
 	ldr	r8, [r4]
 	ldr	r3, [r4, #4]
 	add	r8, r6, r8
@@ -687,10 +736,10 @@ movePlayer:
 	str	r3, [r4, #4]
 	rsblt	r6, r6, #0
 	sub	r5, r5, r7, asr #31
-	b	.L67
-.L100:
+	b	.L77
+.L110:
 	.align	2
-.L99:
+.L109:
 	.word	player
 	.word	.LANCHOR1
 	.word	collisionCheck
@@ -709,20 +758,20 @@ drawPlayer:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
 	mov	r0, #2048
-	ldr	r2, .L102
+	ldr	r2, .L112
 	ldr	r3, [r2, #8]
 	ldrb	r1, [r2, #12]	@ zero_extendqisi2
 	lsl	r3, r3, #23
-	ldr	r2, .L102+4
+	ldr	r2, .L112+4
 	lsr	r3, r3, #23
 	orr	r1, r1, #16384
 	strh	r3, [r2, #2]	@ movhi
 	strh	r1, [r2]	@ movhi
 	strh	r0, [r2, #4]	@ movhi
 	bx	lr
-.L103:
+.L113:
 	.align	2
-.L102:
+.L112:
 	.word	player
 	.word	shadowOAM
 	.size	drawPlayer, .-drawPlayer
@@ -737,31 +786,31 @@ firePlayer:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, lr}
-	ldr	lr, .L113
+	ldr	lr, .L123
 	ldr	r3, [lr, #32]
 	cmp	r3, #1
 	moveq	r4, #96
 	mvnne	r4, #95
 	mov	r3, #0
-	ldrne	ip, .L113+4
+	ldrne	ip, .L123+4
 	ldr	r2, [lr]
 	ldreq	r0, [lr, #24]
 	ldrne	r0, [ip, #24]
 	addeq	r0, r2, r0, lsl #6
 	subne	r0, r2, r0, lsl #6
-	ldreq	ip, .L113+4
-	ldr	r2, .L113+4
-.L109:
+	ldreq	ip, .L123+4
+	ldr	r2, .L123+4
+.L119:
 	ldr	r1, [r2, #32]
 	cmp	r1, #0
-	beq	.L112
+	beq	.L122
 	add	r3, r3, #1
 	cmp	r3, #5
 	add	r2, r2, #40
-	bne	.L109
+	bne	.L119
 	pop	{r4, r5, lr}
 	bx	lr
-.L112:
+.L122:
 	mov	r5, #1
 	ldr	lr, [lr, #4]
 	add	r3, r3, r3, lsl #2
@@ -777,9 +826,9 @@ firePlayer:
 	str	r2, [r3, #8]
 	pop	{r4, r5, lr}
 	bx	lr
-.L114:
+.L124:
 	.align	2
-.L113:
+.L123:
 	.word	player
 	.word	bullets
 	.size	firePlayer, .-firePlayer
@@ -793,61 +842,61 @@ updatePlayer:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r1, .L158
+	ldr	r1, .L168
 	push	{r4, lr}
 	ldrh	r3, [r1, #48]
-	ldr	r4, .L158+4
+	ldr	r4, .L168+4
 	tst	r3, #256
 	add	r2, r4, #16
 	ldm	r2, {r2, r3}
 	ldrh	r0, [r1, #48]
-	beq	.L116
+	beq	.L126
 	tst	r0, #32
-	bne	.L117
+	bne	.L127
 	ldrh	r1, [r1, #48]
 	sub	r2, r2, #20
 	tst	r1, #64
 	str	r2, [r4, #16]
-	bne	.L118
-.L152:
+	bne	.L128
+.L162:
 	sub	r3, r3, #20
 	str	r3, [r4, #20]
-.L119:
+.L129:
 	cmp	r2, #48
 	mov	r1, #48
 	mvn	r0, #47
-	ble	.L141
-.L142:
+	ble	.L151
+.L152:
 	str	r1, [r4, #16]
-.L131:
+.L141:
 	cmp	r1, r3
 	strlt	r1, [r4, #20]
-	blt	.L133
+	blt	.L143
 	cmp	r0, r3
 	strgt	r0, [r4, #20]
-.L133:
+.L143:
 	bl	movePlayer
 	ldr	r3, [r4, #16]
 	cmp	r3, #0
 	movgt	r3, #1
 	strgt	r3, [r4, #32]
-	bgt	.L135
+	bgt	.L145
 	movne	r3, #0
 	strne	r3, [r4, #32]
-.L135:
-	ldr	r3, .L158+8
+.L145:
+	ldr	r3, .L168+8
 	ldrh	r3, [r3]
 	tst	r3, #1
-	beq	.L136
-	ldr	r3, .L158+12
+	beq	.L146
+	ldr	r3, .L168+12
 	ldrh	r3, [r3]
 	tst	r3, #1
-	beq	.L154
-.L136:
+	beq	.L164
+.L146:
 	mov	r0, #2048
 	ldr	r3, [r4, #8]
 	ldrb	r1, [r4, #12]	@ zero_extendqisi2
-	ldr	r2, .L158+16
+	ldr	r2, .L168+16
 	lsl	r3, r3, #23
 	lsr	r3, r3, #23
 	orr	r1, r1, #16384
@@ -856,112 +905,112 @@ updatePlayer:
 	strh	r0, [r2, #4]	@ movhi
 	pop	{r4, lr}
 	bx	lr
-.L116:
+.L126:
 	tst	r0, #32
-	bne	.L120
+	bne	.L130
 	ldrh	r1, [r1, #48]
 	sub	r2, r2, #10
 	tst	r1, #64
 	str	r2, [r4, #16]
-	bne	.L121
-.L150:
+	bne	.L131
+.L160:
 	sub	r3, r3, #10
 	str	r3, [r4, #20]
-.L122:
+.L132:
 	cmp	r2, #24
 	mov	r1, #24
 	mvn	r0, #23
-	bgt	.L142
-.L141:
+	bgt	.L152
+.L151:
 	cmp	r0, r2
 	strgt	r0, [r4, #16]
-	b	.L131
-.L120:
+	b	.L141
+.L130:
 	ldrh	r0, [r1, #48]
 	tst	r0, #16
 	movne	r1, #1
-	beq	.L155
-.L138:
+	beq	.L165
+.L148:
 	cmp	r2, #0
 	subgt	r2, r2, #1
 	strgt	r2, [r4, #16]
-	ble	.L156
-	ldr	r0, .L158
+	ble	.L166
+	ldr	r0, .L168
 	ldrh	ip, [r0, #48]
 	tst	ip, #64
-	beq	.L157
-.L125:
+	beq	.L167
+.L135:
 	ldrh	r0, [r0, #48]
 	tst	r0, #128
-	bne	.L127
+	bne	.L137
 	cmp	r1, #0
-	beq	.L153
-.L151:
+	beq	.L163
+.L161:
 	add	r3, r3, #10
 	str	r3, [r4, #20]
-	b	.L122
-.L117:
+	b	.L132
+.L127:
 	ldrh	r0, [r1, #48]
 	tst	r0, #16
 	movne	r1, #0
-	bne	.L138
+	bne	.L148
 	ldrh	r1, [r1, #48]
 	add	r2, r2, #20
 	tst	r1, #64
 	str	r2, [r4, #16]
-	beq	.L152
-.L118:
-	ldr	r1, .L158
+	beq	.L162
+.L128:
+	ldr	r1, .L168
 	ldrh	r1, [r1, #48]
 	tst	r1, #128
-	beq	.L153
+	beq	.L163
 	mov	r1, #0
-.L127:
+.L137:
 	cmp	r3, #0
 	subgt	r3, r3, #1
 	strgt	r3, [r4, #20]
-	bgt	.L130
+	bgt	.L140
 	addne	r3, r3, #1
 	strne	r3, [r4, #20]
-.L130:
+.L140:
 	cmp	r1, #0
-	bne	.L122
-	b	.L119
-.L155:
+	bne	.L132
+	b	.L129
+.L165:
 	ldrh	r1, [r1, #48]
 	add	r2, r2, #10
 	tst	r1, #64
 	str	r2, [r4, #16]
-	beq	.L150
-.L121:
-	ldr	r1, .L158
+	beq	.L160
+.L131:
+	ldr	r1, .L168
 	ldrh	r1, [r1, #48]
 	tst	r1, #128
-	beq	.L151
+	beq	.L161
 	mov	r1, #1
-	b	.L127
-.L157:
+	b	.L137
+.L167:
 	cmp	r1, #0
-	beq	.L152
-	b	.L150
-.L156:
-	ldr	r0, .L158
+	beq	.L162
+	b	.L160
+.L166:
+	ldr	r0, .L168
 	ldrh	ip, [r0, #48]
 	addne	r2, r2, #1
 	strne	r2, [r4, #16]
 	tst	ip, #64
-	bne	.L125
-	b	.L157
-.L153:
+	bne	.L135
+	b	.L167
+.L163:
 	add	r3, r3, #20
 	str	r3, [r4, #20]
-	b	.L119
-.L154:
+	b	.L129
+.L164:
 	bl	firePlayer
-	b	.L136
-.L159:
+	b	.L146
+.L169:
 	.align	2
-.L158:
+.L168:
 	.word	67109120
 	.word	player
 	.word	oldButtons
@@ -978,93 +1027,122 @@ updateBullet:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	ip, [r0]
-	ldr	r3, [r0, #16]
-	ldr	r1, [r0, #4]
-	ldr	r2, [r0, #20]
-	add	r3, ip, r3
-	add	r2, r1, r2
-	cmp	r3, #0
-	push	{r4, lr}
-	str	r3, [r0]
-	str	r2, [r0, #4]
-	blt	.L161
-	ldr	ip, [r0, #24]
-	add	r1, r3, ip, lsl #6
-	cmp	r1, #65536
-	movle	r1, #0
-	movgt	r1, #1
-	orrs	r1, r1, r2, lsr #31
-	beq	.L172
-.L161:
-	mov	lr, #0
-	ldr	ip, .L173
-	ldr	r1, .L173+4
-	ldr	ip, [ip]
-	ldr	r1, [r1]
-	rsb	r3, ip, r3, asr #6
-	rsb	r2, r1, r2, asr #6
-	str	r3, [r0, #8]
-	str	r2, [r0, #12]
-	str	lr, [r0, #32]
-	ldr	r1, [r0, #36]
-.L163:
-	mov	r2, #512
-	ldr	r3, .L173+8
-	lsl	r1, r1, #3
-	strh	r2, [r3, r1]	@ movhi
-.L160:
-	pop	{r4, lr}
-	bx	lr
+	push	{r4, r5, lr}
+	mov	r4, r0
+	ldr	r2, [r0]
+	ldr	r0, [r0, #16]
+	ldr	r3, [r4, #4]
+	ldr	r1, [r4, #20]
+	add	r2, r2, r0
+	add	r3, r3, r1
+	cmp	r2, #0
+	add	r1, r4, #24
+	stm	r4, {r2, r3}
+	ldm	r1, {r1, ip}
+	sub	sp, sp, #12
+	blt	.L171
+	add	r0, r2, r1, lsl #6
+	cmp	r0, #65536
+	movle	r0, #0
+	movgt	r0, #1
+	orrs	r0, r0, r3, lsr #31
+	beq	.L184
+.L171:
+	mov	r0, #0
+	str	r0, [r4, #32]
 .L172:
-	ldr	r4, [r0, #28]
-	add	r1, r2, r4, lsl #6
-	cmp	r1, #65536
-	bgt	.L161
-	ldr	r1, .L173
-	ldr	lr, .L173+4
-	ldr	r1, [r1]
-	ldr	lr, [lr]
-	rsb	r3, r1, r3, asr #6
-	ldr	r1, [r0, #32]
-	rsb	r2, lr, r2, asr #6
+	stm	sp, {r1, ip}
+	ldr	r0, .L186
+	mov	r1, #1024
+	ldr	r0, [r0]
+	ldr	r5, .L186+4
+	asr	r3, r3, #6
+	asr	r2, r2, #6
+	mov	lr, pc
+	bx	r5
+	cmp	r0, #0
+	bne	.L173
+	ldr	r3, .L186+8
+	ldr	r2, .L186+12
+	ldr	r0, [r3]
+	ldr	r2, [r2]
+	ldr	r3, [r4, #32]
+	ldr	ip, [r4]
+	ldr	r1, [r4, #4]
+	rsb	r2, r2, ip, asr #6
+	rsb	r0, r0, r1, asr #6
+	cmp	r3, #0
+	str	r2, [r4, #8]
+	str	r0, [r4, #12]
+	ldr	r3, [r4, #36]
+	beq	.L175
+	ldr	r1, [r4, #24]
+	add	r1, r2, r1
 	cmp	r1, #0
-	str	r3, [r0, #8]
-	str	r2, [r0, #12]
-	ldr	r1, [r0, #36]
-	beq	.L163
-	add	ip, r3, ip
-	cmp	ip, #0
-	movgt	ip, #1
-	movle	ip, #0
-	cmp	r3, #240
-	movgt	ip, #0
-	cmp	ip, #0
-	beq	.L163
-	add	r4, r2, r4
-	cmp	r4, #0
-	movgt	r4, #1
-	movle	r4, #0
-	cmp	r2, #160
-	movgt	r4, #0
-	cmp	r4, #0
-	beq	.L163
-	ldr	r0, .L173+8
-	ldr	ip, .L173+12
-	lsl	r3, r3, #23
-	lsl	lr, r1, #3
-	lsr	r3, r3, #23
-	add	r1, r0, r1, lsl #3
-	and	r2, r2, #255
-	strh	r2, [r0, lr]	@ movhi
-	strh	r3, [r1, #2]	@ movhi
-	strh	ip, [r1, #4]	@ movhi
-	b	.L160
-.L174:
-	.align	2
+	movgt	r1, #1
+	movle	r1, #0
+	cmp	r2, #240
+	movgt	r1, #0
+	cmp	r1, #0
+	bne	.L185
+.L175:
+	mov	r1, #512
+	ldr	r2, .L186+16
+	lsl	r3, r3, #3
+	strh	r1, [r2, r3]	@ movhi
+.L170:
+	add	sp, sp, #12
+	@ sp needed
+	pop	{r4, r5, lr}
+	bx	lr
 .L173:
-	.word	bg2xOff
+	mov	r1, #0
+	ldr	r2, .L186+12
+	ldr	r3, .L186+8
+	ldr	r2, [r2]
+	ldr	ip, [r4]
+	ldr	r3, [r3]
+	ldr	r0, [r4, #4]
+	rsb	r2, r2, ip, asr #6
+	rsb	r3, r3, r0, asr #6
+	str	r3, [r4, #12]
+	str	r2, [r4, #8]
+	str	r1, [r4, #32]
+	ldr	r3, [r4, #36]
+	b	.L175
+.L184:
+	add	r0, r3, ip, lsl #6
+	cmp	r0, #65536
+	ble	.L172
+	b	.L171
+.L185:
+	ldr	r1, [r4, #28]
+	add	r1, r0, r1
+	cmp	r1, #0
+	movgt	r1, #1
+	movle	r1, #0
+	cmp	r0, #160
+	movgt	r1, #0
+	cmp	r1, #0
+	beq	.L175
+	ldr	r1, .L186+16
+	ldr	ip, .L186+20
+	lsl	r2, r2, #23
+	lsl	lr, r3, #3
+	lsr	r2, r2, #23
+	add	r3, r1, r3, lsl #3
+	and	r0, r0, #255
+	strh	r0, [r1, lr]	@ movhi
+	strh	r2, [r3, #2]	@ movhi
+	strh	ip, [r3, #4]	@ movhi
+	b	.L170
+.L187:
+	.align	2
+.L186:
+	.word	.LANCHOR1
+	.word	collisionCheck
 	.word	bg2yOff
+	.word	bg2xOff
 	.word	shadowOAM
 	.word	2568
 	.size	updateBullet, .-updateBullet
@@ -1083,9 +1161,9 @@ updateEnemy:
 	ldr	lr, [r0, #16]
 	ldr	r2, [r0, #4]
 	add	r1, r1, lr
-	ldr	r3, .L188
+	ldr	r3, .L201
 	ldr	lr, [r0, #20]
-	ldr	ip, .L188+4
+	ldr	ip, .L201+4
 	add	r2, r2, lr
 	ldr	r3, [r3]
 	ldr	ip, [ip]
@@ -1094,7 +1172,7 @@ updateEnemy:
 	rsb	ip, ip, r2, asr #6
 	cmp	lr, #0
 	stm	r0, {r1, r2, r3, ip}
-	beq	.L175
+	beq	.L188
 	ldr	r2, [r0, #24]
 	add	r2, r3, r2
 	cmp	r2, #0
@@ -1103,11 +1181,11 @@ updateEnemy:
 	cmp	r3, #240
 	movgt	r2, #0
 	cmp	r2, #0
-	bne	.L187
-.L175:
+	bne	.L200
+.L188:
 	pop	{r4, lr}
 	bx	lr
-.L187:
+.L200:
 	ldr	r2, [r0, #28]
 	add	r2, ip, r2
 	cmp	r2, #0
@@ -1116,13 +1194,13 @@ updateEnemy:
 	cmp	ip, #160
 	movgt	r2, #0
 	cmp	r2, #0
-	beq	.L175
-	ldr	r0, .L188+8
+	beq	.L188
+	ldr	r0, .L201+8
 	ldr	r2, [r0, #8]
 	cmp	r2, #9
-	bgt	.L175
+	bgt	.L188
 	mov	r4, #2064
-	ldr	lr, .L188+12
+	ldr	lr, .L201+12
 	add	r1, r2, #6
 	and	ip, ip, #255
 	add	r2, r2, #1
@@ -1135,10 +1213,10 @@ updateEnemy:
 	strh	ip, [lr, r0]	@ movhi
 	strh	r3, [r2, #2]	@ movhi
 	strh	r4, [r2, #4]	@ movhi
-	b	.L175
-.L189:
+	b	.L188
+.L202:
 	.align	2
-.L188:
+.L201:
 	.word	bg2xOff
 	.word	bg2yOff
 	.word	.LANCHOR0
@@ -1160,8 +1238,8 @@ updateMine:
 	add	r1, r1, ip
 	ldr	r2, [r0, #4]
 	ldr	ip, [r0, #20]
-	ldr	r3, .L203
-	ldr	lr, .L203+4
+	ldr	r3, .L216
+	ldr	lr, .L216+4
 	add	r2, r2, ip
 	ldr	r3, [r3]
 	ldr	lr, [lr]
@@ -1170,7 +1248,7 @@ updateMine:
 	rsb	lr, lr, r2, asr #6
 	cmp	ip, #0
 	stm	r0, {r1, r2, r3, lr}
-	beq	.L190
+	beq	.L203
 	ldr	r2, [r0, #24]
 	add	r2, r3, r2
 	cmp	r2, #0
@@ -1179,11 +1257,11 @@ updateMine:
 	cmp	r3, #240
 	movgt	r2, #0
 	cmp	r2, #0
-	bne	.L202
-.L190:
+	bne	.L215
+.L203:
 	pop	{r4, lr}
 	bx	lr
-.L202:
+.L215:
 	ldr	r2, [r0, #28]
 	add	r2, lr, r2
 	cmp	r2, #0
@@ -1192,29 +1270,28 @@ updateMine:
 	cmp	lr, #160
 	movgt	r2, #0
 	cmp	r2, #0
-	beq	.L190
-	ldr	ip, .L203+8
+	beq	.L203
+	ldr	ip, .L216+8
 	ldr	r1, [ip, #12]
 	cmp	r1, #9
-	bgt	.L190
+	bgt	.L203
 	add	r0, r1, #24
-	ldr	r4, .L203+12
+	ldr	r4, .L216+12
 	add	r1, r1, #1
-	lsl	r3, r3, #23
 	str	r1, [ip, #12]
-	lsr	r3, r3, #23
-	ldr	ip, .L203+16
+	lsl	r3, r3, #23
+	ldr	ip, .L216+16
 	and	r2, lr, #255
 	add	r1, r4, r0, lsl #3
-	orr	r3, r3, #16384
+	lsr	r3, r3, #23
 	lsl	lr, r0, #3
 	strh	r2, [r4, lr]	@ movhi
 	strh	r3, [r1, #2]	@ movhi
 	strh	ip, [r1, #4]	@ movhi
-	b	.L190
-.L204:
+	b	.L203
+.L217:
 	.align	2
-.L203:
+.L216:
 	.word	bg2xOff
 	.word	bg2yOff
 	.word	.LANCHOR0
@@ -1234,8 +1311,8 @@ freeEnemySprites:
 	@ link register save eliminated.
 	mov	r2, #512
 	mov	r0, #0
-	ldr	r3, .L206
-	ldr	r1, .L206+4
+	ldr	r3, .L219
+	ldr	r1, .L219+4
 	strh	r2, [r3, #48]	@ movhi
 	strh	r2, [r3, #56]	@ movhi
 	strh	r2, [r3, #64]	@ movhi
@@ -1248,9 +1325,9 @@ freeEnemySprites:
 	strh	r2, [r3, #120]	@ movhi
 	str	r0, [r1, #8]
 	bx	lr
-.L207:
+.L220:
 	.align	2
-.L206:
+.L219:
 	.word	shadowOAM
 	.word	.LANCHOR0
 	.size	freeEnemySprites, .-freeEnemySprites
@@ -1264,14 +1341,14 @@ drawEnemy:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	ip, .L214
+	ldr	ip, .L227
 	ldr	r3, [ip, #8]
 	cmp	r3, #9
 	bxgt	lr
 	push	{r4, lr}
 	mov	r4, #2064
 	ldr	r1, [r0, #8]
-	ldr	lr, .L214+4
+	ldr	lr, .L227+4
 	ldrb	r0, [r0, #12]	@ zero_extendqisi2
 	add	r2, r3, #6
 	lsl	r1, r1, #23
@@ -1286,9 +1363,9 @@ drawEnemy:
 	strh	r1, [r3, #2]	@ movhi
 	pop	{r4, lr}
 	bx	lr
-.L215:
+.L228:
 	.align	2
-.L214:
+.L227:
 	.word	.LANCHOR0
 	.word	shadowOAM
 	.size	drawEnemy, .-drawEnemy
@@ -1304,8 +1381,8 @@ freeMineSprites:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	mov	r3, #512
 	mov	r0, #0
-	ldr	r2, .L218
-	ldr	r1, .L218+4
+	ldr	r2, .L231
+	ldr	r1, .L231+4
 	str	lr, [sp, #-4]!
 	add	ip, r2, #264
 	add	lr, r2, #256
@@ -1322,9 +1399,9 @@ freeMineSprites:
 	strh	r3, [ip]	@ movhi
 	str	r0, [r1, #12]
 	bx	lr
-.L219:
+.L232:
 	.align	2
-.L218:
+.L231:
 	.word	shadowOAM
 	.word	.LANCHOR0
 	.size	freeMineSprites, .-freeMineSprites
@@ -1338,31 +1415,30 @@ drawMine:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	ip, .L226
-	ldr	r2, [ip, #12]
-	cmp	r2, #9
+	ldr	ip, .L239
+	ldr	r3, [ip, #12]
+	cmp	r3, #9
 	bxgt	lr
 	push	{r4, lr}
-	ldr	r3, [r0, #8]
-	ldr	lr, .L226+4
-	lsl	r3, r3, #23
+	ldr	r1, [r0, #8]
+	ldr	lr, .L239+4
 	ldrb	r4, [r0, #12]	@ zero_extendqisi2
-	add	r1, r2, #24
-	ldr	r0, .L226+8
-	add	r2, r2, #1
-	lsr	r3, r3, #23
-	str	r2, [ip, #12]
-	orr	r3, r3, #16384
-	add	r2, lr, r1, lsl #3
-	lsl	ip, r1, #3
+	add	r2, r3, #24
+	ldr	r0, .L239+8
+	add	r3, r3, #1
+	lsl	r1, r1, #23
+	str	r3, [ip, #12]
+	lsr	r1, r1, #23
+	add	r3, lr, r2, lsl #3
+	lsl	ip, r2, #3
 	strh	r4, [lr, ip]	@ movhi
-	strh	r3, [r2, #2]	@ movhi
-	strh	r0, [r2, #4]	@ movhi
+	strh	r1, [r3, #2]	@ movhi
+	strh	r0, [r3, #4]	@ movhi
 	pop	{r4, lr}
 	bx	lr
-.L227:
+.L240:
 	.align	2
-.L226:
+.L239:
 	.word	.LANCHOR0
 	.word	shadowOAM
 	.word	2328
@@ -1378,18 +1454,18 @@ updateHealthBar:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, r7, r8, r9, r10, lr}
-	ldr	r7, .L234
+	ldr	r7, .L247
 	ldr	r1, [r7]
 	cmp	r1, #0
 	movle	r5, #800
 	movgt	r5, #768
 	mov	lr, #16
 	mov	r6, #2
-	ldr	r8, .L234+4
-	ldr	r4, .L234+8
-	ldr	r10, .L234+12
-	ldr	ip, .L234+16
-	ldr	r9, .L234+20
+	ldr	r8, .L247+4
+	ldr	r4, .L247+8
+	ldr	r10, .L247+12
+	ldr	ip, .L247+16
+	ldr	r9, .L247+20
 	ldr	r2, [r8]
 	mov	r3, #26
 	mov	r0, #1
@@ -1400,8 +1476,8 @@ updateHealthBar:
 	strh	r10, [r4, #136]	@ movhi
 	mov	lr, pc
 	bx	r9
-	ldr	r5, .L234+24
-	ldr	ip, .L234+28
+	ldr	r5, .L247+24
+	ldr	ip, .L247+28
 	sub	r0, r5, r0
 	ldr	r2, [r8]
 	ldr	r1, [r7]
@@ -1412,7 +1488,7 @@ updateHealthBar:
 	strh	r10, [r4, #144]	@ movhi
 	mov	lr, pc
 	bx	r9
-	ldr	ip, .L234+32
+	ldr	ip, .L247+32
 	sub	r0, r5, r0
 	ldr	r2, [r8]
 	ldr	r1, [r7]
@@ -1423,7 +1499,7 @@ updateHealthBar:
 	strh	r10, [r4, #152]	@ movhi
 	mov	lr, pc
 	bx	r9
-	ldr	ip, .L234+36
+	ldr	ip, .L247+36
 	sub	r0, r5, r0
 	ldr	r2, [r8]
 	ldr	r1, [r7]
@@ -1434,7 +1510,7 @@ updateHealthBar:
 	strh	r10, [r4, #160]	@ movhi
 	mov	lr, pc
 	bx	r9
-	ldr	ip, .L234+40
+	ldr	ip, .L247+40
 	sub	r0, r5, r0
 	ldr	r2, [r8]
 	ldr	r1, [r7]
@@ -1445,7 +1521,7 @@ updateHealthBar:
 	strh	r10, [r4, #168]	@ movhi
 	mov	lr, pc
 	bx	r9
-	ldr	ip, .L234+44
+	ldr	ip, .L247+44
 	sub	r0, r5, r0
 	ldr	r1, [r7]
 	ldr	r2, [r8]
@@ -1457,7 +1533,7 @@ updateHealthBar:
 	mov	lr, pc
 	bx	r9
 	ldr	r3, [r8]
-	ldr	r2, .L234+48
+	ldr	r2, .L247+48
 	add	r3, r3, r3, lsl r6
 	add	r3, r3, r3, lsl r6
 	smull	r1, r2, r3, r2
@@ -1467,7 +1543,7 @@ updateHealthBar:
 	cmp	r3, r1
 	movlt	r3, #768
 	movge	r3, #800
-	ldr	r2, .L234+52
+	ldr	r2, .L247+52
 	sub	r5, r5, r0
 	strh	r5, [r4, #180]	@ movhi
 	strh	r6, [r4, #184]	@ movhi
@@ -1475,9 +1551,9 @@ updateHealthBar:
 	strh	r2, [r4, #186]	@ movhi
 	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
-.L235:
+.L248:
 	.align	2
-.L234:
+.L247:
 	.word	submarineHp
 	.word	submarineMaxHp
 	.word	shadowOAM
@@ -1505,22 +1581,21 @@ updateWorld:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, r7, r8, lr}
 	bl	updatePlayer
-	ldr	r4, .L259
+	ldr	r4, .L272
 	add	r5, r4, #200
-.L238:
+.L251:
 	ldr	r3, [r4, #32]
 	cmp	r3, #0
-	bne	.L256
-.L237:
+	bne	.L269
+.L250:
 	add	r4, r4, #40
 	cmp	r5, r4
-	bne	.L238
+	bne	.L251
 	mov	r3, #512
 	mov	r2, #0
-	ldr	r4, .L259+4
-	ldr	r6, .L259+8
-	ldr	r7, .L259+12
-	add	r5, r4, #2192
+	ldr	r6, .L272+4
+	ldr	r7, .L272+8
+	ldr	r4, .L272+12
 	strh	r3, [r6, #48]	@ movhi
 	strh	r3, [r6, #56]	@ movhi
 	strh	r3, [r6, #64]	@ movhi
@@ -1532,25 +1607,25 @@ updateWorld:
 	strh	r3, [r6, #112]	@ movhi
 	strh	r3, [r6, #120]	@ movhi
 	str	r2, [r7, #8]
-	add	r5, r5, #8
-	b	.L240
-.L239:
+	add	r5, r4, #2640
+	b	.L253
+.L252:
 	add	r4, r4, #44
 	cmp	r5, r4
-	beq	.L257
-.L240:
+	beq	.L270
+.L253:
 	ldr	r3, [r4, #32]
 	cmp	r3, #0
-	beq	.L239
+	beq	.L252
 	mov	r0, r4
 	add	r4, r4, #44
 	bl	updateEnemy
 	cmp	r5, r4
-	bne	.L240
-.L257:
+	bne	.L253
+.L270:
 	mov	r3, #512
 	mov	r1, #0
-	ldr	r2, .L259+16
+	ldr	r2, .L272+16
 	strh	r3, [r6, #192]	@ movhi
 	strh	r3, [r6, #200]	@ movhi
 	strh	r3, [r6, #208]	@ movhi
@@ -1559,40 +1634,40 @@ updateWorld:
 	strh	r3, [r6, #232]	@ movhi
 	strh	r3, [r6, #240]	@ movhi
 	strh	r3, [r6, #248]	@ movhi
-	ldr	r4, .L259+20
+	ldr	r4, .L272+20
 	strh	r3, [r2], #8	@ movhi
-	add	r5, r4, #2000
+	add	r5, r4, #2400
 	strh	r3, [r2]	@ movhi
 	str	r1, [r7, #12]
-	b	.L242
-.L241:
+	b	.L255
+.L254:
 	add	r4, r4, #40
 	cmp	r4, r5
-	beq	.L258
-.L242:
+	beq	.L271
+.L255:
 	ldr	r3, [r4, #32]
 	cmp	r3, #0
-	beq	.L241
+	beq	.L254
 	mov	r0, r4
 	add	r4, r4, #40
 	bl	updateMine
 	cmp	r4, r5
-	bne	.L242
-.L258:
+	bne	.L255
+.L271:
 	bl	doCollision
 	pop	{r4, r5, r6, r7, r8, lr}
 	b	updateHealthBar
-.L256:
+.L269:
 	mov	r0, r4
 	bl	updateBullet
-	b	.L237
-.L260:
+	b	.L250
+.L273:
 	.align	2
-.L259:
+.L272:
 	.word	bullets
-	.word	enemies
 	.word	shadowOAM
 	.word	.LANCHOR0
+	.word	enemies
 	.word	shadowOAM+256
 	.word	mines
 	.size	updateWorld, .-updateWorld
@@ -1601,8 +1676,8 @@ updateWorld:
 	.comm	opponentIdx,4,4
 	.global	doBattle
 	.global	level
-	.comm	mines,2000,4
-	.comm	enemies,2200,4
+	.comm	mines,2400,4
+	.comm	enemies,2640,4
 	.comm	bullets,200,4
 	.comm	player,36,4
 	.global	collisionMap
@@ -1615,575 +1690,811 @@ updateWorld:
 collisionMap:
 	.word	world1collisionBitmap
 	.type	levels, %object
-	.size	levels, 4200
+	.size	levels, 5040
 levels:
-	.word	3200
-	.word	3200
-	.word	50
-	.word	50
-	.word	0
-	.word	0
+	.word	2048
+	.word	10240
+	.space	16
 	.word	16
 	.word	8
 	.word	1
 	.word	0
 	.word	0
-	.word	3840
-	.word	12160
-	.word	60
-	.word	190
-	.word	0
-	.word	0
+	.word	11776
+	.word	11264
+	.space	16
 	.word	16
 	.word	8
 	.word	1
 	.word	0
+	.word	0
+	.word	4096
+	.word	21504
+	.space	16
+	.word	16
+	.word	8
 	.word	1
 	.word	0
 	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	6400
-	.word	5120
-	.space	24
+	.word	16384
+	.word	22528
+	.space	16
+	.word	16
+	.word	8
 	.word	1
-	.word	90
-	.word	6400
-	.word	6400
-	.space	24
+	.word	0
+	.word	0
+	.word	21504
+	.word	21504
+	.space	16
+	.word	16
+	.word	8
 	.word	1
-	.word	10
+	.word	0
+	.word	0
+	.word	26624
+	.word	11776
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	21568
+	.word	8192
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	28160
+	.word	4608
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	38912
+	.word	5632
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	39936
+	.word	8704
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	47616
 	.word	7680
-	.word	5120
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	53248
+	.word	8704
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	45120
+	.word	11776
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	54272
+	.word	19968
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	41472
+	.word	20544
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	49664
+	.word	30208
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	41984
+	.word	32768
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	48192
+	.word	34304
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	41472
+	.word	39936
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	52288
+	.word	39936
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	45056
+	.word	44608
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	59904
+	.word	43008
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	62464
+	.word	36352
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	53248
+	.word	48640
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	49664
+	.word	51712
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	3
+	.word	56320
+	.word	60928
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	34816
+	.word	61440
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	27136
+	.word	61440
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	35840
+	.word	42496
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	3
+	.word	33792
+	.word	31744
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	34944
+	.word	25600
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	25088
+	.word	33280
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	30208
+	.word	35392
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	28736
+	.word	40000
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	21056
+	.word	36416
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	23040
+	.word	41472
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	23040
+	.word	44544
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	17408
+	.word	41408
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	15360
+	.word	37376
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	11776
+	.word	34816
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	6144
+	.word	38400
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	0
+	.word	2048
+	.word	35584
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	3
+	.word	10752
+	.word	59392
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	4
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	0
+	.word	9728
+	.word	22528
 	.space	24
 	.word	1
 	.word	10
-	.word	7680
-	.word	6400
+	.word	11264
+	.word	22528
+	.space	24
+	.word	1
+	.word	10
+	.word	12800
+	.word	22528
+	.space	24
+	.word	1
+	.word	10
+	.word	16384
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	25088
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	29696
+	.word	19968
+	.space	24
+	.word	1
+	.word	10
+	.word	33280
+	.word	11776
+	.space	24
+	.word	1
+	.word	10
+	.word	31232
+	.word	13824
+	.space	24
+	.word	1
+	.word	10
+	.word	30208
+	.word	13824
+	.space	24
+	.word	1
+	.word	10
+	.word	47104
+	.word	21504
+	.space	24
+	.word	1
+	.word	10
+	.word	48128
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	49152
+	.word	21376
+	.space	24
+	.word	1
+	.word	10
+	.word	50176
+	.word	21504
+	.space	24
+	.word	1
+	.word	10
+	.word	51200
+	.word	21504
+	.space	24
+	.word	1
+	.word	10
+	.word	52224
+	.word	21504
+	.space	24
+	.word	1
+	.word	10
+	.word	53248
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	54272
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	55296
+	.word	20992
+	.space	24
+	.word	1
+	.word	10
+	.word	50688
+	.word	31232
+	.space	24
+	.word	1
+	.word	10
+	.word	61440
+	.word	26624
+	.space	24
+	.word	1
+	.word	10
+	.word	62464
+	.word	26624
+	.space	24
+	.word	1
+	.word	10
+	.word	61440
+	.word	24064
+	.space	24
+	.word	1
+	.word	10
+	.word	64000
+	.word	24064
+	.space	24
+	.word	1
+	.word	10
+	.word	62464
+	.word	22016
+	.space	24
+	.word	1
+	.word	10
+	.word	63488
+	.word	19968
+	.space	24
+	.word	1
+	.word	10
+	.word	61952
+	.word	17920
+	.space	24
+	.word	1
+	.word	10
+	.word	62976
+	.word	16384
+	.space	24
+	.word	1
+	.word	10
+	.word	64000
+	.word	15360
+	.space	24
+	.word	1
+	.word	10
+	.word	62464
+	.word	13312
+	.space	24
+	.word	1
+	.word	10
+	.word	62976
+	.word	12800
+	.space	24
+	.word	1
+	.word	10
+	.word	61952
+	.word	10240
+	.space	24
+	.word	1
+	.word	10
+	.word	63488
+	.word	8192
+	.space	24
+	.word	1
+	.word	10
+	.word	61952
+	.word	7168
+	.space	24
+	.word	1
+	.word	10
+	.word	62976
+	.word	5632
+	.space	24
+	.word	1
+	.word	10
+	.word	64000
+	.word	5632
+	.space	24
+	.word	1
+	.word	10
+	.word	48128
+	.word	48640
+	.space	24
+	.word	1
+	.word	10
+	.word	45056
+	.word	51712
+	.space	24
+	.word	1
+	.word	10
+	.word	41472
+	.word	47616
+	.space	24
+	.word	1
+	.word	10
+	.word	43008
+	.word	51712
+	.space	24
+	.word	1
+	.word	10
+	.word	39936
+	.word	50176
+	.space	24
+	.word	1
+	.word	10
+	.word	38400
+	.word	48640
+	.space	24
+	.word	1
+	.word	10
+	.word	37888
+	.word	52736
+	.space	24
+	.word	1
+	.word	10
+	.word	35840
+	.word	51712
+	.space	24
+	.word	1
+	.word	10
+	.word	33280
+	.word	50688
+	.space	24
+	.word	1
+	.word	10
+	.word	32256
+	.word	52736
+	.space	24
+	.word	1
+	.word	10
+	.word	30208
+	.word	49152
+	.space	24
+	.word	1
+	.word	10
+	.word	28672
+	.word	52224
+	.space	24
+	.word	1
+	.word	10
+	.word	27648
+	.word	48640
+	.space	24
+	.word	1
+	.word	10
+	.word	23040
+	.word	52224
+	.space	24
+	.word	1
+	.word	10
+	.word	21504
+	.word	51712
+	.space	24
+	.word	1
+	.word	10
+	.word	30208
+	.word	43008
+	.space	24
+	.word	1
+	.word	10
+	.word	17408
+	.word	45056
+	.space	24
+	.word	1
+	.word	10
+	.word	12800
+	.word	39424
+	.space	24
+	.word	1
+	.word	10
+	.word	28672
+	.word	29184
+	.space	24
+	.word	1
+	.word	10
+	.word	28672
+	.word	27136
 	.space	24
 	.word	1
 	.word	10
@@ -2237,387 +2548,6 @@ levels:
 	.word	0
 	.word	0
 	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.space	120
 	.bss
 	.align	2
 	.set	.LANCHOR0,. + 0
