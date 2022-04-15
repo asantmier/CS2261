@@ -16,7 +16,11 @@ static NODE *create_node(POSITION pos);
 LIST *create_list(void) {
   // TODO 1.0: Complete this function
   // Make sure to handle the case where malloc cannot allocate enough memory for the list!
-
+  LIST* l = malloc(sizeof(LIST));
+  if (l == NULL) return l;
+  l->head = NULL;
+  l->tail = NULL;
+  return l;
 }
 
 /** create_node
@@ -30,7 +34,12 @@ LIST *create_list(void) {
 static NODE *create_node(POSITION pos) {
   // TODO 1.1: Complete this function
   // Make sure to handle the case where malloc cannot allocate enough memory for the list!
-
+  NODE* n = malloc(sizeof(NODE));
+  if (n == NULL) return n;
+  n->next = NULL;
+  n->prev = NULL;
+  n->pos = pos;
+  return n;
 }
 
 /** push_front
@@ -63,7 +72,15 @@ void push_front(LIST *dllist, POSITION pos) {
 void push_back(LIST *dllist, POSITION pos) {
   // TODO 1.2: Complete this function
   // Don't forget to handle the empty list case!
-
+  NODE* node = create_node(pos);
+  if (dllist->head != NULL) {
+    node->prev = dllist->tail;
+    dllist->tail->next = node;
+  } else {
+    dllist->head = node;
+  }
+  
+  dllist->tail = node;
 }
 
 /** pop_front
@@ -153,5 +170,9 @@ void empty_list(LIST *dllist) {
   */
 void updateNodePositions(LIST *dllist) {
   // TODO 2.0: Complete this function
-
+  NODE* curr = dllist->tail;
+  while (curr != dllist->head) {
+    curr->pos = curr->prev->pos;
+    curr = curr->prev;
+  }
 }
