@@ -869,6 +869,8 @@ void waitForVBlank();
 void flipPage();
 
 
+
+
 typedef struct {
     unsigned short attr0;
     unsigned short attr1;
@@ -879,7 +881,7 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 174 "mode0.h"
+# 176 "mode0.h"
 void hideSprites();
 
 
@@ -901,15 +903,10 @@ typedef struct {
     int numFrames;
     int hide;
 } SPRITE;
-# 212 "mode0.h"
+# 216 "mode0.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-
-
-
-
-
-
+# 226 "mode0.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -918,10 +915,11 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 260 "mode0.h"
+# 266 "mode0.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-
-
+# 302 "mode0.h"
+typedef void (*ihp)(void);
+# 321 "mode0.h"
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 3 "game.c" 2
@@ -1069,7 +1067,7 @@ void initParty() {
     battleAllies[1].maxHp = 10;
     battleAllies[1].hp = battleAllies[1].maxHp;
     battleAllies[1].moves[0] = MOVE_SLASH;
-    battleAllies[0].moves[1] = MOVE_HEAL;
+    battleAllies[1].moves[1] = MOVE_HEAL;
     battleAllies[1].numMoves = 2;
 }
 

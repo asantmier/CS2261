@@ -500,12 +500,12 @@ battle:
 	mov	lr, pc
 	bx	r3
 	ldr	r3, .L53+4
-	ldr	r4, [r3]
-	cmn	r4, #1
+	ldr	r5, [r3]
+	cmn	r5, #1
 	beq	.L52
-	cmp	r4, #1
+	cmp	r5, #1
 	beq	.L49
-	ldr	r5, .L53+8
+	ldr	r4, .L53+8
 .L47:
 	ldr	r3, .L53+12
 	mov	lr, pc
@@ -515,7 +515,7 @@ battle:
 	mov	r0, #3
 	ldr	r1, .L53+16
 	mov	lr, pc
-	bx	r5
+	bx	r4
 	mov	r2, #67108864
 	ldr	r3, .L53+20
 	ldr	r3, [r3]
@@ -540,14 +540,14 @@ battle:
 	ldr	r2, .L53+32
 	mov	lr, pc
 	bx	r2
-	ldr	r5, .L53+8
+	ldr	r4, .L53+8
 	mov	r0, #3
 	mov	r3, #512
 	mov	r2, #117440512
 	ldr	r1, .L53+16
 	mov	lr, pc
-	bx	r5
-	mov	r0, r4
+	bx	r4
+	mov	r0, r5
 .L51:
 	ldr	r3, .L53+36
 	mov	lr, pc
@@ -557,7 +557,7 @@ battle:
 	mov	r0, #3
 	ldr	r1, .L53+40
 	mov	lr, pc
-	bx	r5
+	bx	r4
 	mov	r1, #67108864
 	mov	r2, #2
 	ldr	r0, .L53+44
@@ -566,20 +566,29 @@ battle:
 	str	r2, [r3]
 	b	.L47
 .L52:
-	ldr	r2, .L53+52
-	ldr	r3, [r2]
-	ldr	r1, .L53+32
-	sub	r3, r3, #10
-	str	r3, [r2]
-	ldr	r5, .L53+8
+	ldr	r1, .L53+52
+	ldr	r2, [r1]
+	ldr	r3, .L53+28
+	sub	r2, r2, #10
+	ldr	lr, [r3, #16]
+	ldr	ip, [r3, #572]
+	ldr	r0, [r3, #1128]
+	str	r2, [r1]
+	ldr	r1, [r3, #1684]
+	str	lr, [r3, #20]
+	str	ip, [r3, #576]
+	str	r0, [r3, #1132]
+	str	r1, [r3, #1688]
+	ldr	r2, .L53+32
 	mov	lr, pc
-	bx	r1
+	bx	r2
+	ldr	r4, .L53+8
 	mov	r0, #3
 	mov	r3, #512
 	mov	r2, #117440512
 	ldr	r1, .L53+16
 	mov	lr, pc
-	bx	r5
+	bx	r4
 	mov	r0, #0
 	b	.L51
 .L54:

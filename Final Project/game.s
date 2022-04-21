@@ -30,52 +30,57 @@ initParty:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	mov	r5, #10
-	mov	r7, #88
+	mov	r7, #10
+	mov	r6, #88
 	mov	r9, #1
 	ldr	r4, .L4
 	ldr	r10, .L4+4
-	mov	r2, r5
+	mov	r2, r7
 	ldr	fp, .L4+8
-	ldr	r8, .L4+12
 	mov	r0, r4
-	ldr	r1, .L4+16
+	ldr	r1, .L4+12
 	mov	lr, pc
 	bx	fp
-	ldr	r6, .L4+20
-	mov	r2, r7
+	ldr	r5, .L4+16
+	mov	r2, r6
 	mov	r1, r10
+	ldr	r8, .L4+20
 	add	r0, r4, #28
 	str	r9, [r4, #12]
-	str	r5, [r4, #16]
-	str	r5, [r4, #20]
+	str	r7, [r4, #16]
+	str	r7, [r4, #20]
 	mov	lr, pc
-	bx	r6
-	mov	r2, r7
+	bx	r5
+	mov	r2, r6
+	ldr	r1, .L4+24
+	add	r0, r4, #116
+	mov	lr, pc
+	bx	r5
+	mov	r2, r6
 	mov	r1, r8
 	add	r0, r4, #204
 	mov	lr, pc
-	bx	r6
+	bx	r5
 	mov	r3, #3
-	mov	r2, r5
-	ldr	r1, .L4+24
+	mov	r2, r7
+	ldr	r1, .L4+28
 	add	r0, r4, #556
 	str	r3, [r4, #24]
 	mov	lr, pc
 	bx	fp
 	mov	r1, r10
-	mov	r2, r7
+	mov	r2, r6
 	add	r0, r4, #584
 	str	r9, [r4, #568]
-	str	r5, [r4, #572]
-	str	r5, [r4, #576]
+	str	r7, [r4, #572]
+	str	r7, [r4, #576]
 	mov	lr, pc
-	bx	r6
-	mov	r2, r7
+	bx	r5
+	mov	r2, r6
 	mov	r1, r8
-	add	r0, r4, #116
+	add	r0, r4, #672
 	mov	lr, pc
-	bx	r6
+	bx	r5
 	mov	r3, #2
 	str	r3, [r4, #580]
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
@@ -86,9 +91,10 @@ initParty:
 	.word	battleAllies
 	.word	MOVE_SLASH
 	.word	strncpy
-	.word	MOVE_HEAL
 	.word	.LC0
 	.word	memcpy
+	.word	MOVE_HEAL
+	.word	MOVE_BLAST
 	.word	.LC1
 	.size	initParty, .-initParty
 	.align	2

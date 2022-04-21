@@ -869,6 +869,8 @@ void waitForVBlank();
 void flipPage();
 
 
+
+
 typedef struct {
     unsigned short attr0;
     unsigned short attr1;
@@ -879,7 +881,7 @@ typedef struct {
 
 
 extern OBJ_ATTR shadowOAM[];
-# 174 "mode0.h"
+# 176 "mode0.h"
 void hideSprites();
 
 
@@ -901,15 +903,10 @@ typedef struct {
     int numFrames;
     int hide;
 } SPRITE;
-# 212 "mode0.h"
+# 216 "mode0.h"
 extern unsigned short oldButtons;
 extern unsigned short buttons;
-
-
-
-
-
-
+# 226 "mode0.h"
 typedef volatile struct {
     volatile const void *src;
     volatile void *dst;
@@ -918,10 +915,11 @@ typedef volatile struct {
 
 
 extern DMA *dma;
-# 260 "mode0.h"
+# 266 "mode0.h"
 void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt);
-
-
+# 302 "mode0.h"
+typedef void (*ihp)(void);
+# 321 "mode0.h"
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
 # 3 "world.c" 2
@@ -995,14 +993,15 @@ int tilesRed(int tile1, int hp, int maxHp, int segments);
 
 
 enum {
-    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5, ENEMY6, ENEMY7, ENEMY8, ENEMY9, ENEMY10,
-    HEALTHBAR1, HEALTHBAR2, HEALTHBAR3, HEALTHBAR4, HEALTHBAR5, HEALTHBAR6, HEALTHBAR7, HEALTHBAR8, MINE1, MINE2,
-    MINE3, MINE4, MINE5, MINE6, MINE7, MINE8, MINE9, MINE10
+    PLAYER_IDX = 0, BULLET1, BULLET2, BULLET3, BULLET4, BULLET5, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5, ENEMY6,
+    ENEMY7, ENEMY8, ENEMY9, ENEMY10, HEALTHBAR1, HEALTHBAR2, HEALTHBAR3, HEALTHBAR4, HEALTHBAR5, HEALTHBAR6,
+    HEALTHBAR7, HEALTHBAR8, MINE1, MINE2, MINE3, MINE4, MINE5, MINE6, MINE7, MINE8, MINE9, MINE10, MINE11, MINE12,
+    MINE13, MINE14, MINE15, MINE16, MINE17, MINE18, MINE19, MINE20
 };
 
 
 typedef int fp64;
-# 48 "world.h"
+# 49 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
@@ -1689,7 +1688,7 @@ void drawEnemy(ENEMY* enemy) {
 
 
 void freeMineSprites() {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         shadowOAM[MINE1 + i].attr0 = (2 << 8);
     }
     drawnMines = 0;
@@ -1698,7 +1697,7 @@ void freeMineSprites() {
 
 void drawMine(MINE* mine) {
 
-    if (drawnMines < 10) {
+    if (drawnMines < 20) {
         shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & 0xFF) | (0 << 8) | (0 << 14);
         shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & 0x1FF) | (0 << 14);
         shadowOAM[MINE1 + drawnMines].attr2 = ((8)*32 + (24)) | ((2) << 10);

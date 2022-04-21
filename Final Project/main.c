@@ -265,12 +265,14 @@ void battle() {
     updateBattle();
 
     if (battleStatus == LOST) {
+        for (int i = 0; i < 4; i++) {
+            battleAllies[i].hp = battleAllies[i].maxHp;
+        }
         submarineHp -= 10;
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);
         returnFromBattle(0);
         goToGame();
-        // goToLose();
     } else if (battleStatus == WON) {
         for (int i = 0; i < 4; i++) {
             battleAllies[i].hp = battleAllies[i].maxHp;

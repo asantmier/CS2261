@@ -33,7 +33,7 @@ void initParty() {
     battleAllies[1].maxHp = 10;
     battleAllies[1].hp = battleAllies[1].maxHp;
     battleAllies[1].moves[0] = MOVE_SLASH;
-    battleAllies[0].moves[1] = MOVE_HEAL;
+    battleAllies[1].moves[1] = MOVE_HEAL;
     battleAllies[1].numMoves = 2;
 }
 
