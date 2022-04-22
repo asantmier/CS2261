@@ -302,13 +302,13 @@ doCollision:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, r8, r9, r10, lr}
+	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	mov	r6, #0
 	ldr	r4, .L64
 	ldr	r8, .L64+4
 	ldr	r10, .L64+8
 	ldr	r9, .L64+12
-	sub	sp, sp, #16
+	sub	sp, sp, #20
 	b	.L39
 .L34:
 	add	r6, r6, #1
@@ -381,15 +381,18 @@ doCollision:
 	str	r1, [r2]
 	str	r6, [r3]
 .L33:
-	add	sp, sp, #16
+	add	sp, sp, #20
 	@ sp needed
-	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
+	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
 .L61:
 	ldr	r4, .L64+28
 	ldr	r5, .L64+4
-	ldr	r8, .L64+8
-	ldr	r7, .L64+32
+	ldr	r7, .L64+8
+	ldr	r8, .L64+32
+	ldr	fp, .L64+36
+	ldr	r10, .L64+40
+	ldr	r9, .L64+44
 	add	r6, r4, #2400
 	b	.L43
 .L41:
@@ -414,15 +417,19 @@ doCollision:
 	ldm	r5, {r0, r1}
 	lsl	r2, r2, #6
 	mov	lr, pc
-	bx	r8
+	bx	r7
 	cmp	r0, #0
 	beq	.L41
 	mov	r2, #0
-	ldr	r3, [r7]
+	ldr	r3, [r8]
 	ldr	r1, [r4, #36]
+	mov	r0, r10
 	sub	r3, r3, r1
-	str	r3, [r7]
 	str	r2, [r4, #32]
+	ldr	r1, [fp]
+	str	r3, [r8]
+	mov	lr, pc
+	bx	r9
 	b	.L41
 .L62:
 	mov	r1, #1
@@ -430,9 +437,9 @@ doCollision:
 	ldr	r3, .L64+24
 	str	r1, [r2]
 	str	r6, [r3]
-	add	sp, sp, #16
+	add	sp, sp, #20
 	@ sp needed
-	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
+	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
 .L65:
 	.align	2
@@ -446,6 +453,9 @@ doCollision:
 	.word	opponentIdx
 	.word	mines
 	.word	submarineHp
+	.word	boomsfx_length
+	.word	boomsfx_data
+	.word	playSoundB
 	.size	doCollision, .-doCollision
 	.align	2
 	.global	movePlayer
@@ -785,7 +795,7 @@ firePlayer:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, lr}
+	push	{r4, r5, r6, lr}
 	ldr	lr, .L123
 	ldr	r3, [lr, #32]
 	cmp	r3, #1
@@ -796,41 +806,50 @@ firePlayer:
 	ldr	r2, [lr]
 	ldreq	r0, [lr, #24]
 	ldrne	r0, [ip, #24]
+	ldreq	ip, .L123+4
+	ldr	r1, .L123+4
 	addeq	r0, r2, r0, lsl #6
 	subne	r0, r2, r0, lsl #6
-	ldreq	ip, .L123+4
-	ldr	r2, .L123+4
 .L119:
-	ldr	r1, [r2, #32]
-	cmp	r1, #0
+	ldr	r2, [r1, #32]
+	cmp	r2, #0
 	beq	.L122
 	add	r3, r3, #1
 	cmp	r3, #5
-	add	r2, r2, #40
+	add	r1, r1, #40
 	bne	.L119
-	pop	{r4, r5, lr}
+	pop	{r4, r5, r6, lr}
 	bx	lr
 .L122:
 	mov	r5, #1
 	ldr	lr, [lr, #4]
 	add	r3, r3, r3, lsl #2
 	str	r0, [ip, r3, lsl #3]
-	asr	r2, r0, #6
+	ldr	r1, .L123+8
 	add	r3, ip, r3, lsl #3
-	asr	r0, lr, #6
 	str	r4, [r3, #16]
+	asr	ip, r0, #6
+	asr	r4, lr, #6
 	str	lr, [r3, #4]
+	str	r4, [r3, #12]
 	str	r5, [r3, #32]
-	str	r1, [r3, #20]
-	str	r0, [r3, #12]
-	str	r2, [r3, #8]
-	pop	{r4, r5, lr}
+	ldr	r4, .L123+12
+	ldr	r1, [r1]
+	str	r2, [r3, #20]
+	ldr	r0, .L123+16
+	str	ip, [r3, #8]
+	mov	lr, pc
+	bx	r4
+	pop	{r4, r5, r6, lr}
 	bx	lr
 .L124:
 	.align	2
 .L123:
 	.word	player
 	.word	bullets
+	.word	shootsfx_length
+	.word	playSoundB
+	.word	shootsfx_data
 	.size	firePlayer, .-firePlayer
 	.align	2
 	.global	updatePlayer
@@ -1669,6 +1688,8 @@ updateWorld:
 	.comm	bullets,200,4
 	.comm	player,36,4
 	.global	collisionMap
+	.comm	soundB,32,4
+	.comm	soundA,32,4
 	.global	levels
 	.data
 	.align	2

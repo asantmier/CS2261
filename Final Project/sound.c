@@ -18,12 +18,15 @@ void setupSounds() {
 	REG_SOUNDCNT_L = 0;
 }
 
-void playSoundA( const signed char* sound, int length, int loops) {
+// Play sound A with an offset in vblanks. Used for playing paused BGM
+void playSoundA( const signed char* sound, int length, int loops, int offset) {
+    length -= (11025); // Ignore the last second. Same idea as playSoundB, but a full second since this plays longer songs
     dma[1].cnt = 0;
 
     int ticks = PROCESSOR_CYCLES_PER_SECOND / SOUND_FREQ;
 
-    DMANow(1, sound, REG_FIFO_A, DMA_DESTINATION_FIXED | DMA_AT_REFRESH | DMA_REPEAT | DMA_32);
+    // start DMA partway through the song
+    DMANow(1, sound + ((offset * 11025) / 60), REG_FIFO_A, DMA_DESTINATION_FIXED | DMA_AT_REFRESH | DMA_REPEAT | DMA_32);
 
     REG_TM0CNT = 0;
 
@@ -35,12 +38,12 @@ void playSoundA( const signed char* sound, int length, int loops) {
     soundA.loops = loops;
     soundA.isPlaying = 1;
     soundA.duration = (VBLANK_FREQ * length) / SOUND_FREQ;
-    soundA.vBlankCount = 0;
+    soundA.vBlankCount = offset; // move vblankcount to offset
 }
 
 
 void playSoundB( const signed char* sound, int length, int loops) {
-
+    length -= (11025 / 25); // Ignore the last 1/25th of a second (it's silence). This fixes weird popping sounds
     dma[2].cnt = 0;
 
     int ticks = PROCESSOR_CYCLES_PER_SECOND / SOUND_FREQ;
@@ -81,7 +84,7 @@ void interruptHandler() {
             soundA.vBlankCount = soundA.vBlankCount + 1;
             if (soundA.vBlankCount > soundA.duration) {
                 if (soundA.loops) {
-                    playSoundA(soundA.data, soundA.length, soundA.loops);
+                    playSoundA(soundA.data, soundA.length, soundA.loops, 0);
                 } else {
                     soundA.isPlaying = 0;
                     dma[1].cnt = 0;

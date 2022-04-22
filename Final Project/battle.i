@@ -1420,6 +1420,7 @@ char tsel(int cond);
 
 enum { LOST = -1, ONGOING = 0, WON = 1 };
 extern int battleStatus;
+extern int bossBattle;
 
 
 enum { PLAYERTURN, ENEMYTURN };
@@ -1505,10 +1506,64 @@ char *strsignal (int __signo);
 
 
 # 7 "battle.c" 2
+# 1 "sound.h" 1
+
+# 1 "sound.h"
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops, int offset);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void setupInterrupts();
+void interruptHandler();
+
+void pauseSound();
+void unpauseSound();
+void stopSound();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int loops;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 8 "battle.c" 2
+# 1 "damagesfx.h" 1
 
 
+extern const unsigned int damagesfx_sampleRate;
+extern const unsigned int damagesfx_length;
+extern const signed char damagesfx_data[];
+# 9 "battle.c" 2
+# 1 "fanfaresfx.h" 1
 
-# 9 "battle.c"
+
+extern const unsigned int fanfaresfx_sampleRate;
+extern const unsigned int fanfaresfx_length;
+extern const signed char fanfaresfx_data[];
+# 10 "battle.c" 2
+# 1 "menuhighsfx.h" 1
+
+
+extern const unsigned int menuhighsfx_sampleRate;
+extern const unsigned int menuhighsfx_length;
+extern const signed char menuhighsfx_data[];
+# 11 "battle.c" 2
+# 1 "menulowsfx.h" 1
+
+
+extern const unsigned int menulowsfx_sampleRate;
+extern const unsigned int menulowsfx_length;
+extern const signed char menulowsfx_data[];
+# 12 "battle.c" 2
+
+
 const int text_tile_lkup[] = {((16)*32 + (24)),((16)*32 + (25)),((16)*32 + (26)),((16)*32 + (27)),
 ((16)*32 + (28)),((16)*32 + (29)),((16)*32 + (30)),((16)*32 + (31)),((17)*32 + (24)),
 ((17)*32 + (25)),((17)*32 + (26)),((17)*32 + (27)),((17)*32 + (28)),((17)*32 + (29)),((17)*32 + (30)),((17)*32 + (31)),((18)*32 + (24)),
@@ -1557,14 +1612,14 @@ void initBattle(int opponentType) {
     fighter = &battleAllies[0];
     fighterIdx = 0;
     captured = 
-# 56 "battle.c" 3 4
+# 61 "battle.c" 3 4
               ((void *)0)
-# 56 "battle.c"
+# 61 "battle.c"
                   ;
     move = 
-# 57 "battle.c" 3 4
+# 62 "battle.c" 3 4
           ((void *)0)
-# 57 "battle.c"
+# 62 "battle.c"
               ;
     turnPoints = 0;
     for (int i = 0; i < 4; i++) {
@@ -1713,11 +1768,13 @@ void replaceMenu() {
     shadowOAM[TARGETING_ARROW].attr2 = ((26)*32 + (0));
     sprintf(botBuf, "%s:%d/%d", battleAllies[realOpt].name, battleAllies[realOpt].hp, battleAllies[realOpt].maxHp);
     if (leave) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         sprintf(topBuf, "YOU RELEASED %s", captured->name);
         captured->exists = 0;
         finishTurn();
     } else if (enter) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         botBuf[0] = '\0';
         sprintf(topBuf, "%s REPLACED %s", captured->name, battleAllies[realOpt].name);
@@ -1735,9 +1792,11 @@ void captureMenu() {
     sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
 
     if (leave) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         goToFrontMenu();
     } else if (enter) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         botBuf[0] = '\0';
         if (bossBattle) {
@@ -1772,6 +1831,7 @@ void inspectMenu() {
     }
 
     if (leave) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         goToFrontMenu();
     }
@@ -1781,6 +1841,7 @@ void frontMenu() {
     strncpy(topBuf, "WHAT WILL YOU DO?", 61);
     sprintf(botBuf, "%cATTACK   %cCAPTURE\n%cPASS\n%cINSPECT", tsel(selOpt == 0), tsel(selOpt == 3), tsel(selOpt == 1), tsel(selOpt == 2));
     if (enter) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         switch (selOpt)
         {
         case 0:
@@ -1808,8 +1869,10 @@ void attackMenu() {
             tsel(selOpt == 1), fighter->moves[1].text, tsel(selOpt == 4), fighter->moves[4].text,
             tsel(selOpt == 2), fighter->moves[2].text, tsel(selOpt == 5), fighter->moves[5].text);
     if (leave) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         goToFrontMenu();
     } else if (enter) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         move = &fighter->moves[selOpt];
         targetTeam = move->targeting == OPPONENT ? ENEMYTEAM : PLAYERTEAM;
         goToTargetMenu();
@@ -1895,12 +1958,14 @@ void targetMenu() {
     }
 
     if (leave) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         shadowOAM[TARGETING_ARROW + 1].attr0 = (2 << 8);
         shadowOAM[TARGETING_ARROW + 2].attr0 = (2 << 8);
         shadowOAM[TARGETING_ARROW + 3].attr0 = (2 << 8);
         goToAttackMenu();
     } else if (enter) {
+        playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         shadowOAM[TARGETING_ARROW + 1].attr0 = (2 << 8);
         shadowOAM[TARGETING_ARROW + 2].attr0 = (2 << 8);
@@ -1915,6 +1980,11 @@ void targetMenu() {
 
 void executeMove(MOVE* m, COMBATANT* t) {
     mgba_printf("Executing move! Enemy turn: %d, Fighter %s, Target: %s", turn, fighter->name, t->name);
+    if (m->healing) {
+        playSoundB(fanfaresfx_data, fanfaresfx_length, 0);
+    } else {
+        playSoundB(damagesfx_data, damagesfx_length, 0);
+    }
     if (m->hitAll) {
         if (targetTeam == ENEMYTEAM) {
             for (int i = 0; i < 4; i++) {
@@ -2054,10 +2124,12 @@ void updateBattle() {
             if ((!(~(oldButtons) & ((1 << 7))) && (~buttons & ((1 << 7))))) {
                 if (selOpt < numOpt - 1) {
                     selOpt += 1;
+                    playSoundB(menulowsfx_data, menulowsfx_length, 0);
                 }
             } else if ((!(~(oldButtons) & ((1 << 6))) && (~buttons & ((1 << 6))))) {
                 if (selOpt != 0) {
                     selOpt -= 1;
+                    playSoundB(menulowsfx_data, menulowsfx_length, 0);
                 }
             }
         } else if (menu == TARGETMENU || menu == INSPECTMENU || menu == CAPTUREMENU) {
@@ -2066,6 +2138,7 @@ void updateBattle() {
                     for (int i = selOpt + 1; i < 4; i++) {
                         if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2073,6 +2146,7 @@ void updateBattle() {
                     for (int i = selOpt + 1; i < 4; i++) {
                         if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2082,6 +2156,7 @@ void updateBattle() {
                     for (int i = selOpt - 1; i >= 0; i--) {
                         if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2089,6 +2164,7 @@ void updateBattle() {
                     for (int i = selOpt - 1; i >= 0; i--) {
                         if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2100,6 +2176,7 @@ void updateBattle() {
                     for (int i = 0; i < 4; i++) {
                         if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2108,6 +2185,7 @@ void updateBattle() {
                     for (int i = 0; i < 4; i++) {
                         if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                             selOpt = i;
+                            playSoundB(menulowsfx_data, menulowsfx_length, 0);
                             break;
                         }
                     }
@@ -2118,22 +2196,26 @@ void updateBattle() {
                 if (selOpt < numOpt - 1) {
                     if (selOpt != 2 && selOpt != 5) {
                         selOpt += 1;
+                        playSoundB(menulowsfx_data, menulowsfx_length, 0);
                     }
                 }
             } else if ((!(~(oldButtons) & ((1 << 6))) && (~buttons & ((1 << 6))))) {
                 if (selOpt != 0 && selOpt != 3) {
                     selOpt -= 1;
+                    playSoundB(menulowsfx_data, menulowsfx_length, 0);
                 }
             }
             if ((!(~(oldButtons) & ((1 << 4))) && (~buttons & ((1 << 4))))) {
                 if (selOpt < numOpt - 3) {
                     if (selOpt < 3) {
                         selOpt += 3;
+                        playSoundB(menulowsfx_data, menulowsfx_length, 0);
                     }
                 }
             } else if ((!(~(oldButtons) & ((1 << 5))) && (~buttons & ((1 << 5))))) {
                 if (selOpt > 2) {
                     selOpt -= 3;
+                    playSoundB(menulowsfx_data, menulowsfx_length, 0);
                 }
             }
         }

@@ -111,6 +111,7 @@ char tsel(int cond);
 // Battle status used by main to figure out how the battle is going
 enum { LOST = -1, ONGOING = 0, WON = 1 };
 extern int battleStatus;
+extern int bossBattle;
 
 // Turn tracking
 enum { PLAYERTURN, ENEMYTURN };

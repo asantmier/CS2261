@@ -10,6 +10,9 @@
  * 
  * BUGS: When one team finishes their turns in combat, the turn count display immediately switches to the other team's
  *         turns instead of remaining empty during the wait animation.
+ *      For some reason, a loud burst of static plays at the end of all sound. Apparently the provided functions are 
+ *          reading too far. As a solution, I manually added 1/25th of a second to all audio and subtracted that much
+ *          from the length of each in the playSound functions.
  * 
  * HOW TO PLAY: Directional pad to move, right bumper to move slower, A to shoot.
  *     If you collide with or shoot the enemies (red box) you will enter combat.
@@ -38,6 +41,10 @@
 #include "tempbattle.h"
 #include "world1.h"
 #include "world1parallax.h"
+#include "sound.h"
+#include "worldTheme.h"
+#include "battleTheme.h"
+#include "bossTheme.h"
 
 // Prototypes.
 void initialize();
@@ -80,6 +87,9 @@ fp256 bg2xOff, bg2yOff;
 
 // Timer for srand
 int randTimer;
+
+// Store position in songs
+int worldThemeCtr;
 
 int main() {
     // Enable debug logging
@@ -151,6 +161,10 @@ void initialize() {
     hideSprites();
     DMANow(3, &shadowOAM, OAM, 128 * 4);
 
+    // Activate sound
+    setupSounds();
+    setupInterrupts();
+
     // Doing this makes the entire screen flash black for 1 frame when restarting the game rather than introducing a
     // black tearing artifact at the top of the screen for 1 frame. I think it looks better
     waitForVBlank();
@@ -186,6 +200,8 @@ void start() {
         initWorld();
         DMANow(3, &world1parallaxTiles, &CHARBLOCK[2], DMA_32 | (world1parallaxTilesLen / 4));
         DMANow(3, &world1parallaxMap, &SCREENBLOCK[22], DMA_32 | (world1parallaxMapLen / 4));
+        worldThemeCtr = 0;
+        playSoundA(worldTheme_data, worldTheme_length, 1, worldThemeCtr);
         goToGame();
     }
 
@@ -241,10 +257,18 @@ void game() {
     }
 
     if (doBattle) {
+        worldThemeCtr = soundA.vBlankCount; // save position in song
+        stopSound();
         // Turn off all the sprites from the game state
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);
         initBattle(enemies[opponentIdx].type); // tell the battle system what kind of enemy we're encountering
+        if (bossBattle) {
+            playSoundA(bossTheme_data, bossTheme_length, 1, 0);
+        } else {
+            playSoundA(battleTheme_data, battleTheme_length, 1, 0);
+        }
+        
         goToBattle();
     }
 }
@@ -264,23 +288,24 @@ void goToBattle() {
 void battle() {
     updateBattle();
 
-    if (battleStatus == LOST) {
-        for (int i = 0; i < 4; i++) {
-            battleAllies[i].hp = battleAllies[i].maxHp;
-        }
-        submarineHp -= 10;
-        hideSprites();
-        DMANow(3, &shadowOAM, OAM, 128 * 4);
-        returnFromBattle(0);
-        goToGame();
-    } else if (battleStatus == WON) {
-        for (int i = 0; i < 4; i++) {
-            battleAllies[i].hp = battleAllies[i].maxHp;
+    if (battleStatus == LOST || battleStatus == WON) {
+        if (battleStatus == LOST) {
+            for (int i = 0; i < 4; i++) {
+                battleAllies[i].hp = battleAllies[i].maxHp;
+            }
+            submarineHp -= 10;
+            returnFromBattle(0);
+        } else if (battleStatus == WON) {
+            for (int i = 0; i < 4; i++) {
+                battleAllies[i].hp = battleAllies[i].maxHp;
+            }
+            returnFromBattle(1);
         }
         // Turn off all the sprites from the battle state
         hideSprites();
         DMANow(3, &shadowOAM, OAM, 128 * 4);
-        returnFromBattle(1);
+        stopSound();
+        playSoundA(worldTheme_data, worldTheme_length, 1, worldThemeCtr);
         goToGame();
     }
 
@@ -293,6 +318,7 @@ void battle() {
 
 // Sets up the pause state.
 void goToPause() {
+    pauseSound();
     DMANow(3, &temppausePal, PALETTE, 256);
     DMANow(3, &temppauseTiles, &CHARBLOCK[1], DMA_32 | (temppauseTilesLen / 4));
     DMANow(3, &temppauseMap, &SCREENBLOCK[15], DMA_32 | (temppauseMapLen / 4));
@@ -304,6 +330,7 @@ void goToPause() {
 // Runs every frame of the pause state.
 void pause() {
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
+        unpauseSound();
         goToGame();
     } else if (BUTTON_PRESSED(BUTTON_START)) {
         initialize(); // restart the game

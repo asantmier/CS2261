@@ -1099,6 +1099,46 @@ extern const unsigned short world1collisionBitmap[524288];
 
 extern const unsigned short world1collisionPal[256];
 # 6 "world.c" 2
+# 1 "sound.h" 1
+void setupSounds();
+void playSoundA(const signed char* sound, int length, int loops, int offset);
+void playSoundB(const signed char* sound, int length, int loops);
+
+void setupInterrupts();
+void interruptHandler();
+
+void pauseSound();
+void unpauseSound();
+void stopSound();
+# 49 "sound.h"
+typedef struct{
+    const signed char* data;
+    int length;
+    int frequency;
+    int isPlaying;
+    int loops;
+    int duration;
+    int priority;
+    int vBlankCount;
+} SOUND;
+
+SOUND soundA;
+SOUND soundB;
+# 7 "world.c" 2
+# 1 "shootsfx.h" 1
+
+
+extern const unsigned int shootsfx_sampleRate;
+extern const unsigned int shootsfx_length;
+extern const signed char shootsfx_data[];
+# 8 "world.c" 2
+# 1 "boomsfx.h" 1
+
+
+extern const unsigned int boomsfx_sampleRate;
+extern const unsigned int boomsfx_length;
+extern const signed char boomsfx_data[];
+# 9 "world.c" 2
 
 unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
@@ -1356,10 +1396,12 @@ void doCollision() {
 
                 mines[i].active = 0;
                 submarineHp -= mines[i].damage;
+                playSoundB(boomsfx_data, boomsfx_length, 0);
             }
         }
     }
 }
+
 
 void updateWorld() {
     updatePlayer();
@@ -1541,6 +1583,7 @@ void firePlayer() {
             bullets[i].int_y = starty;
             bullets[i].x = ((bullets[i].int_x) >> 6);
             bullets[i].y = ((bullets[i].int_y) >> 6);
+            playSoundB(shootsfx_data, shootsfx_length, 0);
             break;
         }
     }

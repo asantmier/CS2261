@@ -49,59 +49,72 @@ playSoundA:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, r8, lr}
-	mov	r7, #0
-	ldr	r3, .L7+8
+	push	{r4, r5, r6, r7, r8, r9, r10, lr}
+	mov	r6, #0
+	mov	r9, r2
+	add	r2, r3, r3, lsl #2
+	add	r2, r2, r2, lsl #2
+	mov	r8, r1
+	rsb	r2, r2, r2, lsl #3
+	ldr	r1, .L7+8
+	rsb	r2, r2, r2, lsl #6
+	mov	r4, r3
+	smull	r3, r1, r2, r1
+	ldr	r3, .L7+12
+	add	r1, r1, r2
 	ldr	r3, [r3]
-	mov	r5, r1
-	mov	r6, r0
-	mov	r8, r2
-	mov	r1, r0
-	str	r7, [r3, #20]
-	mov	r0, #1
+	asr	r2, r2, #31
+	rsb	r1, r2, r1, asr #5
+	mov	r5, r0
+	str	r6, [r3, #20]
+	add	r1, r0, r1
 	mov	r3, #910163968
-	ldr	r2, .L7+12
-	ldr	r4, .L7+16
+	mov	r0, #1
+	ldr	r2, .L7+16
+	ldr	r7, .L7+20
 	mov	lr, pc
-	bx	r4
-	mov	r2, #1
-	mvn	r0, #1520
-	mov	r1, #128
-	ldr	r4, .L7+20
-	ldr	r3, .L7+24
-	strh	r7, [r3, #2]	@ movhi
-	strh	r0, [r3]	@ movhi
-	strh	r1, [r3, #2]	@ movhi
-	mov	r0, r5
-	str	r5, [r4, #4]
-	str	r2, [r4, #12]
+	bx	r7
+	mov	ip, #128
+	mvn	r2, #1520
+	mov	r1, #1
+	ldr	r7, .L7+24
 	ldr	r3, .L7+28
-	str	r6, [r4]
-	str	r8, [r4, #16]
+	sub	r8, r8, #11008
+	sub	r8, r8, #17
+	strh	r6, [r3, #2]	@ movhi
+	mov	r0, r8
+	strh	r2, [r3]	@ movhi
+	strh	ip, [r3, #2]	@ movhi
+	ldr	r2, .L7+32
+	str	r5, [r7]
+	str	r9, [r7, #16]
+	str	r8, [r7, #4]
+	str	r1, [r7, #12]
 	mov	lr, pc
-	bx	r3
-	ldr	r5, .L7+32
+	bx	r2
+	ldr	r5, .L7+36
 	adr	r3, .L7
 	ldmia	r3, {r2-r3}
 	mov	lr, pc
 	bx	r5
 	mov	r2, #0
-	ldr	r5, .L7+36
-	ldr	r3, .L7+40
-	mov	lr, pc
-	bx	r5
+	ldr	r5, .L7+40
 	ldr	r3, .L7+44
 	mov	lr, pc
+	bx	r5
+	ldr	r3, .L7+48
+	mov	lr, pc
 	bx	r3
-	str	r7, [r4, #28]
-	str	r0, [r4, #20]
-	pop	{r4, r5, r6, r7, r8, lr}
+	str	r4, [r7, #28]
+	str	r0, [r7, #20]
+	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
 .L8:
 	.align	3
 .L7:
 	.word	1443109011
 	.word	1078844686
+	.word	-2004318071
 	.word	dma
 	.word	67109024
 	.word	DMANow
@@ -143,6 +156,8 @@ playSoundB:
 	mov	r1, #128
 	ldr	r4, .L11+20
 	ldr	r3, .L11+24
+	sub	r5, r5, #440
+	sub	r5, r5, #1
 	strh	r7, [r3, #6]	@ movhi
 	strh	r0, [r3, #4]	@ movhi
 	strh	r1, [r3, #6]	@ movhi
@@ -197,32 +212,32 @@ interruptHandler:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	mov	r2, #0
-	ldr	r3, .L32
-	ldrh	r1, [r3, #2]
+	mov	r3, #0
+	ldr	r2, .L32
+	ldrh	r1, [r2, #2]
 	tst	r1, #1
-	strh	r2, [r3, #8]	@ movhi
+	strh	r3, [r2, #8]	@ movhi
 	beq	.L27
-	ldr	r3, .L32+4
-	ldr	r2, [r3, #12]
-	cmp	r2, #0
+	ldr	r0, .L32+4
+	ldr	r2, [r0, #12]
+	cmp	r2, r3
 	push	{r4, lr}
 	beq	.L16
-	ldr	r2, [r3, #28]
-	ldr	r1, [r3, #20]
+	ldr	r2, [r0, #28]
+	ldr	r1, [r0, #20]
 	add	r2, r2, #1
 	cmp	r2, r1
-	str	r2, [r3, #28]
+	str	r2, [r0, #28]
 	ble	.L16
-	ldr	r2, [r3, #16]
-	cmp	r2, #0
+	ldr	r2, [r0, #16]
+	cmp	r2, r3
 	bne	.L30
-	ldr	r0, .L32+8
-	ldr	r1, .L32+12
-	ldr	r0, [r0]
-	str	r2, [r3, #12]
-	str	r2, [r0, #20]
-	strh	r2, [r1, #2]	@ movhi
+	ldr	r1, .L32+8
+	ldr	r3, .L32+12
+	ldr	r1, [r1]
+	str	r2, [r0, #12]
+	str	r2, [r1, #20]
+	strh	r2, [r3, #2]	@ movhi
 .L16:
 	ldr	r3, .L32+16
 	ldr	r2, [r3, #12]
@@ -258,7 +273,7 @@ interruptHandler:
 	strh	r2, [r3, #8]	@ movhi
 	bx	lr
 .L30:
-	ldm	r3, {r0, r1}
+	ldm	r0, {r0, r1}
 	bl	playSoundA
 	b	.L16
 .L31:

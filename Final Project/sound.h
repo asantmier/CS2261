@@ -1,5 +1,5 @@
 void setupSounds();
-void playSoundA(const signed char* sound, int length, int loops);
+void playSoundA(const signed char* sound, int length, int loops, int offset);
 void playSoundB(const signed char* sound, int length, int loops);
 
 void setupInterrupts();

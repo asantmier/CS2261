@@ -3,6 +3,9 @@
 #include "print.h"
 #include "world.h"
 #include "world1collision.h"
+#include "sound.h"
+#include "shootsfx.h"
+#include "boomsfx.h"
 
 unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
@@ -260,11 +263,13 @@ void doCollision() {
                 // Get hurt
                 mines[i].active = 0;
                 submarineHp -= mines[i].damage;
+                playSoundB(boomsfx_data, boomsfx_length, 0);
             }
         }
     }
 }
 
+// Update the world
 void updateWorld() {
     updatePlayer();
     for (int i = 0; i < NUM_BULLETS; i++) {
@@ -423,7 +428,7 @@ void drawPlayer() {
     shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID(0, 0) | ATTR2_PRIORITY(PLAYER_PRIORITY);
 }
 
-// applies high velocity unemployment to the player
+// Shoot a bullet
 void firePlayer() {
     // Player shoots in the direction they're facing
     fp64 dx, startx, starty;
@@ -445,6 +450,7 @@ void firePlayer() {
             bullets[i].int_y = starty;
             bullets[i].x = DECODE26_6(bullets[i].int_x);
             bullets[i].y = DECODE26_6(bullets[i].int_y);
+            playSoundB(shootsfx_data, shootsfx_length, 0);
             break;
         }
     }
