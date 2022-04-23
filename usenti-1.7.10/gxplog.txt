@@ -1,20 +1,27 @@
 STATUS: Validatating gr.
 WARNING:   No explicit src path.
+WARNING: Non-integer tiling in width (240 vs 256)
+WARNING: Non-integer tiling in height (160 vs 256)
 STATUS: Validation succeeded.
-STATUS: Started run at: 2022-04-13, 21:36:39
+STATUS: Started run at: 2022-04-22, 23:48:22
 STATUS: Validatating gr.
 STATUS: Validation succeeded.
 STATUS: Preparing data.
 STATUS: Work-DIB creation.
 STATUS: Work-DIB creation complete: 256x256@8.
 STATUS: Tile preparation.
+STATUS:   tiling to 256x256 tiles.
 STATUS:   tiling to 8x8 tiles.
 STATUS: Tile preparation complete.
+STATUS: Map preparation.
+STATUS:   Performing tile reduction: tiles, flip, palette
+STATUS: Creating new tileset.
+STATUS: Map preparation complete.
 STATUS: Graphics preparation.
 STATUS:   Bitpacking: 8 -> 4.
 STATUS: Graphics preparation complete.
 STATUS: Palette preparation.
 STATUS: Palette preparation complete.
 STATUS: Data preparation complete.
-STATUS: Export to C: tempspritesheet into C:\Users\Allen\Documents\CS2261\Final Project\tempspritesheet.c .
+STATUS: Export to C: splashscreen into C:\Users\Allen\Documents\CS2261\Final Project\splashscreen.c .
 STATUS: Run completed :).

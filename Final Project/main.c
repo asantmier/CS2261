@@ -2,17 +2,19 @@
  * So far the core gameplay mechanics of the game are complete.
  * All world exploration mechanics are in place, with the exception of items you can pick up to heal yourself.
  * The world design is also done. 
- * I have not yet implemented a parallax effect for the background (the blue one behind the level).
  * The combat system is functional enough to consider done (it's very basic, but that's perfectly fine at this point), 
  *      but I still need to add enemy and move diversity.
  * Enemies don't move around or follow the player right now. At the very least I want to make them move back and forth.
- * (Also I need to do art, sound, state backgrounds, and other milestone 4 stuff).
  * 
  * BUGS: When one team finishes their turns in combat, the turn count display immediately switches to the other team's
  *         turns instead of remaining empty during the wait animation.
- *      For some reason, a loud burst of static plays at the end of all sound. Apparently the provided functions are 
- *          reading too far. As a solution, I manually added 1/25th of a second to all audio and subtracted that much
- *          from the length of each in the playSound functions.
+ *      Some of the world tiles aren't animated even though they should be. That's an error in the png that I need to solve
+ *          but would have taken too long to do before this milestone.
+ * 
+ * Not a bug, but for some reason, a loud burst of static plays at the end of all sound. Apparently the provided 
+ *      functions are reading too far. As a solution, I manually added 1/25th of a second to all audio and subtracted 
+ *      that much from the length of each in the playSound functions. Thought it might be worthwhile to explain that
+ *      solution.
  * 
  * HOW TO PLAY: Directional pad to move, right bumper to move slower, A to shoot.
  *     If you collide with or shoot the enemies (red box) you will enter combat.
@@ -33,11 +35,11 @@
 #include "battle.h"
 #include "game.h"
 #include "tempspritesheet.h"
-#include "tempsplash.h"
-#include "tempinstructions.h"
-#include "temppause.h"
-#include "tempwin.h"
-#include "templose.h"
+#include "splashscreen.h"
+#include "instructions.h"
+#include "pause.h"
+#include "win.h"
+#include "lose.h"
 #include "tempbattle.h"
 #include "world1.h"
 #include "world1parallax.h"
@@ -47,7 +49,10 @@
 #include "bossTheme.h"
 
 // Prototypes.
+void interruptHandler();
 void initialize();
+void worldAnim();
+void prepareWorldAnim();
 
 // State Prototypes.
 void goToStart();
@@ -84,6 +89,7 @@ unsigned short oldButtons;
 // Shadow OAM.
 OBJ_ATTR shadowOAM[128];
 fp256 bg2xOff, bg2yOff;
+int bg1xOff, bg1yOff;
 
 // Timer for srand
 int randTimer;
@@ -129,6 +135,21 @@ int main() {
     }
 }
 
+void interruptHandler() {
+	REG_IME = 0;
+
+	soundInterruptHandler();
+
+    if(REG_IF & INT_TM2) {
+        waiting = 0;
+        REG_TM2CNT = 0;
+
+		REG_IF = INT_TM2;
+	}
+
+	REG_IME = 1;
+}
+
 // Sets up GBA.
 void initialize() {
     // Turn of display so the weirdest thing the player sees is black
@@ -139,14 +160,19 @@ void initialize() {
     DMANow(3, &tempspritesheetTiles, &CHARBLOCK[4], DMA_32 | (tempspritesheetTilesLen / 4));
     // Backgrounds
     // BG0 contains the splashscreen. Later it will contain the battle background
-    DMANow(3, &tempsplashTiles, &CHARBLOCK[1], DMA_32 | (tempsplashTilesLen / 4));
-    DMANow(3, &tempsplashMap, &SCREENBLOCK[15], DMA_32 | (tempsplashMapLen / 4));
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
+    DMANow(3, &splashscreenTiles, &CHARBLOCK[1], DMA_32 | (splashscreenTilesLen / 4));
+    DMANow(3, &splashscreenMap, &SCREENBLOCK[15], DMA_32 | (splashscreenMapLen / 4));
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
     // BG1 contains the instructions. Later it will contain the parallax background
-    DMANow(3, &tempinstructionsTiles, &CHARBLOCK[2], DMA_32 | (tempinstructionsTilesLen / 4));
-    DMANow(3, &tempinstructionsMap, &SCREENBLOCK[22], DMA_32 | (tempinstructionsMapLen / 4));
+    DMANow(3, &instructionsTiles, &CHARBLOCK[2], DMA_32 | (instructionsTilesLen / 4));
+    DMANow(3, &instructionsMap, &SCREENBLOCK[22], DMA_32 | (instructionsMapLen / 4));
     // Priority is set to 3 so that it draws below everything
-    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_8BPP | BG_SIZE_TALL | 3;
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_4BPP | BG_SIZE_TALL | 3;
+    // Move background back to its origin
+    bg1xOff = 0;
+    bg1yOff = 0;
+    REG_BG1HOFF = bg1xOff;
+    REG_BG1VOFF = bg1yOff;
     // BG2 contains the world. It's a 128x tile map so it uses the entire 3rd charblock for its map
     DMANow(3, &world1Tiles, &CHARBLOCK[0], DMA_32 | (world1TilesLen / 4));
     DMANow(3, &world1Map, &SCREENBLOCK[24], DMA_32 | (world1MapLen / 4));
@@ -163,7 +189,15 @@ void initialize() {
 
     // Activate sound
     setupSounds();
-    setupInterrupts();
+    setupSoundInterrupts();
+
+    // Activiate interrupt handler
+    REG_IME = 0;
+    REG_INTERRUPT = interruptHandler;
+	REG_IME = 1;
+
+    // Play around with memory for a bit to assist in animating the world
+    prepareWorldAnim();
 
     // Doing this makes the entire screen flash black for 1 frame when restarting the game rather than introducing a
     // black tearing artifact at the top of the screen for 1 frame. I think it looks better
@@ -182,7 +216,8 @@ void initialize() {
 
 // Sets up the start state.
 void goToStart() {
-    DMANow(3, &tempsplashPal, PALETTE, 256);
+    DMANow(3, &splashscreenPal, PALETTE, 256);
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
     REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE;
 
     state = START;
@@ -211,7 +246,8 @@ void start() {
 
 // Sets up instructions
 void goToInstructions() {
-    DMANow(3, &tempinstructionsPal, PALETTE, 256);
+    DMANow(3, &instructionsPal, PALETTE, 256);
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_4BPP | BG_SIZE_TALL | 3;
     REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG1_ENABLE;
 
     state = INSTRUCTIONS;
@@ -230,6 +266,7 @@ void instructions() {
 // Sets up the game state.
 void goToGame() {
     DMANow(3, &world1Pal, PALETTE, 256);
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_8BPP | BG_SIZE_TALL | 3;
     REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE | BG1_ENABLE;
 
     state = GAME;
@@ -238,6 +275,7 @@ void goToGame() {
 // Runs every frame of the game state.
 void game() {
     updateWorld();
+    worldAnim();
 
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         goToPause();
@@ -251,6 +289,12 @@ void game() {
     DMANow(3, &shadowOAM, OAM, 128 * 4);
     REG_BG2X = ENCODE24_8(bg2xOff);
     REG_BG2Y = ENCODE24_8(bg2yOff);
+
+    // Move the parallax background at a slower rate than the main background
+    bg1xOff = bg2xOff / 4;
+    bg1yOff = bg2yOff / 2;
+    REG_BG1HOFF = bg1xOff;
+    REG_BG1VOFF = bg1yOff;
 
     if (submarineHp <= 0) {
         goToLose();
@@ -276,6 +320,7 @@ void game() {
 // Sets up the battle state
 void goToBattle() {
     // DMA in the battle background (maybe we could do this earlier?)
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
     DMANow(3, &tempbattlePal, PALETTE, 256);
     DMANow(3, &tempbattleTiles, &CHARBLOCK[1], DMA_32 | (tempbattleTilesLen / 4));
     DMANow(3, &tempbattleMap, &SCREENBLOCK[15], DMA_32 | (tempbattleMapLen / 4));
@@ -319,9 +364,10 @@ void battle() {
 // Sets up the pause state.
 void goToPause() {
     pauseSound();
-    DMANow(3, &temppausePal, PALETTE, 256);
-    DMANow(3, &temppauseTiles, &CHARBLOCK[1], DMA_32 | (temppauseTilesLen / 4));
-    DMANow(3, &temppauseMap, &SCREENBLOCK[15], DMA_32 | (temppauseMapLen / 4));
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
+    DMANow(3, &pausePal, PALETTE, 256);
+    DMANow(3, &pauseTiles, &CHARBLOCK[1], DMA_32 | (pauseTilesLen / 4));
+    DMANow(3, &pauseMap, &SCREENBLOCK[15], DMA_32 | (pauseMapLen / 4));
     REG_DISPCTL = MODE1 | BG0_ENABLE;
 
     state = PAUSE;
@@ -342,9 +388,11 @@ void pause() {
 
 // Sets up the win state.
 void goToWin() {
-    DMANow(3, &tempwinPal, PALETTE, 256);
-    DMANow(3, &tempwinTiles, &CHARBLOCK[1], DMA_32 | (tempwinTilesLen / 4));
-    DMANow(3, &tempwinMap, &SCREENBLOCK[15], DMA_32 | (tempwinMapLen / 4));
+    stopSound();
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
+    DMANow(3, &winPal, PALETTE, 256);
+    DMANow(3, &winTiles, &CHARBLOCK[1], DMA_32 | (winTilesLen / 4));
+    DMANow(3, &winMap, &SCREENBLOCK[15], DMA_32 | (winMapLen / 4));
     REG_DISPCTL = MODE1 | BG0_ENABLE;
 
     state = WIN;
@@ -362,9 +410,11 @@ void win() {
 
 // Sets up the lose state.
 void goToLose() {
-    DMANow(3, &templosePal, PALETTE, 256);
-    DMANow(3, &temploseTiles, &CHARBLOCK[1], DMA_32 | (temploseTilesLen / 4));
-    DMANow(3, &temploseMap, &SCREENBLOCK[15], DMA_32 | (temploseMapLen / 4));
+    stopSound();
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
+    DMANow(3, &losePal, PALETTE, 256);
+    DMANow(3, &loseTiles, &CHARBLOCK[1], DMA_32 | (loseTilesLen / 4));
+    DMANow(3, &loseMap, &SCREENBLOCK[15], DMA_32 | (loseMapLen / 4));
     REG_DISPCTL = MODE1 | BG0_ENABLE;
 
     state = LOSE;
@@ -378,4 +428,95 @@ void lose() {
 
     waitForVBlank();
 
+}
+
+/* TILE IDS
+    * XX FLOOR LWALL RWALL CEIL COR1 COR2 COR3 COR4 XCOR1 XCOR2 XCOR3 XCOR4
+    * F1  7     26    25    24   13   4    14   5    23    8     22    12
+    * F2  72    68    64    66   70   61   59   57   55    53    51    49
+    * F3  73    69    65    67   71   62   60   58   56    54    52    50
+    * 
+    * FIRST UNUSED TILE: 74
+*/
+enum { FLOOR_SRC=7, LWALL_SRC=2, RWALL_SRC=3, CEILI_SRC=6, CORN1_SRC=13, CORN2_SRC=4, CORN3_SRC=15, CORN4_SRC=5, XCOR1_SRC=24, XCOR2_SRC=8, XCOR3_SRC=23, XCOR4_SRC=12 };
+enum { FLOOR_F2=71, LWALL_F2=67, RWALL_F2=63, CEILI_F2=65, CORN1_F2=69, CORN2_F2=60, CORN3_F2=58, CORN4_F2=56, XCOR1_F2=54, XCOR2_F2=52, XCOR3_F2=50, XCOR4_F2=48 };
+enum { FLOOR_F3=72, LWALL_F3=68, RWALL_F3=64, CEILI_F3=66, CORN1_F3=70, CORN2_F3=61, CORN3_F3=59, CORN4_F3=57, XCOR1_F3=55, XCOR2_F3=53, XCOR3_F3=51, XCOR4_F3=49 };
+#define FREETILE 80
+enum { FLOOR_F1 = FREETILE + 0, LWALL_F1, RWALL_F1, CEILI_F1, CORN1_F1, CORN2_F1, CORN3_F1, CORN4_F1, XCOR1_F1, XCOR2_F1, XCOR3_F1, XCOR4_F1 };
+
+// DMAs tile frame 1s into a spot after the rest of the tiles for safe keeping
+void prepareWorldAnim() {
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+    DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_SRC)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_F1)) / 2], DMA_32 | ((8 * 8) / 4));
+}
+
+// Animates the world's tiles
+void worldAnim() {
+    static int frameCounter = 0;
+    // 0: F1, 1: F2, 2: F3, 3: F2
+    static int aniFrame = 0;
+    if (frameCounter > 30) {
+        aniFrame++;
+        aniFrame %= 3;
+        frameCounter = 0;
+    }
+
+    switch (aniFrame)
+    {
+    case 0:
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_F1)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        break;
+    // case 3: // Fall through
+    case 1:
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_F2)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        break;
+    case 2:
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (FLOOR_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (LWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (RWALL_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CEILI_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (CORN4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR1_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR2_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR3_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        DMANow(3, &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_F3)) / 2], &CHARBLOCK[0].tileimg[((8 * 8) * (XCOR4_SRC)) / 2], DMA_32 | ((8 * 8) / 4));
+        break;
+    }
+
+   frameCounter++;
 }

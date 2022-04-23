@@ -425,7 +425,7 @@ void movePlayer() {
 void drawPlayer() {
     shadowOAM[PLAYER_IDX].attr0 = (player.y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
     shadowOAM[PLAYER_IDX].attr1 = (player.x & COLMASK) | ATTR1_TINY;
-    shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID(0, 0) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+    shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID(0, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
 }
 
 // Shoot a bullet
@@ -536,7 +536,7 @@ void updateBullet(BULLET* bullet) {
         shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
         shadowOAM[bullet->spriteIdx].attr1 = (bullet->x & COLMASK) | ATTR1_TINY;
         // The bullet is gonna be way too big but this is just placeholder until we get a real sprite
-        shadowOAM[bullet->spriteIdx].attr2 = ATTR2_TILEID(8, 16) | ATTR2_PRIORITY(BULLET_PRIORITY);
+        shadowOAM[bullet->spriteIdx].attr2 = ATTR2_TILEID(0, 31) | ATTR2_PRIORITY(BULLET_PRIORITY);
     } else {
         shadowOAM[bullet->spriteIdx].attr0 = ATTR0_HIDE;
     }
@@ -587,13 +587,33 @@ void freeEnemySprites() {
 
 // Draws an enemy sprite
 void drawEnemy(ENEMY* enemy) {
+    // Stuff for animating all of the enemies together
+    static int frameCounter = 0;
+    static int aniFrame = 0;
+    if (frameCounter > 30) {
+        aniFrame++;
+        aniFrame %= 3;
+        frameCounter = 0;
+    }
     // Only draw as many enemies as we have sprites for
     if (drawnEnemies < NUM_ENEMY_SPRITES) {
         shadowOAM[ENEMY1 + drawnEnemies].attr0 = (enemy->y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
         shadowOAM[ENEMY1 + drawnEnemies].attr1 = (enemy->x & COLMASK) | ATTR1_TINY;
-        shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(16, 0) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+        switch (aniFrame)
+        {
+        case 0:
+            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(0, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+            break;
+        case 1:
+            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(2, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+            break;
+        case 2:
+            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(4, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+            break;
+        }
         drawnEnemies++;
     }
+    frameCounter++;
 }
 
 // Hides all mine sprites
@@ -606,13 +626,33 @@ void freeMineSprites() {
 
 // Draws a mine sprite
 void drawMine(MINE* mine) {
+    // Stuff for animating all of the mines together
+    static int frameCounter = 0;
+    static int aniFrame = 0;
+    if (frameCounter > 30) {
+        aniFrame++;
+        aniFrame %= 3;
+        frameCounter = 0;
+    }
     // Only draw as many mines as we have sprites for
     if (drawnMines < NUM_MINE_SPRITES) {
+        switch (aniFrame)
+        {
+        case 0:
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(0, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            break;
+        case 1:
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(1, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            break;
+        case 2:
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(2, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            break;
+        }
         shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
         shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & COLMASK) | ATTR1_TINY;
-        shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(24, 8) | ATTR2_PRIORITY(MINE_PRIORITY);
         drawnMines++;
     }
+    frameCounter++;
 }
 
 // Display the submarine's healthbar

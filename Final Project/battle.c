@@ -34,7 +34,7 @@ COMBATANT* captured;
 int menu;
 int selOpt;
 int numOpt;
-int waitTimer;
+int waiting;
 // Player input variables
 int enter;
 int leave;
@@ -49,7 +49,7 @@ void initBattle(int opponentType) {
     battleStatus = ONGOING;
     lettersActive = 0;
     goToFrontMenu();
-    waitTimer = 0;
+    waiting = 0;
     enter = 0;
     leave = 0;
     topBuf[0] = '\0';
@@ -518,7 +518,10 @@ void finishTurn() {
         }
     }
     
-    waitTimer = 100;
+    waiting = 1;
+    REG_TM2CNT = 0;
+    REG_TM2D = 0 - (16384 * 2); // wait two seconds
+    REG_TM2CNT = TIMER_ON | TM_FREQ_1024 | TM_IRQ;
 }
 
 void checkBattleStatus() {
@@ -548,9 +551,7 @@ void checkBattleStatus() {
 }
 
 void updateBattle() {
-    if (waitTimer) {
-        mgba_printf("%d", waitTimer);
-        waitTimer--;
+    if (waiting) {
         return;
     }
     checkBattleStatus();
@@ -766,6 +767,7 @@ void drawHealthbar(int x, int y, COMBATANT* c, int spriteIdx) {
 
 // Draws all of the combatants
 void drawCombatants() {
+    // TODO use affine matrix to make these sprites big
     shadowOAM[TURNICON1].attr0 = ATTR0_HIDE;
     shadowOAM[TURNICON2].attr0 = ATTR0_HIDE;
     shadowOAM[TURNICON3].attr0 = ATTR0_HIDE;
@@ -778,8 +780,8 @@ void drawCombatants() {
 
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
         shadowOAM[ALLY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY1_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ALLY1_B].attr2 = ATTR2_TILEID(0, 0);
+        shadowOAM[ALLY1_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
+        shadowOAM[ALLY1_B].attr2 = ATTR2_TILEID(0, 28);
         drawHealthbar(8, 15 - 8, &battleAllies[0], HB1);
     } else {
         shadowOAM[ALLY1_B].attr0 = ATTR0_HIDE;
@@ -787,8 +789,8 @@ void drawCombatants() {
     }
     if (battleAllies[1].exists && battleAllies[1].hp > 0) {
         shadowOAM[ALLY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY2_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ALLY2_B].attr2 = ATTR2_TILEID(0, 0);
+        shadowOAM[ALLY2_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
+        shadowOAM[ALLY2_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(8, 55 - 8, &battleAllies[1], HB2);
     } else {
         shadowOAM[ALLY2_B].attr0 = ATTR0_HIDE;
@@ -796,8 +798,8 @@ void drawCombatants() {
     }
     if (battleAllies[2].exists && battleAllies[2].hp > 0) {
         shadowOAM[ALLY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY3_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ALLY3_B].attr2 = ATTR2_TILEID(0, 0);
+        shadowOAM[ALLY3_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
+        shadowOAM[ALLY3_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(8, 95 - 8, &battleAllies[2], HB3);
     } else {
         shadowOAM[ALLY3_B].attr0 = ATTR0_HIDE;
@@ -805,8 +807,8 @@ void drawCombatants() {
     }
     if (battleAllies[3].exists && battleAllies[3].hp > 0) {
         shadowOAM[ALLY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY4_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ALLY4_B].attr2 = ATTR2_TILEID(0, 0);
+        shadowOAM[ALLY4_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
+        shadowOAM[ALLY4_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(8, 135 - 8, &battleAllies[3], HB4);
     } else {
         shadowOAM[ALLY4_B].attr0 = ATTR0_HIDE;
@@ -816,8 +818,8 @@ void drawCombatants() {
     
     if (battleOpponents[0].exists && battleOpponents[0].hp > 0) {
         shadowOAM[ENEMY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY1_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ENEMY1_B].attr2 = ATTR2_TILEID(16, 0);
+        shadowOAM[ENEMY1_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+        shadowOAM[ENEMY1_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(200, 15 - 8, &battleOpponents[0], HB5);
     } else {
         shadowOAM[ENEMY1_B].attr0 = ATTR0_HIDE;
@@ -825,8 +827,8 @@ void drawCombatants() {
     }
     if (battleOpponents[1].exists && battleOpponents[1].hp > 0) {
         shadowOAM[ENEMY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY2_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ENEMY2_B].attr2 = ATTR2_TILEID(16, 0);
+        shadowOAM[ENEMY2_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+        shadowOAM[ENEMY2_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(200, 55 - 8, &battleOpponents[1], HB6);
     } else {
         shadowOAM[ENEMY2_B].attr0 = ATTR0_HIDE;
@@ -834,8 +836,8 @@ void drawCombatants() {
     }
     if (battleOpponents[2].exists && battleOpponents[2].hp > 0) {
         shadowOAM[ENEMY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY3_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ENEMY3_B].attr2 = ATTR2_TILEID(16, 0);
+        shadowOAM[ENEMY3_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+        shadowOAM[ENEMY3_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(200, 95 - 8, &battleOpponents[2], HB7);
     } else {
         shadowOAM[ENEMY3_B].attr0 = ATTR0_HIDE;
@@ -843,8 +845,8 @@ void drawCombatants() {
     }
     if (battleOpponents[3].exists && battleOpponents[3].hp > 0) {
         shadowOAM[ENEMY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY4_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
-        shadowOAM[ENEMY4_B].attr2 = ATTR2_TILEID(16, 0);
+        shadowOAM[ENEMY4_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+        shadowOAM[ENEMY4_B].attr2 = ATTR2_TILEID(0, 29);
         drawHealthbar(200, 135 - 8, &battleOpponents[3], HB8);
     } else {
         shadowOAM[ENEMY4_B].attr0 = ATTR0_HIDE;

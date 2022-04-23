@@ -112,6 +112,7 @@ char tsel(int cond);
 enum { LOST = -1, ONGOING = 0, WON = 1 };
 extern int battleStatus;
 extern int bossBattle;
+extern int waiting;
 
 // Turn tracking
 enum { PLAYERTURN, ENEMYTURN };
