@@ -3,3 +3,31 @@
 MOVE MOVE_SLASH = { "SLASH", "%s STRUCK %s!", 4, 0, OPPONENT, 0 };
 MOVE MOVE_BLAST = { "BLAST", "%s BLASTED THE ENEMY!", 3, 1, OPPONENT, 0 };
 MOVE MOVE_HEAL = { "HEAL", "%s HEALED %s!", 0, 0, ALLY, 3 };
+
+
+// single
+extern MOVE MOVE_NIBBLE = { "NIBBLE", "%s NIBBLED ON %s!", 4, 0, OPPONENT, 0 };
+extern MOVE MOVE_BITE = { "BITE", "%s BIT INTO %s!", 6, 0, OPPONENT, 0 };
+extern MOVE MOVE_STRIKE = { "STRIKE", "%s STRUCK %s!", 8, 0, OPPONENT, 0 };
+extern MOVE MOVE_SLASH = { "SLASH", "%s SLASHED %s!", 8, 0, OPPONENT, 0 };
+// multi
+extern MOVE MOVE_FLAIL = { "FLAIL", "%s FLAILED AROUND!", 3, 1, OPPONENT, 0 };
+extern MOVE MOVE_PUFFUP = { "PUFF UP", "%s PUFFED UP!", 5, 1, OPPONENT, 0 };
+extern MOVE MOVE_WAVE = { "TIDE WAVE", "%s CREATED A TIDAL WAVE!", 6, 1, OPPONENT, 0 };
+// heal
+extern MOVE MOVE_REGEN = { "REGEN", "%s REGENERATED!", 0, 0, ALLY, 3 };
+extern MOVE MOVE_RESOLVE = { "RESOLVE", "%s FOUND THE RESOLVE TO FIGHT!", 0, 0, ALLY, 5 };
+extern MOVE MOVE_SHEAL;
+extern MOVE MOVE_LHEAL;
+extern MOVE MOVE_SHEALBURST;
+extern MOVE MOVE_LHEALBURST;
+// special
+extern MOVE MOVE_DASH;
+extern MOVE MOVE_TRANSCEND;
+// player
+extern MOVE MOVE_TORPEDO1;
+extern MOVE MOVE_TORPEDO2;
+extern MOVE MOVE_SHIELD1;
+extern MOVE MOVE_SHIELD2;
+extern MOVE MOVE_BLAST1;
+extern MOVE MOVE_BLAST2;

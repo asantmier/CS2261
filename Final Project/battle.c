@@ -73,6 +73,8 @@ void initBattle(int opponentType) {
     // Figure out who started the fight and put them on the enemy team
     switch (opponentType)
     {
+    case FISH:
+        break;
     case SHARK:
         strncpy(battleOpponents[0].name, "SHARK1", NAME_LEN);
         battleOpponents[0].exists = 1;
@@ -96,6 +98,39 @@ void initBattle(int opponentType) {
         battleOpponents[2].numMoves = 1;
         
         battleOpponents[3].exists = 0;
+        break;
+    case ANGLER:
+        strncpy(battleOpponents[0].name, "ANGLER1", NAME_LEN);
+        battleOpponents[0].exists = 1;
+        battleOpponents[0].maxHp = 30;
+        battleOpponents[0].hp = battleOpponents[0].maxHp;
+        battleOpponents[0].moves[0] = MOVE_SLASH;
+        battleOpponents[0].numMoves = 1;
+
+        strncpy(battleOpponents[1].name, "SHARK1", NAME_LEN);
+        battleOpponents[1].exists = 1;
+        battleOpponents[1].maxHp = 16;
+        battleOpponents[1].hp = battleOpponents[1].maxHp;
+        battleOpponents[1].moves[0] = MOVE_SLASH;
+        battleOpponents[1].numMoves = 1;
+
+        strncpy(battleOpponents[2].name, "SHARK2", NAME_LEN);
+        battleOpponents[2].exists = 1;
+        battleOpponents[2].maxHp = 16;
+        battleOpponents[2].hp = battleOpponents[2].maxHp;
+        battleOpponents[2].moves[0] = MOVE_SLASH;
+        battleOpponents[2].numMoves = 1;
+
+        strncpy(battleOpponents[3].name, "SHARK3", NAME_LEN);
+        battleOpponents[3].exists = 1;
+        battleOpponents[3].maxHp = 16;
+        battleOpponents[3].hp = battleOpponents[3].maxHp;
+        battleOpponents[3].moves[0] = MOVE_SLASH;
+        battleOpponents[3].numMoves = 1;
+        break;
+    case PUFFER:
+        break;
+    case BARRACUDA:
         break;
     case BOSS:
         bossBattle = 1; // IMPORTANT! This is a boss battle!
