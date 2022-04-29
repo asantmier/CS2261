@@ -863,6 +863,7 @@ void drawPickup(PICKUP* pickup) {
 
 // Display the submarine's healthbar
 void updateHealthBar() {
+    // This is done using simpler techniques than battle mode
     // There are 26 tiles of healthbar
     // Left nub
     shadowOAM[HEALTHBAR1].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
