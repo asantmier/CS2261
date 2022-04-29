@@ -1,5 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
+// Overworld state stuff
 
 #include "game.h"
 

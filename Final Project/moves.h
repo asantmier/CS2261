@@ -1,5 +1,6 @@
 #ifndef MOVES_H
 #define MOVES_H
+// Contains the MOVE items contained in all COMBATANTs
 
 // Targeting mode enum
 enum { OPPONENT, ALLY };

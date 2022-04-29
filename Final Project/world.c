@@ -165,7 +165,13 @@ int opponentIdx; // we trust that we remember to set this each time
 int drawnEnemies = 0;
 int drawnMines = 0;
 int drawnPickups = 0;
+// Frame counters for collective animations modified in updateWorld
+int enemyFrameCounter = 0;
+int enemyAniFrame = 0;
+int mineFrameCounter = 0;
+int mineAniFrame = 0;
 
+// Sets up the overworld for after a battle finishes
 void returnFromBattle(int victory) {
     if (victory) {
         // get rid of that annoying warning. victory really just exists in case its useful one day
@@ -178,6 +184,7 @@ void returnFromBattle(int victory) {
     // }
 }
 
+// Initialize world data
 void initWorld() {
     level = 0;
     doBattle = 0;
@@ -189,6 +196,7 @@ void initWorld() {
     initPickups();
 }
 
+// Initialize player
 void initPlayer() {
     player.int_x = 128 * 64;
     player.int_y = 32 * 64;
@@ -201,6 +209,7 @@ void initPlayer() {
     player.facing = RIGHT;
 }
 
+// Initialize bullet pool
 void initBullets() {
     for (int i = 0; i < NUM_BULLETS; i++) {
         bullets[i].int_x = 0;
@@ -216,6 +225,7 @@ void initBullets() {
     }
 }
 
+// Initialize enemies
 void initEnemies() {
     for (int i = 0; i < NUM_ENEMIES; i++) {
         enemies[i].int_x = levels[level].enemyList[i].int_x;
@@ -232,6 +242,7 @@ void initEnemies() {
     }
 }
 
+// Initialize mines
 void initMines() {
     for (int i = 0; i < NUM_MINES; i++) {
         mines[i].int_x = levels[level].mineList[i].int_x;
@@ -249,6 +260,7 @@ void initMines() {
     }
 }
 
+// Initialize pickups
 void initPickups() {
     for (int i = 0; i < NUM_PICKUP; i++) {
         pickups[i].int_x = levels[level].pickupList[i].int_x;
@@ -262,6 +274,7 @@ void initPickups() {
     }
 }
 
+// Handle collision between actors
 void doCollision() {
     for (int i = 0; i < NUM_ENEMIES; i++) {
         if (enemies[i].active) {
@@ -333,10 +346,6 @@ void doCollision() {
     
 }
 
-int enemyFrameCounter = 0;
-int enemyAniFrame = 0;
-int mineFrameCounter = 0;
-int mineAniFrame = 0;
 // Update the world
 void updateWorld() {
     // Stuff for animating all of the enemies together
@@ -588,7 +597,7 @@ void updatePlayer() {
             player.dx = PLAYER_MAX_V * 4;
         }
     } else {
-        if (cheater) {
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
             player.dx = 0;
         }
         if (player.dx > 0) {
@@ -608,7 +617,7 @@ void updatePlayer() {
             player.dy = PLAYER_MAX_V * 4;
         }
     } else {
-        if (cheater) {
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
             player.dy = 0;
         }
         if (player.dy > 0) {

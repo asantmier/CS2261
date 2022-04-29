@@ -1339,7 +1339,7 @@ executeMove:
 	.ascii	"%s WILL AFFECT\012ALL ENEMIES\000"
 	.align	2
 .LC14:
-	.ascii	"%s WILL AFFECT\012ALL ALLIES\000"
+	.ascii	"%s WILL\012AFFECT ALL ALLIES\000"
 	.text
 	.align	2
 	.global	targetMenu

@@ -1,5 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
+// Contains data relevant to both the overworld and battle states
 
 #include "moves.h"
 
@@ -24,6 +25,7 @@ typedef struct tag_combatant {
     int tileid;
 } COMBATANT;
 
+// Default combatant structs
 extern COMBATANT CBT_FISH;
 extern COMBATANT CBT_SHARK;
 extern COMBATANT CBT_ANGLER;
@@ -40,12 +42,8 @@ extern COMBATANT CBT_NONE;
 // that could actually be an interesting mechanic
 
 // ally/opponent list
-// Allies need to be accessible from battle and world since we can modify our party in the world
+// Allies need to be accessible from battle and world since we might want to modify our party in the world
 // Opponents could technically only be in battle
-// Theoretically we could actually use a separate ally structure with just important data here
-// In battle we could just copy that data over at the start and use a different, specialized struct
-// That could be good for when we like need sprites for battle, but obv not in the overworld
-// TODO that
 extern COMBATANT battleAllies[4]; // player can be ally 0
 extern COMBATANT battleOpponents[4];
 

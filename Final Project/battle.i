@@ -1236,6 +1236,7 @@ void mgba_close(void);
 
 
 
+
 # 1 "mode0.h" 1
 
 
@@ -1345,12 +1346,14 @@ typedef void (*ihp)(void);
 # 322 "mode0.h"
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
-# 5 "battle.h" 2
+# 6 "battle.h" 2
 # 1 "game.h" 1
 
 
 
+
 # 1 "moves.h" 1
+
 
 
 
@@ -1369,7 +1372,7 @@ typedef struct tag_move {
 extern MOVE MOVE_SLASH;
 extern MOVE MOVE_BLAST;
 extern MOVE MOVE_HEAL;
-# 32 "moves.h"
+# 33 "moves.h"
 extern MOVE MOVE_NIBBLE;
 extern MOVE MOVE_BITE;
 extern MOVE MOVE_STRIKE;
@@ -1399,7 +1402,7 @@ extern MOVE MOVE_DEATHRAY;
 extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
-# 5 "game.h" 2
+# 6 "game.h" 2
 
 extern int submarineMaxHp;
 extern int submarineHp;
@@ -1422,6 +1425,7 @@ typedef struct tag_combatant {
     int tileid;
 } COMBATANT;
 
+
 extern COMBATANT CBT_FISH;
 extern COMBATANT CBT_SHARK;
 extern COMBATANT CBT_ANGLER;
@@ -1430,7 +1434,7 @@ extern COMBATANT CBT_BARRACUDA;
 extern COMBATANT CBT_GOD;
 extern COMBATANT CBT_SUBMARINE;
 extern COMBATANT CBT_NONE;
-# 49 "game.h"
+# 47 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1443,8 +1447,8 @@ void initParty();
 
 
 int tilesRed(int tile1, int hp, int maxHp, int segments);
-# 6 "battle.h" 2
-# 83 "battle.h"
+# 7 "battle.h" 2
+# 84 "battle.h"
 extern const int text_tile_lkup[];
 
 
@@ -1452,7 +1456,7 @@ enum { TURNINDICATOR = 0, ALLY1_B, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B
  HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4,
  TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8,
  TEXT_IDX };
-# 105 "battle.h"
+# 106 "battle.h"
 extern int lettersActive;
 void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
@@ -1997,7 +2001,7 @@ void targetMenu() {
             } else {
                 shadowOAM[TARGETING_ARROW + 3].attr0 = (2 << 8);
             }
-            sprintf(botBuf, "%s WILL AFFECT\nALL ALLIES", move->text);
+            sprintf(botBuf, "%s WILL\nAFFECT ALL ALLIES", move->text);
         } else {
             shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & 0xFF) | (0 << 8) | (2 << 14) | (1 << 13);
             shadowOAM[TARGETING_ARROW].attr1 = (40 & 0x1FF) | (0 << 14) | (1 << 12);
@@ -2092,6 +2096,7 @@ void executeMove(MOVE* m, COMBATANT* t) {
     finishTurn();
 }
 
+
 void finishTurn() {
     goToFrontMenu();
     mgba_printf("Ending turn...");
@@ -2161,6 +2166,7 @@ void finishTurn() {
     *(volatile unsigned short*)0x400010A = (1<<7) | 3 | (1<<6);
 }
 
+
 void checkBattleStatus() {
     int winTest = 1;
     for (int i = 0; i < 4; i++) {
@@ -2186,6 +2192,7 @@ void checkBattleStatus() {
         battleStatus = LOST;
     }
 }
+
 
 void updateBattle() {
     if (waiting) {
@@ -2303,6 +2310,7 @@ void updateBattle() {
         if ((!(~(oldButtons) & ((1 << 1))) && (~buttons & ((1 << 1))))) {
             leave = 1;
         }
+
 
 
         switch (menu)

@@ -1,5 +1,6 @@
 #ifndef BATTLE_H
 #define BATTLE_H
+// Battle state stuff
 
 #include "mode0.h"
 #include "game.h"
@@ -158,7 +159,5 @@ void finishTurn();
 // I want the sprites to be bigger on the battle screen
 // Either we can have more sprites on the sprite sheet for this which might be ok
 // but if we can't we could use smaller sprites and use the affine matrix
-// We've got like 16(?) affine sprites to work with and we would need 8 for combatants
-// and maybe a few more for special effects
 
 #endif

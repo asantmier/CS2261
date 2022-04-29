@@ -935,7 +935,9 @@ void mgba_close(void);
 
 
 
+
 # 1 "moves.h" 1
+
 
 
 
@@ -954,7 +956,7 @@ typedef struct tag_move {
 extern MOVE MOVE_SLASH;
 extern MOVE MOVE_BLAST;
 extern MOVE MOVE_HEAL;
-# 32 "moves.h"
+# 33 "moves.h"
 extern MOVE MOVE_NIBBLE;
 extern MOVE MOVE_BITE;
 extern MOVE MOVE_STRIKE;
@@ -984,7 +986,7 @@ extern MOVE MOVE_DEATHRAY;
 extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
-# 5 "game.h" 2
+# 6 "game.h" 2
 
 extern int submarineMaxHp;
 extern int submarineHp;
@@ -1007,6 +1009,7 @@ typedef struct tag_combatant {
     int tileid;
 } COMBATANT;
 
+
 extern COMBATANT CBT_FISH;
 extern COMBATANT CBT_SHARK;
 extern COMBATANT CBT_ANGLER;
@@ -1015,7 +1018,7 @@ extern COMBATANT CBT_BARRACUDA;
 extern COMBATANT CBT_GOD;
 extern COMBATANT CBT_SUBMARINE;
 extern COMBATANT CBT_NONE;
-# 49 "game.h"
+# 47 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 

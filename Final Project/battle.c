@@ -386,7 +386,7 @@ void targetMenu() {
             } else {
                 shadowOAM[TARGETING_ARROW + 3].attr0 = ATTR0_HIDE;
             }
-            sprintf(botBuf, "%s WILL AFFECT\nALL ALLIES", move->text);
+            sprintf(botBuf, "%s WILL\nAFFECT ALL ALLIES", move->text);
         } else {
             shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
             shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
@@ -481,6 +481,7 @@ void executeMove(MOVE* m, COMBATANT* t) {
     finishTurn();
 }
 
+// Called at the end of every turn
 void finishTurn() {
     goToFrontMenu();
     mgba_printf("Ending turn...");
@@ -550,6 +551,7 @@ void finishTurn() {
     REG_TM2CNT = TIMER_ON | TM_FREQ_1024 | TM_IRQ;
 }
 
+// Checks for victory or failure
 void checkBattleStatus() {
     int winTest = 1;
     for (int i = 0; i < 4; i++) {
@@ -576,6 +578,7 @@ void checkBattleStatus() {
     }
 }
 
+// Runs battle
 void updateBattle() {
     if (waiting) {
         return;
@@ -694,6 +697,7 @@ void updateBattle() {
         }
 
         // Do stuff
+        // Big ol' menu state machine
         switch (menu)
         {
         case FRONTMENU:

@@ -95,7 +95,7 @@ MOVE_SHIELD2:
 	.word	0
 	.word	0
 	.word	1
-	.word	5
+	.word	8
 	.type	MOVE_SHIELD1, %object
 	.size	MOVE_SHIELD1, 88
 MOVE_SHIELD1:
@@ -107,7 +107,7 @@ MOVE_SHIELD1:
 	.word	0
 	.word	0
 	.word	1
-	.word	3
+	.word	4
 	.type	MOVE_TORPEDO2, %object
 	.size	MOVE_TORPEDO2, 88
 MOVE_TORPEDO2:
@@ -188,7 +188,7 @@ MOVE_LHEAL:
 	.word	0
 	.word	0
 	.word	1
-	.word	5
+	.word	6
 	.type	MOVE_SHEAL, %object
 	.size	MOVE_SHEAL, 88
 MOVE_SHEAL:
@@ -200,7 +200,7 @@ MOVE_SHEAL:
 	.word	0
 	.word	0
 	.word	1
-	.word	3
+	.word	4
 	.type	MOVE_RESOLVE, %object
 	.size	MOVE_RESOLVE, 88
 MOVE_RESOLVE:
@@ -212,7 +212,7 @@ MOVE_RESOLVE:
 	.word	0
 	.word	0
 	.word	1
-	.word	5
+	.word	8
 	.type	MOVE_REGEN, %object
 	.size	MOVE_REGEN, 88
 MOVE_REGEN:
@@ -224,7 +224,7 @@ MOVE_REGEN:
 	.word	0
 	.word	0
 	.word	1
-	.word	3
+	.word	4
 	.type	MOVE_WAVE, %object
 	.size	MOVE_WAVE, 88
 MOVE_WAVE:

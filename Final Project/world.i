@@ -935,11 +935,14 @@ void mgba_close(void);
 
 
 
+
 # 1 "game.h" 1
 
 
 
+
 # 1 "moves.h" 1
+
 
 
 
@@ -958,7 +961,7 @@ typedef struct tag_move {
 extern MOVE MOVE_SLASH;
 extern MOVE MOVE_BLAST;
 extern MOVE MOVE_HEAL;
-# 32 "moves.h"
+# 33 "moves.h"
 extern MOVE MOVE_NIBBLE;
 extern MOVE MOVE_BITE;
 extern MOVE MOVE_STRIKE;
@@ -988,7 +991,7 @@ extern MOVE MOVE_DEATHRAY;
 extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
-# 5 "game.h" 2
+# 6 "game.h" 2
 
 extern int submarineMaxHp;
 extern int submarineHp;
@@ -1011,6 +1014,7 @@ typedef struct tag_combatant {
     int tileid;
 } COMBATANT;
 
+
 extern COMBATANT CBT_FISH;
 extern COMBATANT CBT_SHARK;
 extern COMBATANT CBT_ANGLER;
@@ -1019,7 +1023,7 @@ extern COMBATANT CBT_BARRACUDA;
 extern COMBATANT CBT_GOD;
 extern COMBATANT CBT_SUBMARINE;
 extern COMBATANT CBT_NONE;
-# 49 "game.h"
+# 47 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
@@ -1032,7 +1036,7 @@ void initParty();
 
 
 int tilesRed(int tile1, int hp, int maxHp, int segments);
-# 5 "world.h" 2
+# 6 "world.h" 2
 
 
 enum {
@@ -1044,7 +1048,7 @@ enum {
 
 
 typedef int fp64;
-# 53 "world.h"
+# 54 "world.h"
 enum { LEFT, RIGHT };
 
 enum { PASSIVE, NEUTRAL, HOSTILE };
@@ -1364,6 +1368,12 @@ int drawnEnemies = 0;
 int drawnMines = 0;
 int drawnPickups = 0;
 
+int enemyFrameCounter = 0;
+int enemyAniFrame = 0;
+int mineFrameCounter = 0;
+int mineAniFrame = 0;
+
+
 void returnFromBattle(int victory) {
     if (victory) {
 
@@ -1376,6 +1386,7 @@ void returnFromBattle(int victory) {
 
 }
 
+
 void initWorld() {
     level = 0;
     doBattle = 0;
@@ -1386,6 +1397,7 @@ void initWorld() {
     initMines();
     initPickups();
 }
+
 
 void initPlayer() {
     player.int_x = 128 * 64;
@@ -1398,6 +1410,7 @@ void initPlayer() {
     player.height = 8;
     player.facing = RIGHT;
 }
+
 
 void initBullets() {
     for (int i = 0; i < 5; i++) {
@@ -1414,6 +1427,7 @@ void initBullets() {
     }
 }
 
+
 void initEnemies() {
     for (int i = 0; i < 60; i++) {
         enemies[i].int_x = levels[level].enemyList[i].int_x;
@@ -1429,6 +1443,7 @@ void initEnemies() {
         enemies[i].type = levels[level].enemyList[i].type;
     }
 }
+
 
 void initMines() {
     for (int i = 0; i < 60; i++) {
@@ -1447,6 +1462,7 @@ void initMines() {
     }
 }
 
+
 void initPickups() {
     for (int i = 0; i < 10; i++) {
         pickups[i].int_x = levels[level].pickupList[i].int_x;
@@ -1459,6 +1475,7 @@ void initPickups() {
         pickups[i].effect = levels[level].pickupList[i].effect;
     }
 }
+
 
 void doCollision() {
     for (int i = 0; i < 60; i++) {
@@ -1531,10 +1548,6 @@ void doCollision() {
 
 }
 
-int enemyFrameCounter = 0;
-int enemyAniFrame = 0;
-int mineFrameCounter = 0;
-int mineAniFrame = 0;
 
 void updateWorld() {
 
@@ -1786,7 +1799,7 @@ void updatePlayer() {
             player.dx = 48 * 4;
         }
     } else {
-        if (cheater) {
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
             player.dx = 0;
         }
         if (player.dx > 0) {
@@ -1806,7 +1819,7 @@ void updatePlayer() {
             player.dy = 48 * 4;
         }
     } else {
-        if (cheater) {
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
             player.dy = 0;
         }
         if (player.dy > 0) {
