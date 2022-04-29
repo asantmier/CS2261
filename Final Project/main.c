@@ -2,14 +2,10 @@
  * So far the core gameplay mechanics of the game are complete.
  * All world exploration mechanics are in place, with the exception of items you can pick up to heal yourself.
  * The world design is also done. 
- * The combat system is functional enough to consider done (it's very basic, but that's perfectly fine at this point), 
- *      but I still need to add enemy and move diversity.
+ * The combat system is also done to a satisfactory extent.
  * Enemies don't move around or follow the player right now. At the very least I want to make them move back and forth.
  * 
- * BUGS: When one team finishes their turns in combat, the turn count display immediately switches to the other team's
- *         turns instead of remaining empty during the wait animation.
- *      Some of the world tiles aren't animated even though they should be. That's an error in the png that I need to solve
- *          but would have taken too long to do before this milestone.
+ * BUGS: 
  * 
  * Not a bug, but for some reason, a loud burst of static plays at the end of all sound. Apparently the provided 
  *      functions are reading too far. As a solution, I manually added 1/25th of a second to all audio and subtracted 
@@ -25,6 +21,9 @@
  *     Your team starts at full health in every battle. You can expand or upgrade your team by capturing enemies.
  *     Capturing enemies is easier the lower their health is. You can replace an empty slot on your team to expand it, but if
  *     your team is full you will have to replace a teammate or hit B to just not use the captured enemy.
+ * 
+ * TO DO LIST:
+ * MAKE ENEMIES MOVE AND ORIENT DEPENDING ON VELOCITY
 */
 
 #include <stdlib.h>
@@ -34,7 +33,7 @@
 #include "world.h"
 #include "battle.h"
 #include "game.h"
-#include "tempspritesheet.h"
+#include "spritesheet.h"
 #include "splashscreen.h"
 #include "instructions.h"
 #include "pause.h"
@@ -142,7 +141,12 @@ void interruptHandler() {
 
     if(REG_IF & INT_TM2) {
         waiting = 0;
-        REG_TM2CNT = 0;
+        // Set turnPoints to nextTurnPoints. After each turn, the turn token counter displays turnPoints tokens.
+        // When we swap teams turns, we want to show 0 tokens during the wait period, so we set nextTurnPoints equal
+        // to the number of turn tokens the next team is going to need. When the wait timer finishes, we can then update turnPoints
+        // and the game will display the number of tokens we want.
+        turnPoints = nextTurnPoints;
+        REG_TM2CNT = TIMER_OFF;
 
 		REG_IF = INT_TM2;
 	}
@@ -156,18 +160,19 @@ void initialize() {
     REG_DISPCTL = MODE1;
     // The almighty DMA
     // Sprites
-    DMANow(3, &tempspritesheetPal, SPRITEPALETTE, 256);
-    DMANow(3, &tempspritesheetTiles, &CHARBLOCK[4], DMA_32 | (tempspritesheetTilesLen / 4));
+    DMANow(3, &spritesheetPal, SPRITEPALETTE, 256);
+    DMANow(3, &spritesheetTiles, &CHARBLOCK[4], DMA_32 | (spritesheetTilesLen / 4));
     // Backgrounds
-    // BG0 contains the splashscreen. Later it will contain the battle background
+    // BG0 contains the splashscreen and instructions. Later it will contain the battle background and pause
     DMANow(3, &splashscreenTiles, &CHARBLOCK[1], DMA_32 | (splashscreenTilesLen / 4));
     DMANow(3, &splashscreenMap, &SCREENBLOCK[15], DMA_32 | (splashscreenMapLen / 4));
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
-    // BG1 contains the instructions. Later it will contain the parallax background
-    DMANow(3, &instructionsTiles, &CHARBLOCK[2], DMA_32 | (instructionsTilesLen / 4));
-    DMANow(3, &instructionsMap, &SCREENBLOCK[22], DMA_32 | (instructionsMapLen / 4));
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
+    // BG1 contains the parallax background
+    // IF THE PARALLAX BACKGROUND IS BLACK YOU FORGOT TO IMPORT THE PALETTE INTO THE FOREGROUND
+    DMANow(3, &world1parallaxTiles, &CHARBLOCK[2], DMA_32 | (world1parallaxTilesLen / 4));
+    DMANow(3, &world1parallaxMap, &SCREENBLOCK[22], DMA_32 | (world1parallaxMapLen / 4));
     // Priority is set to 3 so that it draws below everything
-    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_4BPP | BG_SIZE_TALL | 3;
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_8BPP | BG_SIZE_TALL | 3;
     // Move background back to its origin
     bg1xOff = 0;
     bg1yOff = 0;
@@ -216,9 +221,21 @@ void initialize() {
 
 // Sets up the start state.
 void goToStart() {
-    DMANow(3, &splashscreenPal, PALETTE, 256);
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
-    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE;
+    DMANow(3, &splashscreenTiles, &CHARBLOCK[1], DMA_32 | (splashscreenTilesLen / 4));
+    DMANow(3, &splashscreenMap, &SCREENBLOCK[15], DMA_32 | (splashscreenMapLen / 4));
+    DMANow(3, &world1Pal, PALETTE, 256);
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
+    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_8BPP | BG_SIZE_TALL | 3;
+    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE | BG2_ENABLE | BG1_ENABLE;
+
+    bg2xOff = 424;
+    bg2yOff = 716;
+    REG_BG2X = ENCODE24_8(bg2xOff);
+    REG_BG2Y = ENCODE24_8(bg2yOff);
+    bg1xOff = 0;
+    bg1yOff = 512-160;
+    REG_BG1HOFF = bg1xOff;
+    REG_BG1VOFF = bg1yOff;
 
     state = START;
 }
@@ -226,17 +243,26 @@ void goToStart() {
 // Runs every frame of the start state.
 void start() {
     randTimer++;
+    worldAnim();
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
+        REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG2_ENABLE | BG1_ENABLE;
         goToInstructions();
     } else if (BUTTON_PRESSED(BUTTON_START)) {
         // Seed RNG
         srand(randTimer);
         initGame();
         initWorld();
-        DMANow(3, &world1parallaxTiles, &CHARBLOCK[2], DMA_32 | (world1parallaxTilesLen / 4));
-        DMANow(3, &world1parallaxMap, &SCREENBLOCK[22], DMA_32 | (world1parallaxMapLen / 4));
         worldThemeCtr = 0;
         playSoundA(worldTheme_data, worldTheme_length, 1, worldThemeCtr);
+        // Reset the camera
+        bg2xOff = 0;
+        bg2yOff = 0;
+        REG_BG2X = ENCODE24_8(bg2xOff);
+        REG_BG2Y = ENCODE24_8(bg2yOff);
+        bg1xOff = 0;
+        bg1yOff = 0;
+        REG_BG1HOFF = bg1xOff;
+        REG_BG1VOFF = bg1yOff;
         goToGame();
     }
 
@@ -246,9 +272,11 @@ void start() {
 
 // Sets up instructions
 void goToInstructions() {
+    DMANow(3, &instructionsTiles, &CHARBLOCK[1], DMA_32 | (instructionsTilesLen / 4));
+    DMANow(3, &instructionsMap, &SCREENBLOCK[15], DMA_32 | (instructionsMapLen / 4));
     DMANow(3, &instructionsPal, PALETTE, 256);
-    REG_BG1CNT = BG_CHARBLOCK(2) | BG_SCREENBLOCK(22) | BG_4BPP | BG_SIZE_TALL | 3;
-    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG1_ENABLE;
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
+    REG_DISPCTL = MODE1 | SPRITE_ENABLE | BG0_ENABLE;
 
     state = INSTRUCTIONS;
 }
@@ -292,7 +320,7 @@ void game() {
 
     // Move the parallax background at a slower rate than the main background
     bg1xOff = bg2xOff / 4;
-    bg1yOff = bg2yOff / 2;
+    bg1yOff = (int)(bg2yOff / 2.5); // Floating points math is definitely not fast, but, hey, it works
     REG_BG1HOFF = bg1xOff;
     REG_BG1VOFF = bg1yOff;
 
@@ -335,6 +363,9 @@ void battle() {
 
     if (battleStatus == LOST || battleStatus == WON) {
         if (battleStatus == LOST) {
+            if (bossBattle) {
+                goToLose();
+            }
             for (int i = 0; i < 4; i++) {
                 battleAllies[i].hp = battleAllies[i].maxHp;
             }
@@ -363,12 +394,13 @@ void battle() {
 
 // Sets up the pause state.
 void goToPause() {
+    // TODO MAKE BG TRANSPARENT
     pauseSound();
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
-    DMANow(3, &pausePal, PALETTE, 256);
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
+    // DMANow(3, &pausePal, PALETTE, 256);
     DMANow(3, &pauseTiles, &CHARBLOCK[1], DMA_32 | (pauseTilesLen / 4));
     DMANow(3, &pauseMap, &SCREENBLOCK[15], DMA_32 | (pauseMapLen / 4));
-    REG_DISPCTL = MODE1 | BG0_ENABLE;
+    REG_DISPCTL = MODE1 | BG0_ENABLE | BG1_ENABLE | BG2_ENABLE | SPRITE_ENABLE;
 
     state = PAUSE;
 }
@@ -389,11 +421,19 @@ void pause() {
 // Sets up the win state.
 void goToWin() {
     stopSound();
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_4BPP | BG_SIZE_SMALL;
-    DMANow(3, &winPal, PALETTE, 256);
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(15) | BG_8BPP | BG_SIZE_SMALL;
+    // DMANow(3, &winPal, PALETTE, 256);
     DMANow(3, &winTiles, &CHARBLOCK[1], DMA_32 | (winTilesLen / 4));
     DMANow(3, &winMap, &SCREENBLOCK[15], DMA_32 | (winMapLen / 4));
-    REG_DISPCTL = MODE1 | BG0_ENABLE;
+    bg2xOff = 5;
+    bg2yOff = 858;
+    REG_BG2X = ENCODE24_8(bg2xOff);
+    REG_BG2Y = ENCODE24_8(bg2yOff);
+    bg1xOff = 0;
+    bg1yOff = 512-160;
+    REG_BG1HOFF = bg1xOff;
+    REG_BG1VOFF = bg1yOff;
+    REG_DISPCTL = MODE1 | BG0_ENABLE | BG1_ENABLE | BG2_ENABLE;
 
     state = WIN;
 }
@@ -438,9 +478,9 @@ void lose() {
     * 
     * FIRST UNUSED TILE: 74
 */
-enum { FLOOR_SRC=7, LWALL_SRC=2, RWALL_SRC=3, CEILI_SRC=6, CORN1_SRC=13, CORN2_SRC=4, CORN3_SRC=15, CORN4_SRC=5, XCOR1_SRC=24, XCOR2_SRC=8, XCOR3_SRC=23, XCOR4_SRC=12 };
-enum { FLOOR_F2=71, LWALL_F2=67, RWALL_F2=63, CEILI_F2=65, CORN1_F2=69, CORN2_F2=60, CORN3_F2=58, CORN4_F2=56, XCOR1_F2=54, XCOR2_F2=52, XCOR3_F2=50, XCOR4_F2=48 };
-enum { FLOOR_F3=72, LWALL_F3=68, RWALL_F3=64, CEILI_F3=66, CORN1_F3=70, CORN2_F3=61, CORN3_F3=59, CORN4_F3=57, XCOR1_F3=55, XCOR2_F3=53, XCOR3_F3=51, XCOR4_F3=49 };
+enum { FLOOR_SRC=7, LWALL_SRC=2, RWALL_SRC=3, CEILI_SRC=6, CORN1_SRC=13, CORN2_SRC=4, CORN3_SRC=14, CORN4_SRC=5, XCOR1_SRC=22, XCOR2_SRC=8, XCOR3_SRC=21, XCOR4_SRC=12 };
+enum { FLOOR_F2=66, LWALL_F2=62, RWALL_F2=58, CEILI_F2=60, CORN1_F2=64, CORN2_F2=56, CORN3_F2=53, CORN4_F2=51, XCOR1_F2=49, XCOR2_F2=47, XCOR3_F2=45, XCOR4_F2=43 };
+enum { FLOOR_F3=67, LWALL_F3=63, RWALL_F3=59, CEILI_F3=61, CORN1_F3=65, CORN2_F3=57, CORN3_F3=54, CORN4_F3=52, XCOR1_F3=50, XCOR2_F3=48, XCOR3_F3=46, XCOR4_F3=44 };
 #define FREETILE 80
 enum { FLOOR_F1 = FREETILE + 0, LWALL_F1, RWALL_F1, CEILI_F1, CORN1_F1, CORN2_F1, CORN3_F1, CORN4_F1, XCOR1_F1, XCOR2_F1, XCOR3_F1, XCOR4_F1 };
 

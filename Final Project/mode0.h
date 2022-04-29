@@ -169,6 +169,7 @@ extern OBJ_ATTR shadowOAM[];
 
 // Attribute 2.
 #define ATTR2_TILEID(col, row) ((row)*32 + (col))
+#define ATTR2_TILEID64(col, row) ((row)*32 + ((col)*2)) // 8BPP sprites
 #define ATTR2_PRIORITY(num) ((num) << 10)
 #define ATTR2_PALROW(row) ((row) << 12)
 

@@ -54,5 +54,7 @@ extern MOVE MOVE_SHIELD1;  // weak
 extern MOVE MOVE_SHIELD2;  // med
 extern MOVE MOVE_BLAST1;   // weak
 extern MOVE MOVE_BLAST2;   // med
+// default
+extern MOVE MOVE_NONE;
 
 #endif

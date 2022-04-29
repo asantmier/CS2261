@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-// #include "mode0.h"
 #include "print.h"
 #include "battle.h"
 #include <string.h>
@@ -29,6 +28,7 @@ COMBATANT* fighter; // Combatant whose turn it is
 int fighterIdx;
 MOVE* move; // The move to be executed
 int turnPoints;
+int nextTurnPoints;
 COMBATANT* captured;
 // Menu tracking
 int menu;
@@ -74,96 +74,47 @@ void initBattle(int opponentType) {
     switch (opponentType)
     {
     case FISH:
+        battleOpponents[0] = CBT_FISH;
+        battleOpponents[1] = CBT_FISH;
+        battleOpponents[2] = CBT_NONE;
+        battleOpponents[3] = CBT_NONE;
         break;
     case SHARK:
-        strncpy(battleOpponents[0].name, "SHARK1", NAME_LEN);
-        battleOpponents[0].exists = 1;
-        battleOpponents[0].maxHp = 10;
-        battleOpponents[0].hp = battleOpponents[0].maxHp;
-        battleOpponents[0].moves[0] = MOVE_SLASH;
-        battleOpponents[0].numMoves = 1;
-
-        strncpy(battleOpponents[1].name, "SHARK2", NAME_LEN);
-        battleOpponents[1].exists = 1;
-        battleOpponents[1].maxHp = 10;
-        battleOpponents[1].hp = battleOpponents[1].maxHp;
-        battleOpponents[1].moves[0] = MOVE_SLASH;
-        battleOpponents[1].numMoves = 1;
-
-        strncpy(battleOpponents[2].name, "SHARK3", NAME_LEN);
-        battleOpponents[2].exists = 1;
-        battleOpponents[2].maxHp = 10;
-        battleOpponents[2].hp = battleOpponents[2].maxHp;
-        battleOpponents[2].moves[0] = MOVE_SLASH;
-        battleOpponents[2].numMoves = 1;
-        
-        battleOpponents[3].exists = 0;
+        battleOpponents[0] = CBT_SHARK;
+        battleOpponents[1] = CBT_SHARK;
+        battleOpponents[2] = CBT_FISH;
+        battleOpponents[3] = CBT_NONE;
         break;
     case ANGLER:
-        strncpy(battleOpponents[0].name, "ANGLER1", NAME_LEN);
-        battleOpponents[0].exists = 1;
-        battleOpponents[0].maxHp = 30;
-        battleOpponents[0].hp = battleOpponents[0].maxHp;
-        battleOpponents[0].moves[0] = MOVE_SLASH;
-        battleOpponents[0].numMoves = 1;
-
-        strncpy(battleOpponents[1].name, "SHARK1", NAME_LEN);
-        battleOpponents[1].exists = 1;
-        battleOpponents[1].maxHp = 16;
-        battleOpponents[1].hp = battleOpponents[1].maxHp;
-        battleOpponents[1].moves[0] = MOVE_SLASH;
-        battleOpponents[1].numMoves = 1;
-
-        strncpy(battleOpponents[2].name, "SHARK2", NAME_LEN);
-        battleOpponents[2].exists = 1;
-        battleOpponents[2].maxHp = 16;
-        battleOpponents[2].hp = battleOpponents[2].maxHp;
-        battleOpponents[2].moves[0] = MOVE_SLASH;
-        battleOpponents[2].numMoves = 1;
-
-        strncpy(battleOpponents[3].name, "SHARK3", NAME_LEN);
-        battleOpponents[3].exists = 1;
-        battleOpponents[3].maxHp = 16;
-        battleOpponents[3].hp = battleOpponents[3].maxHp;
-        battleOpponents[3].moves[0] = MOVE_SLASH;
-        battleOpponents[3].numMoves = 1;
+        battleOpponents[0] = CBT_ANGLER;
+        battleOpponents[1] = CBT_SHARK;
+        battleOpponents[2] = CBT_SHARK;
+        battleOpponents[3] = CBT_FISH;
         break;
     case PUFFER:
+        battleOpponents[0] = CBT_PUFFER;
+        battleOpponents[1] = CBT_SHARK;
+        battleOpponents[2] = CBT_FISH;
+        battleOpponents[3] = CBT_FISH;
         break;
     case BARRACUDA:
+        battleOpponents[0] = CBT_BARRACUDA;
+        battleOpponents[1] = CBT_BARRACUDA;
+        battleOpponents[2] = CBT_SHARK;
+        battleOpponents[3] = CBT_FISH;
         break;
     case BOSS:
         bossBattle = 1; // IMPORTANT! This is a boss battle!
-        strncpy(battleOpponents[0].name, "TUNA GOD", NAME_LEN);
-        battleOpponents[0].exists = 1;
-        battleOpponents[0].maxHp = 60;
-        battleOpponents[0].hp = battleOpponents[0].maxHp;
-        battleOpponents[0].moves[0] = MOVE_SLASH;
-        battleOpponents[0].numMoves = 1;
-
-        battleOpponents[1].exists = 0;
-        battleOpponents[2].exists = 0;
-        battleOpponents[3].exists = 0;
+        battleOpponents[0] = CBT_GOD;
+        battleOpponents[1] = CBT_BARRACUDA;
+        battleOpponents[2] = CBT_PUFFER;
+        battleOpponents[3] = CBT_SHARK;
         break;
-    // case FISH: // by default all enemies are a fish
     default:
-        strncpy(battleOpponents[0].name, "FISH1", NAME_LEN);
-        battleOpponents[0].exists = 1;
-        battleOpponents[0].maxHp = 6;
-        battleOpponents[0].hp = battleOpponents[0].maxHp;
-        battleOpponents[0].moves[0] = MOVE_SLASH;
-        battleOpponents[0].numMoves = 1;
-
-        strncpy(battleOpponents[1].name, "FISH2", NAME_LEN);
-        battleOpponents[1].exists = 1;
-        battleOpponents[1].maxHp = 6;
-        battleOpponents[1].hp = battleOpponents[1].maxHp;
-        battleOpponents[1].moves[0] = MOVE_SLASH;
-        battleOpponents[1].numMoves = 1;
-
-        battleOpponents[2].exists = 0;
-
-        battleOpponents[3].exists = 0;
+        battleOpponents[0] = CBT_FISH;
+        battleOpponents[1] = CBT_NONE;
+        battleOpponents[2] = CBT_NONE;
+        battleOpponents[3] = CBT_NONE;
         break;
     }
     // Then draw the teams
@@ -237,9 +188,9 @@ void goToReplaceMenu() {
 void replaceMenu() {
     int realOpt = selOpt + 1;
     sprintf(topBuf, "YOU CAPTURED %s! SELECT AN ALLY TO REPLACE", captured->name);
-    shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * realOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+    shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * realOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
     shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-    shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+    shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
     sprintf(botBuf, "%s:%d/%d", battleAllies[realOpt].name, battleAllies[realOpt].hp, battleAllies[realOpt].maxHp);
     if (leave) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
@@ -260,9 +211,9 @@ void replaceMenu() {
 
 void captureMenu() {
     strncpy(topBuf, "CHOOSE AN OPPONENT\nTO CAPTURE.", 61);
-    shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+    shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
     shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
-    shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+    shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
     sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
 
     if (leave) {
@@ -274,7 +225,7 @@ void captureMenu() {
         shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
         botBuf[0] = '\0';
         if (bossBattle) {
-            sprintf(topBuf, "YOU FAILED TO CAPTURE %s", battleOpponents[selOpt].name);
+            sprintf(topBuf, "YOU CANNOT\nCAPTURE SUCH A\nFIERCE OPPONENT!");
             finishTurn();
         } else {
             // The chance of our success is the percent of missing health
@@ -293,14 +244,14 @@ void captureMenu() {
 void inspectMenu() {
     strncpy(topBuf, "CHOOSE A COMBATANT\nTO INSPECT.", 61);
     if (targetTeam == ENEMYTEAM) {
-        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
         shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
-        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
         sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
     } else {
-        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+        shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
         shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+        shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
         sprintf(botBuf, "%s:%d/%d", battleAllies[selOpt].name, battleAllies[selOpt].hp, battleAllies[selOpt].maxHp);
     }
 
@@ -339,15 +290,15 @@ void frontMenu() {
 void attackMenu() {
     strncpy(topBuf, "CHOOSE AN ATTACK.", 61);
     sprintf(botBuf, "%c%-9s%c%-9s%c%-9s%c%-9s%c%-9s%c%-9s", 
-            tsel(selOpt == 0), fighter->moves[0].text, tsel(selOpt == 3), fighter->moves[3].text,
-            tsel(selOpt == 1), fighter->moves[1].text, tsel(selOpt == 4), fighter->moves[4].text,
-            tsel(selOpt == 2), fighter->moves[2].text, tsel(selOpt == 5), fighter->moves[5].text);
+            tsel(selOpt == 0), fighter->moves[0]->text, tsel(selOpt == 3), fighter->moves[3]->text,
+            tsel(selOpt == 1), fighter->moves[1]->text, tsel(selOpt == 4), fighter->moves[4]->text,
+            tsel(selOpt == 2), fighter->moves[2]->text, tsel(selOpt == 5), fighter->moves[5]->text);
     if (leave) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         goToFrontMenu();
     } else if (enter) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
-        move = &fighter->moves[selOpt];
+        move = fighter->moves[selOpt];
         targetTeam = move->targeting == OPPONENT ? ENEMYTEAM : PLAYERTEAM;
         goToTargetMenu();
     }
@@ -355,78 +306,82 @@ void attackMenu() {
 
 void targetMenu() {
     strncpy(topBuf, "CHOOSE A TARGET.", 61);
+    // These four special moves only target self, so we need to override selOpt
+    if (move == &MOVE_REGEN || move == &MOVE_RESOLVE || move == &MOVE_DASH || move == &MOVE_TRANSCEND) {
+        selOpt = fighterIdx; // set to the current actor. hit all should already be false
+    }
     if (targetTeam == ENEMYTEAM) {
         if (move->hitAll) {
             if (battleOpponents[0].exists && battleOpponents[0].hp > 0) {
-                shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+                shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
                 shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
-                shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
             }
             if (battleOpponents[1].exists && battleOpponents[1].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+                shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
                 shadowOAM[TARGETING_ARROW + 1].attr1 = (192 & COLMASK) | ATTR1_TINY;
-                shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 1].attr0 = ATTR0_HIDE;
             }
             if (battleOpponents[2].exists && battleOpponents[2].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+                shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
                 shadowOAM[TARGETING_ARROW + 2].attr1 = (192 & COLMASK) | ATTR1_TINY;
-                shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 2].attr0 = ATTR0_HIDE;
             }
             if (battleOpponents[3].exists && battleOpponents[3].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+                shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
                 shadowOAM[TARGETING_ARROW + 3].attr1 = (192 & COLMASK) | ATTR1_TINY;
-                shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 3].attr0 = ATTR0_HIDE;
             }
             sprintf(botBuf, "%s WILL AFFECT\nALL ENEMIES", move->text);
         } else {
-            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
             shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY;
-            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
             sprintf(botBuf, "%s:%d/%d", battleOpponents[selOpt].name, battleOpponents[selOpt].hp, battleOpponents[selOpt].maxHp);
         }
     } else {
         if (move->hitAll) {
             if (battleAllies[0].exists && battleAllies[0].hp > 0) {
-                shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
-                shadowOAM[TARGETING_ARROW].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-                shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * 0) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
+                shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+                shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
             }
             if (battleAllies[1].exists && battleAllies[1].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
-                shadowOAM[TARGETING_ARROW + 1].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-                shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 1].attr0 = ((15 + 40 * 1) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
+                shadowOAM[TARGETING_ARROW + 1].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+                shadowOAM[TARGETING_ARROW + 1].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 1].attr0 = ATTR0_HIDE;
             }
             if (battleAllies[2].exists && battleAllies[2].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
-                shadowOAM[TARGETING_ARROW + 2].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-                shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 2].attr0 = ((15 + 40 * 2) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
+                shadowOAM[TARGETING_ARROW + 2].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+                shadowOAM[TARGETING_ARROW + 2].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 2].attr0 = ATTR0_HIDE;
             }
             if (battleAllies[3].exists && battleAllies[3].hp > 0) {
-                shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
-                shadowOAM[TARGETING_ARROW + 3].attr1 = (192 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-                shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID(0, 26);
+                shadowOAM[TARGETING_ARROW + 3].attr0 = ((15 + 40 * 3) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
+                shadowOAM[TARGETING_ARROW + 3].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
+                shadowOAM[TARGETING_ARROW + 3].attr2 = ATTR2_TILEID64(0, 26);
             } else {
                 shadowOAM[TARGETING_ARROW + 3].attr0 = ATTR0_HIDE;
             }
             sprintf(botBuf, "%s WILL AFFECT\nALL ALLIES", move->text);
         } else {
-            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL;
+            shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * selOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
             shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID(0, 26);
+            shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
             sprintf(botBuf, "%s:%d/%d", battleAllies[selOpt].name, battleAllies[selOpt].hp, battleAllies[selOpt].maxHp);
         }
     }
@@ -462,7 +417,8 @@ void executeMove(MOVE* m, COMBATANT* t) {
     if (m->hitAll) {
         if (targetTeam == ENEMYTEAM) {
             for (int i = 0; i < 4; i++) {
-                if (battleOpponents[i].exists) {
+                // If boss battle, allow reviving of opponenets. The Tuna God is a god after all, he can use necromancy if he wants
+                if (battleOpponents[i].exists && (battleOpponents[i].hp > 0 || bossBattle)) {
                     battleOpponents[i].hp -= m->damage;
                     battleOpponents[i].hp += m->healing;
                     if (battleOpponents[i].hp > battleOpponents[i].maxHp) {
@@ -472,7 +428,7 @@ void executeMove(MOVE* m, COMBATANT* t) {
             }
         } else {
             for (int i = 0; i < 4; i++) {
-                if (battleAllies[i].exists) {
+                if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                     battleAllies[i].hp -= m->damage;
                     battleAllies[i].hp += m->healing;
                     if (battleAllies[i].hp > battleAllies[i].maxHp) {
@@ -488,6 +444,12 @@ void executeMove(MOVE* m, COMBATANT* t) {
             t->hp = t->maxHp;
         }
     }
+    if (m == &MOVE_DASH) {
+        turnPoints += 2;
+    }
+    if (m == &MOVE_TRANSCEND) {
+        fighter->hp = fighter->maxHp;
+    }
     
     sprintf(topBuf, m->flavorText, fighter->name, t->name);
     botBuf[0] = '\0';
@@ -499,17 +461,19 @@ void finishTurn() {
     goToFrontMenu();
     mgba_printf("Ending turn...");
     turnPoints--;
+    // Check the interrupt handler for an explanation for what nextTurnPoints is
+    nextTurnPoints = turnPoints;
 
     if (turnPoints == 0) {  // Swap turns
         if (turn == PLAYERTURN) {
             turn = ENEMYTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
-                    turnPoints++;
+                    nextTurnPoints++;
                 }
             }
             if (bossBattle) {
-                turnPoints += 1; // Bosses get an extra turn
+                nextTurnPoints += 1; // Bosses get an extra turn
             }
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
@@ -522,7 +486,7 @@ void finishTurn() {
             turn = PLAYERTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleAllies[i].exists && battleAllies[i].hp > 0) {
-                    turnPoints++;
+                    nextTurnPoints++;
                 }
             }
             for (int i = 0; i < 4; i++) {
@@ -724,14 +688,21 @@ void updateBattle() {
             replaceMenu();
             break;
         }
-    } else {
+    } else { // Enemy turn
         int skip = rand() % 7;
         if (skip == 6) {
             sprintf(topBuf, "%s PASSED", fighter->name);
             finishTurn();
         } else {
-            int mi = rand() % fighter->numMoves;
-            if (fighter->moves[mi].targeting == OPPONENT) {
+            int nm = fighter->numMoves;
+            if (bossBattle && fighterIdx == 0) {
+                nm -= 1;
+            }
+            int mi = rand() % nm;
+            if (bossBattle && fighterIdx == 0 && fighter->hp < 10) {
+                mi = 5; // index of transcend
+            }
+            if (fighter->moves[mi]->targeting == OPPONENT) {
                 targetTeam = PLAYERTEAM;
                 int numopps = 0;
                 for (int i = 0; i < 4; i++) {
@@ -743,7 +714,7 @@ void updateBattle() {
                 for (int i = 0; i < 4; i++) {
                     if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                         if (ta == 0) {
-                            executeMove(&fighter->moves[mi], &battleAllies[i]);
+                            executeMove(fighter->moves[mi], &battleAllies[i]);
                             break;
                         } else {
                             ta--;
@@ -762,7 +733,7 @@ void updateBattle() {
                 for (int i = 0; i < 4; i++) {
                     if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                         if (ta == 0) {
-                            executeMove(&fighter->moves[mi], &battleOpponents[i]);
+                            executeMove(fighter->moves[mi], &battleOpponents[i]);
                             break;
                         } else {
                             ta--;
@@ -795,9 +766,9 @@ char tsel(int cond) {
 // Draws a healthbar for a combatant
 void drawHealthbar(int x, int y, COMBATANT* c, int spriteIdx) {
     // TODO we could increase the accuracy of the healthbar by directly modifying the sprite's pixels
-    shadowOAM[spriteIdx].attr0 = ((y) & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[spriteIdx].attr0 = ((y) & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[spriteIdx].attr1 = ((x) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[spriteIdx].attr2 = ATTR2_TILEID(5 - tilesRed(0, c->hp, c->maxHp, 4), 24);
+    shadowOAM[spriteIdx].attr2 = ATTR2_TILEID64(5 - tilesRed(0, c->hp, c->maxHp, 4), 24);
 }
 
 // Draws all of the combatants
@@ -807,43 +778,47 @@ void drawCombatants() {
     shadowOAM[TURNICON2].attr0 = ATTR0_HIDE;
     shadowOAM[TURNICON3].attr0 = ATTR0_HIDE;
     shadowOAM[TURNICON4].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON5].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON6].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON7].attr0 = ATTR0_HIDE;
+    shadowOAM[TURNICON8].attr0 = ATTR0_HIDE;
     for (int i = turnPoints - 1; i >= 0; i--) {
-        shadowOAM[TURNICON4 - i].attr0 = (41 & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
-        shadowOAM[TURNICON4 - i].attr1 = ((57 + 9 * i) & COLMASK) | ATTR1_TINY;
-        shadowOAM[TURNICON4 - i].attr2 = ATTR2_TILEID(8, 0);
+        shadowOAM[TURNICON8 - i].attr0 = (41 & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
+        shadowOAM[TURNICON8 - i].attr1 = ((57 + 9 * i) & COLMASK) | ATTR1_TINY;
+        shadowOAM[TURNICON8 - i].attr2 = ATTR2_TILEID64(1, 26);
     }
 
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
-        shadowOAM[ALLY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY1_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
-        shadowOAM[ALLY1_B].attr2 = ATTR2_TILEID(0, 28);
+        shadowOAM[ALLY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ALLY1_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ALLY1_B].attr2 = battleAllies[0].tileid;
         drawHealthbar(8, 15 - 8, &battleAllies[0], HB1);
     } else {
         shadowOAM[ALLY1_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB1].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[1].exists && battleAllies[1].hp > 0) {
-        shadowOAM[ALLY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY2_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
-        shadowOAM[ALLY2_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ALLY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ALLY2_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ALLY2_B].attr2 = battleAllies[1].tileid;
         drawHealthbar(8, 55 - 8, &battleAllies[1], HB2);
     } else {
         shadowOAM[ALLY2_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB2].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[2].exists && battleAllies[2].hp > 0) {
-        shadowOAM[ALLY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY3_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
-        shadowOAM[ALLY3_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ALLY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ALLY3_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ALLY3_B].attr2 = battleAllies[2].tileid;
         drawHealthbar(8, 95 - 8, &battleAllies[2], HB3);
     } else {
         shadowOAM[ALLY3_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB3].attr0 = ATTR0_HIDE;
     }
     if (battleAllies[3].exists && battleAllies[3].hp > 0) {
-        shadowOAM[ALLY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ALLY4_B].attr1 = (8 & COLMASK) | ATTR1_TINY;
-        shadowOAM[ALLY4_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ALLY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ALLY4_B].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
+        shadowOAM[ALLY4_B].attr2 = battleAllies[3].tileid;
         drawHealthbar(8, 135 - 8, &battleAllies[3], HB4);
     } else {
         shadowOAM[ALLY4_B].attr0 = ATTR0_HIDE;
@@ -852,36 +827,36 @@ void drawCombatants() {
 
     
     if (battleOpponents[0].exists && battleOpponents[0].hp > 0) {
-        shadowOAM[ENEMY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY1_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-        shadowOAM[ENEMY1_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ENEMY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ENEMY1_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM | ATTR1_HFLIP;
+        shadowOAM[ENEMY1_B].attr2 = battleOpponents[0].tileid;
         drawHealthbar(200, 15 - 8, &battleOpponents[0], HB5);
     } else {
         shadowOAM[ENEMY1_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB5].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[1].exists && battleOpponents[1].hp > 0) {
-        shadowOAM[ENEMY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY2_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-        shadowOAM[ENEMY2_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ENEMY2_B].attr0 = (55 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ENEMY2_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM | ATTR1_HFLIP;
+        shadowOAM[ENEMY2_B].attr2 = battleOpponents[1].tileid;
         drawHealthbar(200, 55 - 8, &battleOpponents[1], HB6);
     } else {
         shadowOAM[ENEMY2_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB6].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[2].exists && battleOpponents[2].hp > 0) {
-        shadowOAM[ENEMY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY3_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-        shadowOAM[ENEMY3_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ENEMY3_B].attr0 = (95 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ENEMY3_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM | ATTR1_HFLIP;
+        shadowOAM[ENEMY3_B].attr2 = battleOpponents[2].tileid;
         drawHealthbar(200, 95 - 8, &battleOpponents[2], HB7);
     } else {
         shadowOAM[ENEMY3_B].attr0 = ATTR0_HIDE;
         shadowOAM[HB7].attr0 = ATTR0_HIDE;
     }
     if (battleOpponents[3].exists && battleOpponents[3].hp > 0) {
-        shadowOAM[ENEMY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY4_B].attr1 = (200 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
-        shadowOAM[ENEMY4_B].attr2 = ATTR2_TILEID(0, 29);
+        shadowOAM[ENEMY4_B].attr0 = (135 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+        shadowOAM[ENEMY4_B].attr1 = (200 & COLMASK) | ATTR1_MEDIUM | ATTR1_HFLIP;
+        shadowOAM[ENEMY4_B].attr2 = battleOpponents[3].tileid;
         drawHealthbar(200, 135 - 8, &battleOpponents[3], HB8);
     } else {
         shadowOAM[ENEMY4_B].attr0 = ATTR0_HIDE;
@@ -917,7 +892,7 @@ void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textb
                 if (idx >= 128) {
                     return;
                 }
-                shadowOAM[idx].attr0 = (cursory & ROWMASK) | ATTR0_REGULAR;
+                shadowOAM[idx].attr0 = (cursory & ROWMASK) | ATTR0_REGULAR | ATTR0_8BPP;
                 shadowOAM[idx].attr1 = (cursorx & COLMASK) | ATTR1_TINY;
                 shadowOAM[idx].attr2 = text_tile_lkup[*str - CHAR_START];
                 lettersActive++;

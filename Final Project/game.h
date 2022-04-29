@@ -20,8 +20,18 @@ typedef struct tag_combatant {
     int maxHp;
     int hp;
     int numMoves;
-    MOVE moves[6];
+    MOVE* moves[6];
+    int tileid;
 } COMBATANT;
+
+extern COMBATANT CBT_FISH;
+extern COMBATANT CBT_SHARK;
+extern COMBATANT CBT_ANGLER;
+extern COMBATANT CBT_PUFFER;
+extern COMBATANT CBT_BARRACUDA;
+extern COMBATANT CBT_GOD;
+extern COMBATANT CBT_SUBMARINE;
+extern COMBATANT CBT_NONE;
 
 // TODO idea
 // so how about the player in combat is separate from the submarine

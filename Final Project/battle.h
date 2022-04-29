@@ -5,77 +5,77 @@
 #include "game.h"
 
 // Letter sprites
-#define TILE_EXCLAMATION    ATTR2_TILEID(24, 16)
-#define TILE_QUOTE          ATTR2_TILEID(25, 16)
-#define TILE_POUND          ATTR2_TILEID(26, 16)
-#define TILE_CURRENCY       ATTR2_TILEID(27, 16) // custom icon for in game currency
-#define TILE_PERCENT        ATTR2_TILEID(28, 16)
-#define TILE_AMPERSAND      ATTR2_TILEID(29, 16)
-#define TILE_APOSTROPHE     ATTR2_TILEID(30, 16)
-#define TILE_LPARANTHESIS   ATTR2_TILEID(31, 16)
+#define TILE_EXCLAMATION    ATTR2_TILEID64(0, 0)
+#define TILE_QUOTE          ATTR2_TILEID64(1, 0)
+#define TILE_POUND          ATTR2_TILEID64(2, 0)
+#define TILE_CURRENCY       ATTR2_TILEID64(3, 0) // custom icon for in game currency
+#define TILE_PERCENT        ATTR2_TILEID64(4, 0)
+#define TILE_AMPERSAND      ATTR2_TILEID64(5, 0)
+#define TILE_APOSTROPHE     ATTR2_TILEID64(6, 0)
+#define TILE_LPARANTHESIS   ATTR2_TILEID64(7, 0)
 
-#define TILE_RPARANTHESIS   ATTR2_TILEID(24, 17)
-#define TILE_ASTERISK       ATTR2_TILEID(25, 17) // custom icon for a little selection icon
-#define TILE_PLUS           ATTR2_TILEID(26, 17)
-#define TILE_COMMA          ATTR2_TILEID(27, 17)
-#define TILE_MINUS          ATTR2_TILEID(28, 17)
-#define TILE_PERIOD         ATTR2_TILEID(29, 17)
-#define TILE_FSLASH         ATTR2_TILEID(30, 17)
-#define TILE_0              ATTR2_TILEID(31, 17)
+#define TILE_RPARANTHESIS   ATTR2_TILEID64(0, 1)
+#define TILE_ASTERISK       ATTR2_TILEID64(1, 1) // custom icon for a little selection icon
+#define TILE_PLUS           ATTR2_TILEID64(2, 1)
+#define TILE_COMMA          ATTR2_TILEID64(3, 1)
+#define TILE_MINUS          ATTR2_TILEID64(4, 1)
+#define TILE_PERIOD         ATTR2_TILEID64(5, 1)
+#define TILE_FSLASH         ATTR2_TILEID64(6, 1)
+#define TILE_0              ATTR2_TILEID64(7, 1)
 
-#define TILE_1              ATTR2_TILEID(24, 18)
-#define TILE_2              ATTR2_TILEID(25, 18)
-#define TILE_3              ATTR2_TILEID(26, 18)
-#define TILE_4              ATTR2_TILEID(27, 18)
-#define TILE_5              ATTR2_TILEID(28, 18)
-#define TILE_6              ATTR2_TILEID(29, 18)
-#define TILE_7              ATTR2_TILEID(30, 18)
-#define TILE_8              ATTR2_TILEID(31, 18)
+#define TILE_1              ATTR2_TILEID64(0, 2)
+#define TILE_2              ATTR2_TILEID64(1, 2)
+#define TILE_3              ATTR2_TILEID64(2, 2)
+#define TILE_4              ATTR2_TILEID64(3, 2)
+#define TILE_5              ATTR2_TILEID64(4, 2)
+#define TILE_6              ATTR2_TILEID64(5, 2)
+#define TILE_7              ATTR2_TILEID64(6, 2)
+#define TILE_8              ATTR2_TILEID64(7, 2)
 
-#define TILE_9              ATTR2_TILEID(24, 19)
-#define TILE_COLON          ATTR2_TILEID(25, 19)
-#define TILE_SEMICOLON      ATTR2_TILEID(26, 19)
-#define TILE_LANGLED        ATTR2_TILEID(27, 19)
-#define TILE_EQUAL          ATTR2_TILEID(28, 19)
-#define TILE_RANGLED        ATTR2_TILEID(29, 19)
-#define TILE_QUESTION       ATTR2_TILEID(30, 19)
-#define TILE_AT             ATTR2_TILEID(31, 19)
+#define TILE_9              ATTR2_TILEID64(0, 3)
+#define TILE_COLON          ATTR2_TILEID64(1, 3)
+#define TILE_SEMICOLON      ATTR2_TILEID64(2, 3)
+#define TILE_LANGLED        ATTR2_TILEID64(3, 3)
+#define TILE_EQUAL          ATTR2_TILEID64(4, 3)
+#define TILE_RANGLED        ATTR2_TILEID64(5, 3)
+#define TILE_QUESTION       ATTR2_TILEID64(6, 3)
+#define TILE_AT             ATTR2_TILEID64(7, 3)
 
-#define TILE_A              ATTR2_TILEID(24, 20)
-#define TILE_B              ATTR2_TILEID(25, 20)
-#define TILE_C              ATTR2_TILEID(26, 20)
-#define TILE_D              ATTR2_TILEID(27, 20)
-#define TILE_E              ATTR2_TILEID(28, 20)
-#define TILE_F              ATTR2_TILEID(29, 20)
-#define TILE_G              ATTR2_TILEID(30, 20)
-#define TILE_H              ATTR2_TILEID(31, 20)
+#define TILE_A              ATTR2_TILEID64(0, 4)
+#define TILE_B              ATTR2_TILEID64(1, 4)
+#define TILE_C              ATTR2_TILEID64(2, 4)
+#define TILE_D              ATTR2_TILEID64(3, 4)
+#define TILE_E              ATTR2_TILEID64(4, 4)
+#define TILE_F              ATTR2_TILEID64(5, 4)
+#define TILE_G              ATTR2_TILEID64(6, 4)
+#define TILE_H              ATTR2_TILEID64(7, 4)
 
-#define TILE_I              ATTR2_TILEID(24, 21)
-#define TILE_J              ATTR2_TILEID(25, 21)
-#define TILE_K              ATTR2_TILEID(26, 21)
-#define TILE_L              ATTR2_TILEID(27, 21)
-#define TILE_M              ATTR2_TILEID(28, 21)
-#define TILE_N              ATTR2_TILEID(29, 21)
-#define TILE_O              ATTR2_TILEID(30, 21)
-#define TILE_P              ATTR2_TILEID(31, 21)
+#define TILE_I              ATTR2_TILEID64(0, 5)
+#define TILE_J              ATTR2_TILEID64(1, 5)
+#define TILE_K              ATTR2_TILEID64(2, 5)
+#define TILE_L              ATTR2_TILEID64(3, 5)
+#define TILE_M              ATTR2_TILEID64(4, 5)
+#define TILE_N              ATTR2_TILEID64(5, 5)
+#define TILE_O              ATTR2_TILEID64(6, 5)
+#define TILE_P              ATTR2_TILEID64(7, 5)
 
-#define TILE_Q              ATTR2_TILEID(24, 22)
-#define TILE_R              ATTR2_TILEID(25, 22)
-#define TILE_S              ATTR2_TILEID(26, 22)
-#define TILE_T              ATTR2_TILEID(27, 22)
-#define TILE_U              ATTR2_TILEID(28, 22)
-#define TILE_V              ATTR2_TILEID(29, 22)
-#define TILE_W              ATTR2_TILEID(30, 22)
-#define TILE_X              ATTR2_TILEID(31, 22)
+#define TILE_Q              ATTR2_TILEID64(0, 6)
+#define TILE_R              ATTR2_TILEID64(1, 6)
+#define TILE_S              ATTR2_TILEID64(2, 6)
+#define TILE_T              ATTR2_TILEID64(3, 6)
+#define TILE_U              ATTR2_TILEID64(4, 6)
+#define TILE_V              ATTR2_TILEID64(5, 6)
+#define TILE_W              ATTR2_TILEID64(6, 6)
+#define TILE_X              ATTR2_TILEID64(7, 6)
 
-#define TILE_Y              ATTR2_TILEID(24, 23)
-#define TILE_Z              ATTR2_TILEID(25, 23)
-#define TILE_LSQUARE        ATTR2_TILEID(26, 23)
-#define TILE_BSLASH         ATTR2_TILEID(27, 23)
-#define TILE_RSQUARE        ATTR2_TILEID(28, 23)
-#define TILE_CARROT         ATTR2_TILEID(29, 23)
-#define TILE_UNDERSCORE     ATTR2_TILEID(30, 23)
-#define TILE_GRAVE          ATTR2_TILEID(31, 23) // custom icon for a little star in the top left
+#define TILE_Y              ATTR2_TILEID64(0, 7)
+#define TILE_Z              ATTR2_TILEID64(1, 7)
+#define TILE_LSQUARE        ATTR2_TILEID64(2, 7)
+#define TILE_BSLASH         ATTR2_TILEID64(3, 7)
+#define TILE_RSQUARE        ATTR2_TILEID64(4, 7)
+#define TILE_CARROT         ATTR2_TILEID64(5, 7)
+#define TILE_UNDERSCORE     ATTR2_TILEID64(6, 7)
+#define TILE_GRAVE          ATTR2_TILEID64(7, 7) // custom icon for a little star in the top left
 
 // Character to sprite TILE lookup stuff
 // Take the character and subtract CHAR_START
@@ -85,7 +85,7 @@ extern const int text_tile_lkup[];
 // Sprite ID table
 enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
  HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4, 
- TURNICON1, TURNICON2, TURNICON3, TURNICON4, TEXT_IDX };
+ TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8, TEXT_IDX };
 
 // Some constants
 // At 7 width text looks good. At 6 it looks kinda compressed with QWM#$& but it gives us 20 characters
@@ -113,6 +113,8 @@ enum { LOST = -1, ONGOING = 0, WON = 1 };
 extern int battleStatus;
 extern int bossBattle;
 extern int waiting;
+extern int turnPoints;
+extern int nextTurnPoints;
 
 // Turn tracking
 enum { PLAYERTURN, ENEMYTURN };

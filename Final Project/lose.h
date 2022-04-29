@@ -5,11 +5,11 @@
 //
 //	lose, 256x256@4, 
 //	+ palette 256 entries, not compressed
-//	+ 174 tiles (t|f|p reduced) not compressed
+//	+ 280 tiles (t|f|p reduced) not compressed
 //	+ regular map (in SBBs), not compressed, 32x32 
-//	Total size: 512 + 5568 + 2048 = 8128
+//	Total size: 512 + 8960 + 2048 = 11520
 //
-//	Time-stamp: 2022-04-22, 23:39:00
+//	Time-stamp: 2022-04-28, 17:42:13
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
 //	( http://www.coranac.com/projects/#grit )
 //
@@ -18,8 +18,8 @@
 #ifndef GRIT_LOSE_H
 #define GRIT_LOSE_H
 
-#define loseTilesLen 5568
-extern const unsigned short loseTiles[2784];
+#define loseTilesLen 8960
+extern const unsigned short loseTiles[4480];
 
 #define loseMapLen 2048
 extern const unsigned short loseMap[1024];

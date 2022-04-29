@@ -6,6 +6,7 @@
 #include "sound.h"
 #include "shootsfx.h"
 #include "boomsfx.h"
+#include "fanfaresfx.h"
 
 unsigned char* collisionMap = (unsigned char*) world1collisionBitmap;
 
@@ -13,18 +14,19 @@ PLAYER player;
 BULLET bullets[NUM_BULLETS];
 ENEMY enemies[NUM_ENEMIES];
 MINE mines[NUM_MINES];
-// const ENEMY _disable_enemy_ = { 0, 0, 0, 0, 0, 0, 16, 8, 0, PASSIVE, FISH };
+PICKUP pickups[NUM_PICKUP];
 #define DISABLE_ENEMY { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 #define DISABLE_MINE { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define DISABLE_PICKUP { 0, 0, 0, 0, 0, 0, 0, 0 }
 LEVEL levels[NUM_LEVELS] = {
     { // start 1st LEVEL constructor
         { // start ENEMY list 
             {.int_x=32*64, .int_y=160*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 1
-            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 2
-            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 3
-            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 4
-            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 5
-            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 6
+            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 2
+            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 3
+            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 4
+            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 5
+            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BOSS}, // 6
             {.int_x=337*64, .int_y=128*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 7
             {.int_x=440*64, .int_y=72*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 8
             {.int_x=608*64, .int_y=88*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 9
@@ -61,7 +63,7 @@ LEVEL levels[NUM_LEVELS] = {
             {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 40
             {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 41
             {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 42
-            {.int_x=168*64, .int_y=928*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BOSS}, // 43
+            {.int_x=168*64, .int_y=928*64, .width=32, .height=16, .active=1, .ai=PASSIVE, .type=BOSS}, // 43
             DISABLE_ENEMY, // 44
             DISABLE_ENEMY, // 45
             DISABLE_ENEMY, // 46
@@ -141,6 +143,18 @@ LEVEL levels[NUM_LEVELS] = {
             DISABLE_MINE, // 58
             DISABLE_MINE, // 59
             DISABLE_MINE, // 60
+        },
+        { // start PICKUP list
+            { .int_x = 768 * 64, .int_y = 8 * 64, .active = 1, .effect = UPGRADE_TORP }, // 1
+            { .int_x = 760 * 64, .int_y = 808 * 64, .active = 1, .effect = UPGRADE_SHIELD }, // 2
+            { .int_x = 20 * 64, .int_y = 464 * 64, .active = 1, .effect = UPGRADE_BLAST }, // 3
+            { .int_x = 904 * 64, .int_y = 24 * 64, .active = 1, .effect = RESTORE_HP }, // 4
+            { .int_x = 432 * 64, .int_y = 945 * 64, .active = 1, .effect = RESTORE_HP }, // 5
+            { .int_x = 568 * 64, .int_y = 700 * 64, .active = 1, .effect = RESTORE_HP }, // 6
+            { .int_x = 688 * 64, .int_y = 960 * 64, .active = 1, .effect = RESTORE_HP }, // 7
+            DISABLE_PICKUP, // 8
+            DISABLE_PICKUP, // 9
+            DISABLE_PICKUP, // 10
         }
     } 
 };
@@ -150,8 +164,12 @@ int doBattle = 0;
 int opponentIdx; // we trust that we remember to set this each time
 int drawnEnemies = 0;
 int drawnMines = 0;
+int drawnPickups = 0;
 
 void returnFromBattle(int victory) {
+    if (victory) {
+        // get rid of that annoying warning. victory really just exists in case its useful one day
+    }
     // if (victory) {
         doBattle = 0;
         enemies[opponentIdx].active = 0;
@@ -168,6 +186,7 @@ void initWorld() {
     initBullets();
     initEnemies();
     initMines();
+    initPickups();
 }
 
 void initPlayer() {
@@ -230,6 +249,19 @@ void initMines() {
     }
 }
 
+void initPickups() {
+    for (int i = 0; i < NUM_PICKUP; i++) {
+        pickups[i].int_x = levels[level].pickupList[i].int_x;
+        pickups[i].int_y = levels[level].pickupList[i].int_y;
+        pickups[i].x = DECODE26_6(pickups[i].int_x) - bg2xOff; // doesn't need to be preset
+        pickups[i].y = DECODE26_6(pickups[i].int_y) - bg2yOff; // doesn't need to be preset
+        pickups[i].width = 8; // ditto
+        pickups[i].height = 8;
+        pickups[i].active = levels[level].pickupList[i].active;
+        pickups[i].effect = levels[level].pickupList[i].effect;
+    }
+}
+
 void doCollision() {
     for (int i = 0; i < NUM_ENEMIES; i++) {
         if (enemies[i].active) {
@@ -246,7 +278,7 @@ void doCollision() {
                     enemies[i].int_x, enemies[i].int_y, ENCODE26_6(enemies[i].width), ENCODE26_6(enemies[i].height))) {
                         // Disable bullet
                         bullets[j].active = 0;
-                        shadowOAM[bullets[j].spriteIdx].attr0 = ATTR0_HIDE;
+                        shadowOAM[bullets[j].spriteIdx].attr0 = ATTR0_HIDE | ATTR0_8BPP;
                         // DO BATTLE
                         doBattle = 1;
                         opponentIdx = i;
@@ -267,10 +299,60 @@ void doCollision() {
             }
         }
     }
+    for (int i = 0; i < NUM_PICKUP; i++) {
+        if (pickups[i].active) {
+            if (collision(player.int_x, player.int_y, ENCODE26_6(player.width), ENCODE26_6(player.height),
+            pickups[i].int_x, pickups[i].int_y, ENCODE26_6(pickups[i].width), ENCODE26_6(pickups[i].height))) {
+                pickups[i].active = 0;
+                playSoundB(fanfaresfx_data, fanfaresfx_length, 0);
+                switch (pickups[i].effect)
+                {
+                case UPGRADE_TORP:
+                    battleAllies[0].moves[0] = &MOVE_TORPEDO2;
+                    break;
+                case UPGRADE_BLAST:
+                    battleAllies[0].moves[2] = &MOVE_BLAST2;
+                    break;
+                case UPGRADE_SHIELD:
+                    battleAllies[0].moves[1] = &MOVE_SHIELD2;
+                    break;
+                case RESTORE_HP:
+                    submarineHp += 50;
+                    if (submarineHp > submarineMaxHp) submarineHp = submarineMaxHp;
+                    for (int j = 0; j < 4; j++) {
+                        battleAllies[j].hp = battleAllies[j].maxHp;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+
+
+    
 }
 
+int enemyFrameCounter = 0;
+int enemyAniFrame = 0;
+int mineFrameCounter = 0;
+int mineAniFrame = 0;
 // Update the world
 void updateWorld() {
+    // Stuff for animating all of the enemies together
+    if (enemyFrameCounter > 20) {
+        enemyAniFrame++;
+        enemyAniFrame %= 3;
+        enemyFrameCounter = 0;
+    }
+    enemyFrameCounter++;
+    // Stuff for animating all of the mines together
+    if (mineFrameCounter > 20) {
+        mineAniFrame++;
+        mineAniFrame %= 3;
+        mineFrameCounter = 0;
+    }
+    mineFrameCounter++;
     updatePlayer();
     for (int i = 0; i < NUM_BULLETS; i++) {
         if (bullets[i].active) {
@@ -287,6 +369,12 @@ void updateWorld() {
     for (int i = 0; i < NUM_MINES; i++) {
         if (mines[i].active) {
             updateMine(&mines[i]);
+        }
+    }
+    freePickupSprites();
+    for (int i = 0; i < NUM_PICKUP; i++) {
+        if (pickups[i].active) {
+            updatePickup(&pickups[i]);
         }
     }
     
@@ -423,9 +511,35 @@ void movePlayer() {
 
 // ShadowOAM sprite stuff for the player
 void drawPlayer() {
-    shadowOAM[PLAYER_IDX].attr0 = (player.y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    // Stuff for animating the player
+    static int frameCounter = 0;
+    static int aniFrame = 0;
+    if (frameCounter > 10) {
+        aniFrame++;
+        aniFrame %= 4;
+        frameCounter = 0;
+    }
+    shadowOAM[PLAYER_IDX].attr0 = (player.y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[PLAYER_IDX].attr1 = (player.x & COLMASK) | ATTR1_TINY;
-    shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID(0, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+    switch (aniFrame)
+    {
+    case 0:
+        shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID64(0, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+        break;
+    case 1:
+        shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID64(2, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+        break;
+    case 2:
+        shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID64(4, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+        break;
+    case 3:
+        shadowOAM[PLAYER_IDX].attr2 = ATTR2_TILEID64(6, 28) | ATTR2_PRIORITY(PLAYER_PRIORITY);
+        break;
+    }
+    if (player.facing == LEFT) {
+        shadowOAM[PLAYER_IDX].attr1 |= ATTR1_HFLIP;
+    }
+    frameCounter++;
 }
 
 // Shoot a bullet
@@ -435,11 +549,11 @@ void firePlayer() {
     if (player.facing == RIGHT) { // right
         dx = BULLET_MAX_V;
         startx = player.int_x + ENCODE26_6(player.width);
-        starty = player.int_y;
+        starty = player.int_y + ENCODE26_6(player.height / 2);
     } else { // left
         dx = -BULLET_MAX_V;
         startx = player.int_x - ENCODE26_6(bullets[0].width);
-        starty = player.int_y;
+        starty = player.int_y + ENCODE26_6(player.height / 2);
     }
     for (int i = 0; i < NUM_BULLETS; i++) {
         if (!bullets[i].active) {
@@ -533,10 +647,10 @@ void updateBullet(BULLET* bullet) {
         (bullet->y + bullet->height - 1 < 0) ||
         (bullet->y > SCREENHEIGHT)))
     {
-        shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+        shadowOAM[bullet->spriteIdx].attr0 = (bullet->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
         shadowOAM[bullet->spriteIdx].attr1 = (bullet->x & COLMASK) | ATTR1_TINY;
         // The bullet is gonna be way too big but this is just placeholder until we get a real sprite
-        shadowOAM[bullet->spriteIdx].attr2 = ATTR2_TILEID(0, 31) | ATTR2_PRIORITY(BULLET_PRIORITY);
+        shadowOAM[bullet->spriteIdx].attr2 = ATTR2_TILEID64(0, 31) | ATTR2_PRIORITY(BULLET_PRIORITY);
     } else {
         shadowOAM[bullet->spriteIdx].attr0 = ATTR0_HIDE;
     }
@@ -577,6 +691,21 @@ void updateMine(MINE* mine) {
     }
 }
 
+// Update a pickup
+void updatePickup(PICKUP* pickup) {
+    pickup->x = DECODE26_6(pickup->int_x) - bg2xOff;
+    pickup->y = DECODE26_6(pickup->int_y) - bg2yOff;
+    // Only draw if partly onscreen
+    if (pickup->active && !(
+        (pickup->x + pickup->width - 1 < 0) ||
+        (pickup->x > SCREENWIDTH) ||
+        (pickup->y + pickup->height - 1 < 0) ||
+        (pickup->y > SCREENHEIGHT)))
+    {
+        drawPickup(pickup);
+    }
+}
+
 // Hides all enemy sprites
 void freeEnemySprites() {
     for (int i = 0; i < NUM_ENEMY_SPRITES; i++) {
@@ -587,33 +716,81 @@ void freeEnemySprites() {
 
 // Draws an enemy sprite
 void drawEnemy(ENEMY* enemy) {
-    // Stuff for animating all of the enemies together
-    static int frameCounter = 0;
-    static int aniFrame = 0;
-    if (frameCounter > 30) {
-        aniFrame++;
-        aniFrame %= 3;
-        frameCounter = 0;
-    }
     // Only draw as many enemies as we have sprites for
     if (drawnEnemies < NUM_ENEMY_SPRITES) {
-        shadowOAM[ENEMY1 + drawnEnemies].attr0 = (enemy->y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
-        shadowOAM[ENEMY1 + drawnEnemies].attr1 = (enemy->x & COLMASK) | ATTR1_TINY;
-        switch (aniFrame)
-        {
-        case 0:
-            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(0, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
-            break;
-        case 1:
-            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(2, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
-            break;
-        case 2:
-            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID(4, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
-            break;
+        if (enemy->type == BOSS) {
+            shadowOAM[ENEMY1 + drawnEnemies].attr0 = (enemy->y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+            shadowOAM[ENEMY1 + drawnEnemies].attr1 = (enemy->x & COLMASK) | ATTR1_MEDIUM;
+            shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(8, 26) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+        } else {
+            shadowOAM[ENEMY1 + drawnEnemies].attr0 = (enemy->y & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+            shadowOAM[ENEMY1 + drawnEnemies].attr1 = (enemy->x & COLMASK) | ATTR1_TINY;
+            switch (enemyAniFrame)
+            {
+            case 0:
+                switch (enemy->type)
+                {
+                case FISH:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(0, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case BARRACUDA:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(8, 28) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case SHARK:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(8, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case ANGLER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(8, 30) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case PUFFER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(8, 31) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                }
+                break;
+            case 1:
+                switch (enemy->type)
+                {
+                case FISH:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(2, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case BARRACUDA:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(10, 28) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case SHARK:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(10, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case ANGLER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(10, 30) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case PUFFER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(10, 31) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                }
+                break;
+            case 2:
+                switch (enemy->type)
+                {
+                case FISH:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(4, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case BARRACUDA:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(12, 28) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case SHARK:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(12, 29) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case ANGLER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(12, 30) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                case PUFFER:
+                    shadowOAM[ENEMY1 + drawnEnemies].attr2 = ATTR2_TILEID64(12, 31) | ATTR2_PRIORITY(ENEMY_PRIORITY);
+                    break;
+                }
+                break;
+            }  
         }
         drawnEnemies++;
     }
-    frameCounter++;
 }
 
 // Hides all mine sprites
@@ -626,78 +803,102 @@ void freeMineSprites() {
 
 // Draws a mine sprite
 void drawMine(MINE* mine) {
-    // Stuff for animating all of the mines together
-    static int frameCounter = 0;
-    static int aniFrame = 0;
-    if (frameCounter > 30) {
-        aniFrame++;
-        aniFrame %= 3;
-        frameCounter = 0;
-    }
     // Only draw as many mines as we have sprites for
     if (drawnMines < NUM_MINE_SPRITES) {
-        switch (aniFrame)
+        switch (mineAniFrame)
         {
         case 0:
-            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(0, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID64(0, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
             break;
         case 1:
-            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(1, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID64(1, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
             break;
         case 2:
-            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID(2, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
+            shadowOAM[MINE1 + drawnMines].attr2 = ATTR2_TILEID64(2, 30) | ATTR2_PRIORITY(MINE_PRIORITY);
             break;
         }
-        shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+        shadowOAM[MINE1 + drawnMines].attr0 = (mine->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
         shadowOAM[MINE1 + drawnMines].attr1 = (mine->x & COLMASK) | ATTR1_TINY;
         drawnMines++;
     }
-    frameCounter++;
+}
+
+// Hides all pickup sprites
+void freePickupSprites() {
+    for (int i = 0; i < NUM_PICKUP_SPRITES; i++) {
+        shadowOAM[PICKUP1 + i].attr0 = ATTR0_HIDE;
+    }
+    drawnPickups = 0;
+}
+
+// Draws a pickup sprite
+void drawPickup(PICKUP* pickup) {
+    // Only draw as many pickups as we have sprites for
+    if (drawnPickups < NUM_PICKUP_SPRITES) {
+        shadowOAM[PICKUP1 + drawnPickups].attr0 = (pickup->y & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
+        shadowOAM[PICKUP1 + drawnPickups].attr1 = (pickup->x & COLMASK) | ATTR1_TINY;
+        switch (pickup->effect)
+        {
+        case UPGRADE_TORP:
+            shadowOAM[PICKUP1 + drawnPickups].attr2 = ATTR2_TILEID64(3, 31) | ATTR2_PRIORITY(PICKUP_PRIORITY);
+            break;
+        case UPGRADE_BLAST:
+            shadowOAM[PICKUP1 + drawnPickups].attr2 = ATTR2_TILEID64(4, 31) | ATTR2_PRIORITY(PICKUP_PRIORITY);
+            break;
+        case UPGRADE_SHIELD:
+            shadowOAM[PICKUP1 + drawnPickups].attr2 = ATTR2_TILEID64(2, 31) | ATTR2_PRIORITY(PICKUP_PRIORITY);
+            break;
+        case RESTORE_HP:
+            shadowOAM[PICKUP1 + drawnPickups].attr2 = ATTR2_TILEID64(5, 31) | ATTR2_PRIORITY(PICKUP_PRIORITY);
+            break;
+        }
+        drawnPickups++;
+    }
 }
 
 // Display the submarine's healthbar
 void updateHealthBar() {
     // There are 26 tiles of healthbar
     // Left nub
-    shadowOAM[HEALTHBAR1].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+    shadowOAM[HEALTHBAR1].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR1].attr1 = (16 & COLMASK) | ATTR1_TINY;
     if (submarineHp > 0) {
-        shadowOAM[HEALTHBAR1].attr2 = ATTR2_TILEID(0, 24);
+        shadowOAM[HEALTHBAR1].attr2 = ATTR2_TILEID64(0, 24) | ATTR2_PRIORITY(HUD_PRIORITY);
     } else {
-        shadowOAM[HEALTHBAR1].attr2 = ATTR2_TILEID(0, 25);
+        shadowOAM[HEALTHBAR1].attr2 = ATTR2_TILEID64(0, 25) | ATTR2_PRIORITY(HUD_PRIORITY);
     }
 
     // Middle section
-    shadowOAM[HEALTHBAR2].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR2].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR2].attr1 = ((24 + 32 * 0) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR2].attr2 = ATTR2_TILEID(5 - tilesRed(1, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR2].attr2 = ATTR2_TILEID64(5 - tilesRed(1, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
     
-    shadowOAM[HEALTHBAR3].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR3].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR3].attr1 = ((24 + 32 * 1) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR3].attr2 = ATTR2_TILEID(5 - tilesRed(5, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR3].attr2 = ATTR2_TILEID64(5 - tilesRed(5, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
 
-    shadowOAM[HEALTHBAR4].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR4].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR4].attr1 = ((24 + 32 * 2) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR4].attr2 = ATTR2_TILEID(5 - tilesRed(9, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR4].attr2 = ATTR2_TILEID64(5 - tilesRed(9, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
 
-    shadowOAM[HEALTHBAR5].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR5].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR5].attr1 = ((24 + 32 * 3) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR5].attr2 = ATTR2_TILEID(5 - tilesRed(13, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR5].attr2 = ATTR2_TILEID64(5 - tilesRed(13, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
 
-    shadowOAM[HEALTHBAR6].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR6].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR6].attr1 = ((24 + 32 * 4) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR6].attr2 = ATTR2_TILEID(5 - tilesRed(17, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR6].attr2 = ATTR2_TILEID64(5 - tilesRed(17, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
 
-    shadowOAM[HEALTHBAR7].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE;
+    shadowOAM[HEALTHBAR7].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR7].attr1 = ((24 + 32 * 5) & COLMASK) | ATTR1_SMALL;
-    shadowOAM[HEALTHBAR7].attr2 = ATTR2_TILEID(5 - tilesRed(21, submarineHp, submarineMaxHp, 26), 24);
+    shadowOAM[HEALTHBAR7].attr2 = ATTR2_TILEID64(5 - tilesRed(21, submarineHp, submarineMaxHp, 26), 24) | ATTR2_PRIORITY(HUD_PRIORITY);
 
     // Right nub
-    shadowOAM[HEALTHBAR8].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE;
+    shadowOAM[HEALTHBAR8].attr0 = (HEALTHBAR_VOFF & ROWMASK) | ATTR0_REGULAR | ATTR0_SQUARE | ATTR0_8BPP;
     shadowOAM[HEALTHBAR8].attr1 = ((24 + 32 * 6) & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
     if (submarineHp > ((25 * submarineMaxHp) / 26)) {
-        shadowOAM[HEALTHBAR8].attr2 = ATTR2_TILEID(0, 24);
+        shadowOAM[HEALTHBAR8].attr2 = ATTR2_TILEID64(0, 24) | ATTR2_PRIORITY(HUD_PRIORITY);
     } else {
-        shadowOAM[HEALTHBAR8].attr2 = ATTR2_TILEID(0, 25);
+        shadowOAM[HEALTHBAR8].attr2 = ATTR2_TILEID64(0, 25) | ATTR2_PRIORITY(HUD_PRIORITY);
     }
 }
