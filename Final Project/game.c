@@ -15,7 +15,7 @@ COMBATANT CBT_PUFFER = { "PUFFER", 1, 28, 28, 3, { &MOVE_NIBBLE, &MOVE_PUFFUP, &
 COMBATANT CBT_BARRACUDA = { "BARRACUDA", 1, 14, 14, 2, { &MOVE_BITE, &MOVE_DASH, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE }, ATTR2_TILEID64(0, 20) };
 COMBATANT CBT_GOD = { "TUNA GOD", 1, 60, 60, 6, { &MOVE_BITE, &MOVE_SLASH, &MOVE_RESOLVE, &MOVE_LHEALBURST, &MOVE_WAVE, &MOVE_TRANSCEND }, ATTR2_TILEID64(8, 26) };
 COMBATANT CBT_SUBMARINE = { "SUBMARINE", 1, 20, 20, 3, { &MOVE_TORPEDO1, &MOVE_SHIELD1, &MOVE_BLAST1, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE }, ATTR2_TILEID64(0, 16) };
-COMBATANT CBT_NONE = { "NONE", 0, 99, 0, 0, { &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE }, ATTR2_TILEID64(0, 16) }; 
+COMBATANT CBT_NONE = { "NONE", 0, 0, 0, 0, { &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE, &MOVE_NONE }, ATTR2_TILEID64(0, 16) }; 
 
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
@@ -38,6 +38,8 @@ void initParty() {
     battleAllies[1] = CBT_FISH;
     battleAllies[1].hp = battleAllies[1].maxHp;
     strncpy(battleAllies[1].name, "BUDDY", NAME_LEN); // Give the starting ally a fun name
+    battleAllies[2] = CBT_NONE;
+    battleAllies[3] = CBT_NONE;
 }
 
 // Returns the number of tiles to be red in a section of the healthbar

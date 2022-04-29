@@ -136,8 +136,8 @@ MOVE_TORPEDO1:
 	.size	MOVE_TRANSCEND, 88
 MOVE_TRANSCEND:
 	.ascii	"TRANSCEND\000"
-	.ascii	"%s TRANSCENDED\012MORTALITY.\000"
-	.space	35
+	.ascii	"%s TRANSCENDEDMORTALITY.\000"
+	.space	36
 	.space	1
 	.word	0
 	.word	0
@@ -148,8 +148,8 @@ MOVE_TRANSCEND:
 MOVE_DASH:
 	.ascii	"DASH\000"
 	.space	5
-	.ascii	"%s MOVED WITH\012INCREDIBLE SPEED!\012+1 TURN\000"
-	.space	21
+	.ascii	"%s MOVED WITHINCREDIBLE SPEED!\012+1 TURN\000"
+	.space	22
 	.space	1
 	.word	0
 	.word	0
@@ -158,8 +158,7 @@ MOVE_DASH:
 	.type	MOVE_LHEALBURST, %object
 	.size	MOVE_LHEALBURST, 88
 MOVE_LHEALBURST:
-	.ascii	"S HEAL\000"
-	.space	3
+	.ascii	"L H BURST\000"
 	.ascii	"%s HEALED\012THEIR ALLIES!\000"
 	.space	37
 	.space	1
@@ -170,8 +169,7 @@ MOVE_LHEALBURST:
 	.type	MOVE_SHEALBURST, %object
 	.size	MOVE_SHEALBURST, 88
 MOVE_SHEALBURST:
-	.ascii	"S HEAL\000"
-	.space	3
+	.ascii	"S H BURST\000"
 	.ascii	"%s HEALED\012THEIR ALLIES!\000"
 	.space	37
 	.space	1

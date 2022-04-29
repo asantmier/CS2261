@@ -69,6 +69,11 @@ void initBattle(int opponentType) {
         }
     }
 
+    nextTurnPoints = turnPoints;
+    nextFighterIdx = fighterIdx;
+    nextTurn = turn;
+    REG_TM2CNT = TIMER_OFF;
+
     bossBattle = 0;
 
     resetOpponents();
@@ -206,7 +211,9 @@ void replaceMenu() {
         botBuf[0] = '\0';
         sprintf(topBuf, "%s REPLACED\n%s.", captured->name, battleAllies[realOpt].name);
         battleAllies[realOpt] = *captured; // Copy captured into battleAllies
-        captured->exists = 0;
+        captured->exists = 0; // disable the original captured
+        // Heal up the new teammate a little to make things fair
+        if (battleAllies[realOpt].hp < battleAllies[realOpt].maxHp / 2) battleAllies[realOpt].hp = battleAllies[realOpt].maxHp / 2;
         finishTurn();
     }
 }
@@ -448,9 +455,17 @@ void executeMove(MOVE* m, COMBATANT* t) {
     }
     if (m == &MOVE_DASH) {
         turnPoints += 2;
+        if (turnPoints > 9) turnPoints = 9; // we subtract 1 after this which will make it 8, which is the max
     }
     if (m == &MOVE_TRANSCEND) {
         fighter->hp = fighter->maxHp;
+    }
+    // Ignore the submarine
+    for (int i = 1; i < 4; i++) {
+        // Permanently kill this ally
+        if (battleAllies[i].exists && battleAllies[i].hp <= 0) {
+            battleAllies[i] = CBT_NONE;
+        }
     }
     
     sprintf(topBuf, m->flavorText, fighter->name, t->name);
@@ -465,6 +480,9 @@ void finishTurn() {
     turnPoints--;
     // Check the interrupt handler for an explanation for what nextTurnPoints is
     nextTurnPoints = turnPoints;
+    // Always set these values to something valid otherwise weird things can happen
+    nextFighterIdx = fighterIdx;
+    nextTurn = turn;
 
     if (turnPoints == 0) {  // Swap turns
         if (turn == PLAYERTURN) {

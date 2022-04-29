@@ -26,40 +26,60 @@ initParty:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	ip, .L4
 	push	{r4, r5, r6, lr}
-	ldr	r5, .L4+4
-	mov	r4, ip
+	ldr	r5, .L4
+	ldr	r4, .L4+4
 	mov	lr, r5
-	ldmia	r4!, {r0, r1, r2, r3}
-	stmia	lr!, {r0, r1, r2, r3}
-	ldmia	r4!, {r0, r1, r2, r3}
-	stmia	lr!, {r0, r1, r2, r3}
-	ldmia	r4!, {r0, r1, r2, r3}
-	stmia	lr!, {r0, r1, r2, r3}
-	ldr	r3, [r5, #16]
-	ldm	r4, {r0, r1}
-	add	ip, ip, #56
-	stm	lr, {r0, r1}
-	str	r3, [r5, #20]
-	ldmia	ip!, {r0, r1, r2, r3}
+	mov	ip, r4
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldr	r3, [r4, #16]
+	ldm	lr, {r0, r1}
 	add	lr, r5, #56
-	stmia	lr!, {r0, r1, r2, r3}
-	ldmia	ip!, {r0, r1, r2, r3}
-	stmia	lr!, {r0, r1, r2, r3}
-	ldmia	ip!, {r0, r1, r2, r3}
-	stmia	lr!, {r0, r1, r2, r3}
-	ldm	ip, {r0, r1}
-	ldr	ip, [r5, #72]
-	stm	lr, {r0, r1}
-	str	ip, [r5, #76]
-	add	r0, r5, #56
+	stm	ip, {r0, r1}
+	str	r3, [r4, #20]
+	ldmia	lr!, {r0, r1, r2, r3}
+	add	ip, r4, #56
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldm	lr, {r0, r1}
+	ldr	lr, [r4, #72]
+	stm	ip, {r0, r1}
+	str	lr, [r4, #76]
 	mov	r2, #10
 	ldr	r1, .L4+8
 	ldr	r3, .L4+12
+	add	r0, r4, #56
 	mov	lr, pc
 	bx	r3
+	add	lr, r5, #112
+	ldmia	lr!, {r0, r1, r2, r3}
+	add	ip, r4, #112
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldm	lr, {r0, r1}
+	add	lr, r5, #112
+	stm	ip, {r0, r1}
+	ldmia	lr!, {r0, r1, r2, r3}
+	add	ip, r4, #168
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldmia	lr!, {r0, r1, r2, r3}
+	stmia	ip!, {r0, r1, r2, r3}
+	ldm	lr, {r0, r1}
 	pop	{r4, r5, r6, lr}
+	stm	ip, {r0, r1}
 	bx	lr
 .L5:
 	.align	2
@@ -212,7 +232,7 @@ CBT_NONE:
 	.space	5
 	.space	2
 	.word	0
-	.word	99
+	.word	0
 	.word	0
 	.word	0
 	.word	MOVE_NONE

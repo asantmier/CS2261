@@ -1680,6 +1680,11 @@ void initBattle(int opponentType) {
         }
     }
 
+    nextTurnPoints = turnPoints;
+    nextFighterIdx = fighterIdx;
+    nextTurn = turn;
+    *(volatile unsigned short*)0x400010A = (0<<7);
+
     bossBattle = 0;
 
     resetOpponents();
@@ -1818,6 +1823,8 @@ void replaceMenu() {
         sprintf(topBuf, "%s REPLACED\n%s.", captured->name, battleAllies[realOpt].name);
         battleAllies[realOpt] = *captured;
         captured->exists = 0;
+
+        if (battleAllies[realOpt].hp < battleAllies[realOpt].maxHp / 2) battleAllies[realOpt].hp = battleAllies[realOpt].maxHp / 2;
         finishTurn();
     }
 }
@@ -2059,9 +2066,16 @@ void executeMove(MOVE* m, COMBATANT* t) {
     }
     if (m == &MOVE_DASH) {
         turnPoints += 2;
+        if (turnPoints > 9) turnPoints = 9;
     }
     if (m == &MOVE_TRANSCEND) {
         fighter->hp = fighter->maxHp;
+    }
+    for (int i = 1; i < 4; i++) {
+
+        if (battleAllies[i].exists && battleAllies[i].hp <= 0) {
+            battleAllies[i] = CBT_NONE;
+        }
     }
 
     sprintf(topBuf, m->flavorText, fighter->name, t->name);
@@ -2076,6 +2090,9 @@ void finishTurn() {
     turnPoints--;
 
     nextTurnPoints = turnPoints;
+
+    nextFighterIdx = fighterIdx;
+    nextTurn = turn;
 
     if (turnPoints == 0) {
         if (turn == PLAYERTURN) {

@@ -63,8 +63,8 @@ LEVEL levels[NUM_LEVELS] = {
             {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 40
             {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 41
             {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 42
-            {.int_x=168*64, .int_y=928*64, .width=32, .height=16, .active=1, .ai=PASSIVE, .type=BOSS}, // 43
-            DISABLE_ENEMY, // 44
+            {.int_x=68*64, .int_y=464*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 43
+            {.int_x=168*64, .int_y=928*64, .width=32, .height=16, .active=1, .ai=PASSIVE, .type=BOSS}, // 44
             DISABLE_ENEMY, // 45
             DISABLE_ENEMY, // 46
             DISABLE_ENEMY, // 47

@@ -2613,6 +2613,14 @@ levels:
 	.word	1
 	.word	0
 	.word	4
+	.word	4352
+	.word	29696
+	.space	16
+	.word	16
+	.word	8
+	.word	1
+	.word	0
+	.word	3
 	.word	10752
 	.word	59392
 	.space	16
@@ -2621,17 +2629,6 @@ levels:
 	.word	1
 	.word	0
 	.word	5
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
 	.word	0
 	.word	0
 	.word	0

@@ -24,6 +24,9 @@
  * 
  * TO DO LIST:
  * PLAYTEST
+ * MOSAIC
+ * SAVING
+ * BUDDY EVOLUTION
 */
 
 #include <stdlib.h>
@@ -184,6 +187,7 @@ void interruptHandler() {
         // When we swap teams turns, we want to show 0 tokens during the wait period, so we set nextTurnPoints equal
         // to the number of turn tokens the next team is going to need. When the wait timer finishes, we can then update turnPoints
         // and the game will display the number of tokens we want.
+        mgba_printf("Battle timer interrupt");
         turnPoints = nextTurnPoints;
         fighterIdx = nextFighterIdx;
         turn = nextTurn;
@@ -403,19 +407,18 @@ void battle() {
     updateBattle();
 
     if (battleStatus == LOST || battleStatus == WON) {
+        battleAllies[0].hp = battleAllies[0].maxHp;
+        for (int i = 1; i < 4; i++) {
+            battleAllies[i].hp += battleAllies[i].maxHp / 2;
+            if (battleAllies[i].hp > battleAllies[i].maxHp) battleAllies[i].hp = battleAllies[i].maxHp;
+        }
         if (battleStatus == LOST) {
             if (bossBattle) {
                 goToLose();
             }
-            for (int i = 0; i < 4; i++) {
-                battleAllies[i].hp = battleAllies[i].maxHp;
-            }
-            submarineHp -= 10;
+            submarineHp -= 20;
             returnFromBattle(0);
         } else if (battleStatus == WON) {
-            for (int i = 0; i < 4; i++) {
-                battleAllies[i].hp = battleAllies[i].maxHp;
-            }
             returnFromBattle(1);
         }
         // Turn off all the sprites from the battle state
