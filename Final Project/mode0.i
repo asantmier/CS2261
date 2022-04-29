@@ -267,6 +267,14 @@ int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int 
     }
 
 
+
+
+    current = collisionMap[((y) * (mapWidth) + (x + (width / 2) - 1))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+
     current = collisionMap[((y) * (mapWidth) + (x + width - 1))];
     if (current > largestSoFar) {
         largestSoFar = current;
@@ -274,6 +282,12 @@ int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int 
 
 
     current = collisionMap[((y + height - 1) * (mapWidth) + (x))];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+
+    current = collisionMap[((y + height - 1) * (mapWidth) + (x + (width / 2) - 1))];
     if (current > largestSoFar) {
         largestSoFar = current;
     }

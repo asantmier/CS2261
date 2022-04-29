@@ -460,6 +460,16 @@ void executeMove(MOVE* m, COMBATANT* t) {
     if (m == &MOVE_TRANSCEND) {
         fighter->hp = fighter->maxHp;
     }
+    // We don't want opponents going into negative health. It interferes with the Tuna God's necromantic abilities
+    for (int i = 0; i < 4; i++) {
+        if (battleOpponents[i].exists && battleOpponents[i].hp < 0) {
+            battleOpponents[i].hp = 0;
+        }
+    }
+    
+    sprintf(topBuf, m->flavorText, fighter->name, t->name);
+    botBuf[0] = '\0';
+    // Remove dead allies from the team. Important to do this after printing the names.
     // Ignore the submarine
     for (int i = 1; i < 4; i++) {
         // Permanently kill this ally
@@ -467,9 +477,6 @@ void executeMove(MOVE* m, COMBATANT* t) {
             battleAllies[i] = CBT_NONE;
         }
     }
-    
-    sprintf(topBuf, m->flavorText, fighter->name, t->name);
-    botBuf[0] = '\0';
     
     finishTurn();
 }

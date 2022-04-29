@@ -22,8 +22,14 @@
  *     Capturing enemies is easier the lower their health is. You can replace an empty slot on your team to expand it, but if
  *     your team is full you will have to replace a teammate or hit B to just not use the captured enemy.
  * 
+ * CHEATING: Activate the cheat by inputting the Konami code in either the overworld or battle states.
+ *      (up, up, down, down, left, right, left, right, b, a, start)
+ *      The cheat gives you a lot of health, two new overpowered moves, and enables speedup mode.
+ *      With the cheat active in the overworld, hold down the left bumper to move really fast.
+ * 
  * TO DO LIST:
  * PLAYTEST
+ * MAIN MENU MUSIC?
  * MOSAIC
  * SAVING
  * BUDDY EVOLUTION
@@ -141,9 +147,11 @@ int main() {
     }
 }
 
+// only run the cheat detection function in game and battle. it wouldn't make much sense in the other states
 // lol
 void lmao() {
     // cheating is fun
+    // i lied, this was unnaturally difficult to make work
     static int konami[] = { BUTTON_UP, BUTTON_UP, BUTTON_DOWN, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_B, BUTTON_A, BUTTON_START };
     static int konamiIdx = 0;
     int prev = konamiIdx - 1;
@@ -152,6 +160,10 @@ void lmao() {
         konamiIdx++;
         mgba_printf("Konami %d", konamiIdx);
     } else {
+        // if the right button was not just pressed this frame, check if any other button was JUST pressed
+        // the button register freaky, so we have to use BUTTON_PRESSED here
+        // TIL that the button register is flagged on button release too. i think? just checking if the button register was its default
+        // value + the previous button still held down didn't give sensible output
         for (int i = 0; i <= 9; i++) {
             if (BUTTON_PRESSED(1 << i)) {
                 konamiIdx = 0;
@@ -161,6 +173,7 @@ void lmao() {
         }
     }
     
+    // if the full code was input, its cheating time
     if (konamiIdx == 11) {
         cheater = 1;
         battleAllies[0].numMoves = 5;

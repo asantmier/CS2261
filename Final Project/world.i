@@ -1777,9 +1777,18 @@ void updatePlayer() {
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 5)))) {
         player.dx += -(slowMode ? 20 / 2 : 20);
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
+            player.dx = -48 * 4;
+        }
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 4)))) {
         player.dx += (slowMode ? 20 / 2 : 20);
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
+            player.dx = 48 * 4;
+        }
     } else {
+        if (cheater) {
+            player.dx = 0;
+        }
         if (player.dx > 0) {
             player.dx -= 1;
         } else if (player.dx < 0) {
@@ -1788,23 +1797,29 @@ void updatePlayer() {
     }
     if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 6)))) {
         player.dy += -(slowMode ? 20 / 2 : 20);
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
+            player.dy = -48 * 4;
+        }
     } else if ((~((*(volatile unsigned short *)0x04000130)) & ((1 << 7)))) {
         player.dy += (slowMode ? 20 / 2 : 20);
+        if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
+            player.dy = 48 * 4;
+        }
     } else {
+        if (cheater) {
+            player.dy = 0;
+        }
         if (player.dy > 0) {
             player.dy -= 1;
         } else if (player.dy < 0) {
             player.dy += 1;
         }
     }
-    if (player.dx > (slowMode ? 48 / 2 : 48)) player.dx = (slowMode ? 48 / 2 : 48);
-    if (player.dx < -(slowMode ? 48 / 2 : 48)) player.dx = -(slowMode ? 48 / 2 : 48);
-    if (player.dy > (slowMode ? 48 / 2 : 48)) player.dy = (slowMode ? 48 / 2 : 48);
-    if (player.dy < -(slowMode ? 48 / 2 : 48)) player.dy = -(slowMode ? 48 / 2 : 48);
-
-    if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
-        player.dx *= 4;
-        player.dy *= 4;
+    if (!(cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9))))) {
+        if (player.dx > (slowMode ? 48 / 2 : 48)) player.dx = (slowMode ? 48 / 2 : 48);
+        if (player.dx < -(slowMode ? 48 / 2 : 48)) player.dx = -(slowMode ? 48 / 2 : 48);
+        if (player.dy > (slowMode ? 48 / 2 : 48)) player.dy = (slowMode ? 48 / 2 : 48);
+        if (player.dy < -(slowMode ? 48 / 2 : 48)) player.dy = -(slowMode ? 48 / 2 : 48);
     }
 
 
@@ -2061,6 +2076,7 @@ void drawPickup(PICKUP* pickup) {
 
 
 void updateHealthBar() {
+
 
 
     shadowOAM[HEALTHBAR1].attr0 = (2 & 0xFF) | (0 << 8) | (0 << 14) | (1 << 13);

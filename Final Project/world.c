@@ -579,9 +579,18 @@ void updatePlayer() {
     }
     if (BUTTON_HELD(BUTTON_LEFT)) {
         player.dx += -(slowMode ? PLAYER_MAX_A / 2 : PLAYER_MAX_A);
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
+            player.dx = -PLAYER_MAX_V * 4;
+        }
     } else if (BUTTON_HELD(BUTTON_RIGHT)) {
         player.dx += (slowMode ? PLAYER_MAX_A / 2 : PLAYER_MAX_A);
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
+            player.dx = PLAYER_MAX_V * 4;
+        }
     } else {
+        if (cheater) {
+            player.dx = 0;
+        }
         if (player.dx > 0) {
             player.dx -= PLAYER_DRAG;
         } else if (player.dx < 0) {
@@ -590,23 +599,29 @@ void updatePlayer() {
     }
     if (BUTTON_HELD(BUTTON_UP)) {
         player.dy += -(slowMode ? PLAYER_MAX_A / 2 : PLAYER_MAX_A);
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
+            player.dy = -PLAYER_MAX_V * 4;
+        }
     } else if (BUTTON_HELD(BUTTON_DOWN)) {
         player.dy += (slowMode ? PLAYER_MAX_A / 2 : PLAYER_MAX_A);
+        if (cheater && BUTTON_HELD(BUTTON_L)) {
+            player.dy = PLAYER_MAX_V * 4;
+        }
     } else {
+        if (cheater) {
+            player.dy = 0;
+        }
         if (player.dy > 0) {
             player.dy -= PLAYER_DRAG;
         } else if (player.dy < 0) {
             player.dy += PLAYER_DRAG;
         }
     }
-    if (player.dx > (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dx = (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
-    if (player.dx < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dx = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
-    if (player.dy > (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
-    if (player.dy < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
-
-    if (cheater && BUTTON_HELD(BUTTON_L)) {
-        player.dx *= 4;
-        player.dy *= 4;
+    if (!(cheater && BUTTON_HELD(BUTTON_L))) {
+        if (player.dx > (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dx = (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
+        if (player.dx < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dx = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
+        if (player.dy > (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
+        if (player.dy < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
     }
 
     // Move player

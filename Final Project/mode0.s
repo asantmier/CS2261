@@ -626,28 +626,39 @@ collisionCheck:
 	@ Function supports interworking.
 	@ args = 8, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, lr}
-	mla	lr, r1, r3, r0
-	ldr	ip, [sp, #8]
+	push	{r4, r5, r6, lr}
+	mla	r6, r1, r3, r0
+	ldr	ip, [sp, #16]
+	add	lr, ip, ip, lsr #31
+	add	lr, r2, lr, asr #1
+	sub	lr, lr, #1
+	ldrb	r5, [r6, lr]	@ zero_extendqisi2
+	ldrb	r4, [r6, r2]	@ zero_extendqisi2
+	cmp	r4, r5
+	movge	r5, r4
 	add	ip, r2, ip
 	sub	ip, ip, #1
-	ldrb	r4, [lr, ip]	@ zero_extendqisi2
-	ldrb	lr, [lr, r2]	@ zero_extendqisi2
-	cmp	lr, r4
-	movlt	lr, r4
-	ldr	r4, [sp, #12]
-	add	r3, r3, r4
+	ldrb	r4, [r6, ip]	@ zero_extendqisi2
+	cmp	r4, r5
+	movlt	r4, r5
+	ldr	r5, [sp, #20]
+	add	r3, r3, r5
 	sub	r3, r3, #1
 	mul	r1, r3, r1
 	add	r3, r0, r1
 	ldrb	r3, [r3, r2]	@ zero_extendqisi2
-	cmp	r3, lr
-	movlt	r3, lr
-	add	r0, r0, ip
-	ldrb	r0, [r0, r1]	@ zero_extendqisi2
+	cmp	r3, r4
+	movlt	r2, r4
+	movge	r2, r3
+	add	lr, r0, lr
+	ldrb	r3, [lr, r1]	@ zero_extendqisi2
+	cmp	r3, r2
+	movlt	r3, r2
+	add	ip, r0, ip
+	ldrb	r0, [ip, r1]	@ zero_extendqisi2
 	cmp	r0, r3
 	movlt	r0, r3
-	pop	{r4, lr}
+	pop	{r4, r5, r6, lr}
 	bx	lr
 	.size	collisionCheck, .-collisionCheck
 	.global	dma

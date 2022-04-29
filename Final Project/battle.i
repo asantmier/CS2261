@@ -2072,15 +2072,22 @@ void executeMove(MOVE* m, COMBATANT* t) {
         fighter->hp = fighter->maxHp;
     }
 
+    for (int i = 0; i < 4; i++) {
+        if (battleOpponents[i].exists && battleOpponents[i].hp < 0) {
+            battleOpponents[i].hp = 0;
+        }
+    }
+
+    sprintf(topBuf, m->flavorText, fighter->name, t->name);
+    botBuf[0] = '\0';
+
+
     for (int i = 1; i < 4; i++) {
 
         if (battleAllies[i].exists && battleAllies[i].hp <= 0) {
             battleAllies[i] = CBT_NONE;
         }
     }
-
-    sprintf(topBuf, m->flavorText, fighter->name, t->name);
-    botBuf[0] = '\0';
 
     finishTurn();
 }
@@ -2394,23 +2401,22 @@ char tsel(int cond) {
     return cond ? '*' : ' ';
 }
 
-void eraseHealthbars() {
-
-
-
-}
-
 
 void drawHealthbar(int x, int y, COMBATANT* c, int spriteIdx, int barId) {
 
     shadowOAM[spriteIdx].attr0 = ((y) & 0xFF) | (0 << 8) | (1 << 14) | (1 << 13);
     shadowOAM[spriteIdx].attr1 = ((x) & 0x1FF) | (1 << 14);
+
     shadowOAM[spriteIdx].attr2 = ((14)*32 + ((0)*2)) + (barId * 8);
 
     int gCol = ((c->hp * 30) / (c->maxHp));
+
+
     unsigned volatile short *vb = (unsigned short *)0x06013800 + 8 + (barId * 128);
+
     char l = 8;
     char r = 8;
+
     for (int i = 0; i < 4; i++) {
         r = 1 <= gCol ? 8 : 2;
         vb[0 + (i * 4)] = 11 | (r << 8);
@@ -2494,8 +2500,6 @@ void drawCombatants() {
         shadowOAM[TURNINDICATOR].attr1 = (200 & 0x1FF) | (2 << 14);
     }
     shadowOAM[TURNINDICATOR].attr2 = ((16)*32 + ((4)*2));
-
-    eraseHealthbars();
 
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
         shadowOAM[ALLY1_B].attr0 = (15 & 0xFF) | (0 << 8) | (1 << 14) | (1 << 13);
@@ -2622,9 +2626,11 @@ void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textb
     }
 }
 
+
 void setTopText(char* str) {
     drawText(str, 59, 11, (121), (3 * 8));
 }
+
 
 void setBottomText(char* str) {
     drawText(str, 59, 123, (121), (3 * 8));

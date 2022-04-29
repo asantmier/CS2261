@@ -153,6 +153,14 @@ int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int 
         largestSoFar = current;
     }
 
+    // Checking the middle protects us from clipping into stalagtites
+
+    // Top Middle
+    current = collisionMap[OFFSET(x + (width / 2) - 1, y, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
     // Top Right
     current = collisionMap[OFFSET(x + width - 1, y, mapWidth)];
     if (current > largestSoFar) {
@@ -161,6 +169,12 @@ int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int 
 
     // Bottom Left
     current = collisionMap[OFFSET(x, y + height - 1, mapWidth)];
+    if (current > largestSoFar) {
+        largestSoFar = current;
+    }
+
+    // Bottom Middle
+    current = collisionMap[OFFSET(x + (width / 2) - 1, y + height - 1, mapWidth)];
     if (current > largestSoFar) {
         largestSoFar = current;
     }
