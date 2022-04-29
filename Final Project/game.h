@@ -49,6 +49,9 @@ extern COMBATANT CBT_NONE;
 extern COMBATANT battleAllies[4]; // player can be ally 0
 extern COMBATANT battleOpponents[4];
 
+// Cheat flag
+extern int cheater;
+
 // Initialize game
 void initGame();
 void initParty();

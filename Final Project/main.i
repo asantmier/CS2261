@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 29 "main.c"
+# 30 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -811,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 30 "main.c" 2
+# 31 "main.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1222,7 +1222,54 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 31 "main.c" 2
+# 32 "main.c" 2
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 1 3
+# 17 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+# 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
+# 18 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 2 3
+# 27 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+
+
+void * memchr (const void *, int, size_t);
+int memcmp (const void *, const void *, size_t);
+void * memcpy (void *restrict, const void *restrict, size_t);
+void * memmove (void *, const void *, size_t);
+void * memset (void *, int, size_t);
+char *strcat (char *restrict, const char *restrict);
+char *strchr (const char *, int);
+int strcmp (const char *, const char *);
+int strcoll (const char *, const char *);
+char *strcpy (char *restrict, const char *restrict);
+size_t strcspn (const char *, const char *);
+char *strerror (int);
+size_t strlen (const char *);
+char *strncat (char *restrict, const char *restrict, size_t);
+int strncmp (const char *, const char *, size_t);
+char *strncpy (char *restrict, const char *restrict, size_t);
+char *strpbrk (const char *, const char *);
+char *strrchr (const char *, int);
+size_t strspn (const char *, const char *);
+char *strstr (const char *, const char *);
+
+char *strtok (char *restrict, const char *restrict);
+
+size_t strxfrm (char *restrict, const char *restrict, size_t);
+# 86 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char *_strdup_r (struct _reent *, const char *);
+
+
+
+char *_strndup_r (struct _reent *, const char *, size_t);
+# 112 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char * _strerror_r (struct _reent *, int, int, int *);
+# 134 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+char *strsignal (int __signo);
+# 175 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 3
+# 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/sys/string.h" 1 3
+# 176 "/opt/devkitpro/devkitARM/arm-none-eabi/include/string.h" 2 3
+
+
+# 33 "main.c" 2
 # 1 "mode0.h" 1
 
 
@@ -1334,7 +1381,7 @@ typedef void (*ihp)(void);
 # 322 "mode0.h"
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 int collisionCheck(unsigned char *collisionMap, int mapWidth, int x, int y, int width, int height);
-# 32 "main.c" 2
+# 34 "main.c" 2
 # 1 "print.h" 1
 # 36 "print.h"
 void mgba_printf_level(int level, const char* ptr, ...);
@@ -1342,7 +1389,7 @@ void mgba_printf(const char* string, ...);
 void mgba_break(void);
 uint8_t mgba_open(void);
 void mgba_close(void);
-# 33 "main.c" 2
+# 35 "main.c" 2
 # 1 "world.h" 1
 
 
@@ -1396,6 +1443,8 @@ extern MOVE MOVE_SHIELD1;
 extern MOVE MOVE_SHIELD2;
 extern MOVE MOVE_BLAST1;
 extern MOVE MOVE_BLAST2;
+extern MOVE MOVE_DEATHRAY;
+extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
 # 5 "game.h" 2
@@ -1432,6 +1481,9 @@ extern COMBATANT CBT_NONE;
 # 49 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
+
+
+extern int cheater;
 
 
 void initGame();
@@ -1557,7 +1609,7 @@ void drawPickup(PICKUP* pickup);
 
 
 void updateHealthBar();
-# 34 "main.c" 2
+# 36 "main.c" 2
 # 1 "battle.h" 1
 # 83 "battle.h"
 extern const int text_tile_lkup[];
@@ -1616,7 +1668,7 @@ void captureMenu();
 void replaceMenu();
 void executeMove(MOVE* m, COMBATANT* t);
 void finishTurn();
-# 35 "main.c" 2
+# 37 "main.c" 2
 
 # 1 "spritesheet.h" 1
 # 21 "spritesheet.h"
@@ -1624,7 +1676,7 @@ extern const unsigned short spritesheetTiles[16384];
 
 
 extern const unsigned short spritesheetPal[256];
-# 37 "main.c" 2
+# 39 "main.c" 2
 # 1 "splashscreen.h" 1
 # 22 "splashscreen.h"
 extern const unsigned short splashscreenTiles[5920];
@@ -1634,7 +1686,7 @@ extern const unsigned short splashscreenMap[1024];
 
 
 extern const unsigned short splashscreenPal[256];
-# 38 "main.c" 2
+# 40 "main.c" 2
 # 1 "instructions.h" 1
 # 22 "instructions.h"
 extern const unsigned short instructionsTiles[6080];
@@ -1644,7 +1696,7 @@ extern const unsigned short instructionsMap[1024];
 
 
 extern const unsigned short instructionsPal[256];
-# 39 "main.c" 2
+# 41 "main.c" 2
 # 1 "pause.h" 1
 # 22 "pause.h"
 extern const unsigned short pauseTiles[5184];
@@ -1654,7 +1706,7 @@ extern const unsigned short pauseMap[1024];
 
 
 extern const unsigned short pausePal[256];
-# 40 "main.c" 2
+# 42 "main.c" 2
 # 1 "win.h" 1
 # 22 "win.h"
 extern const unsigned short winTiles[6848];
@@ -1664,7 +1716,7 @@ extern const unsigned short winMap[1024];
 
 
 extern const unsigned short winPal[256];
-# 41 "main.c" 2
+# 43 "main.c" 2
 # 1 "lose.h" 1
 # 22 "lose.h"
 extern const unsigned short loseTiles[4480];
@@ -1674,7 +1726,7 @@ extern const unsigned short loseMap[1024];
 
 
 extern const unsigned short losePal[256];
-# 42 "main.c" 2
+# 44 "main.c" 2
 # 1 "tempbattle.h" 1
 # 22 "tempbattle.h"
 extern const unsigned short tempbattleTiles[3904];
@@ -1684,7 +1736,7 @@ extern const unsigned short tempbattleMap[1024];
 
 
 extern const unsigned short tempbattlePal[256];
-# 43 "main.c" 2
+# 45 "main.c" 2
 # 1 "world1.h" 1
 # 22 "world1.h"
 extern const unsigned short world1Tiles[2176];
@@ -1694,7 +1746,7 @@ extern const unsigned short world1Map[8192];
 
 
 extern const unsigned short world1Pal[256];
-# 44 "main.c" 2
+# 46 "main.c" 2
 # 1 "world1parallax.h" 1
 # 22 "world1parallax.h"
 extern const unsigned short world1parallaxTiles[960];
@@ -1704,7 +1756,7 @@ extern const unsigned short world1parallaxMap[2048];
 
 
 extern const unsigned short world1parallaxPal[256];
-# 45 "main.c" 2
+# 47 "main.c" 2
 # 1 "sound.h" 1
 void setupSounds();
 void playSoundA(const signed char* sound, int length, int loops, int offset);
@@ -1730,34 +1782,35 @@ typedef struct{
 
 SOUND soundA;
 SOUND soundB;
-# 46 "main.c" 2
+# 48 "main.c" 2
 # 1 "worldTheme.h" 1
 
 
 extern const unsigned int worldTheme_sampleRate;
 extern const unsigned int worldTheme_length;
 extern const signed char worldTheme_data[];
-# 47 "main.c" 2
+# 49 "main.c" 2
 # 1 "battleTheme.h" 1
 
 
 extern const unsigned int battleTheme_sampleRate;
 extern const unsigned int battleTheme_length;
 extern const signed char battleTheme_data[];
-# 48 "main.c" 2
+# 50 "main.c" 2
 # 1 "bossTheme.h" 1
 
 
 extern const unsigned int bossTheme_sampleRate;
 extern const unsigned int bossTheme_length;
 extern const signed char bossTheme_data[];
-# 49 "main.c" 2
+# 51 "main.c" 2
 
 
 void interruptHandler();
 void initialize();
 void worldAnim();
 void prepareWorldAnim();
+void lmao();
 
 
 void goToStart();
@@ -1823,9 +1876,11 @@ int main() {
             break;
         case GAME:
             game();
+            lmao();
             break;
         case BATTLE:
             battle();
+            lmao();
             break;
         case PAUSE:
             pause();
@@ -1837,6 +1892,41 @@ int main() {
             lose();
             break;
         }
+    }
+}
+
+
+void lmao() {
+
+    static int konami[] = { (1 << 6), (1 << 6), (1 << 7), (1 << 7), (1 << 5), (1 << 4), (1 << 5), (1 << 4), (1 << 1), (1 << 0), (1 << 3) };
+    static int konamiIdx = 0;
+    int prev = konamiIdx - 1;
+    if (prev < 0) prev = 0;
+    if ((!(~(oldButtons) & (konami[konamiIdx])) && (~buttons & (konami[konamiIdx])))) {
+        konamiIdx++;
+        mgba_printf("Konami %d", konamiIdx);
+    } else {
+        for (int i = 0; i <= 9; i++) {
+            if ((!(~(oldButtons) & (1 << i)) && (~buttons & (1 << i)))) {
+                konamiIdx = 0;
+                mgba_printf("Konami reset %d", buttons);
+                break;
+            }
+        }
+    }
+
+    if (konamiIdx == 11) {
+        cheater = 1;
+        battleAllies[0].numMoves = 5;
+        battleAllies[0].moves[3] = &MOVE_DEATHRAY;
+        battleAllies[0].moves[4] = &MOVE_BRUH;
+        battleAllies[0].maxHp = 99;
+        battleAllies[0].hp = 99;
+        strncpy(battleAllies[0].name, "CHEATER", 10);
+        submarineHp = submarineMaxHp;
+
+        mgba_printf("Konami code confirmed");
+        konamiIdx = 0;
     }
 }
 
@@ -1887,7 +1977,7 @@ void initialize() {
 
     DMANow(3, &world1Tiles, &((charblock *)0x6000000)[0], (1 << 26) | (4352 / 4));
     DMANow(3, &world1Map, &((screenblock *)0x6000000)[24], (1 << 26) | (16384 / 4));
-    (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (1 << 7) | (3 << 14) | (1 << 13);
+    (*(volatile unsigned short *)0x400000C) = ((0) << 2) | ((24) << 8) | (1 << 7) | (3 << 14) | (1 << 13) | 2;
     *((BG_AFFINE *)(0x04000020)) = bg_aff_default;
 
     bg2xOff = 0;
@@ -2010,7 +2100,6 @@ void goToGame() {
 void game() {
     updateWorld();
     worldAnim();
-
 
     if ((!(~(oldButtons) & ((1 << 2))) && (~buttons & ((1 << 2))))) {
         goToPause();
@@ -2176,7 +2265,7 @@ void lose() {
     waitForVBlank();
 
 }
-# 482 "main.c"
+# 521 "main.c"
 enum { FLOOR_SRC=7, LWALL_SRC=2, RWALL_SRC=3, CEILI_SRC=6, CORN1_SRC=13, CORN2_SRC=4, CORN3_SRC=14, CORN4_SRC=5, XCOR1_SRC=22, XCOR2_SRC=8, XCOR3_SRC=21, XCOR4_SRC=12 };
 enum { FLOOR_F2=66, LWALL_F2=62, RWALL_F2=58, CEILI_F2=60, CORN1_F2=64, CORN2_F2=56, CORN3_F2=53, CORN4_F2=51, XCOR1_F2=49, XCOR2_F2=47, XCOR3_F2=45, XCOR4_F2=43 };
 enum { FLOOR_F3=67, LWALL_F3=63, RWALL_F3=59, CEILI_F3=61, CORN1_F3=65, CORN2_F3=57, CORN3_F3=54, CORN4_F3=52, XCOR1_F3=50, XCOR2_F3=48, XCOR3_F3=46, XCOR4_F3=44 };

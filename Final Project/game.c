@@ -20,8 +20,11 @@ COMBATANT CBT_NONE = { "NONE", 0, 99, 0, 0, { &MOVE_NONE, &MOVE_NONE, &MOVE_NONE
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
+int cheater = 0;
+
 // Initialize the game
 void initGame() {
+    cheater = 0;
     submarineMaxHp = 100;
     submarineHp = submarineMaxHp;
     gameVictory = 0;

@@ -24,10 +24,12 @@
  * 
  * TO DO LIST:
  * MAKE ENEMIES MOVE AND ORIENT DEPENDING ON VELOCITY
+ * PUT DIFFERENT TYPES OF ENEMIES AROUND
 */
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "mode0.h"
 #include "print.h"
 #include "world.h"
@@ -52,6 +54,7 @@ void interruptHandler();
 void initialize();
 void worldAnim();
 void prepareWorldAnim();
+void lmao();
 
 // State Prototypes.
 void goToStart();
@@ -117,9 +120,11 @@ int main() {
             break;
         case GAME:
             game();
+            lmao();
             break;
         case BATTLE:
             battle();
+            lmao();
             break;
         case PAUSE:
             pause();
@@ -131,6 +136,41 @@ int main() {
             lose();
             break;
         }
+    }
+}
+
+// lol
+void lmao() {
+    // cheating is fun
+    static int konami[] = { BUTTON_UP, BUTTON_UP, BUTTON_DOWN, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_B, BUTTON_A, BUTTON_START };
+    static int konamiIdx = 0;
+    int prev = konamiIdx - 1;
+    if (prev < 0) prev = 0;
+    if (BUTTON_PRESSED(konami[konamiIdx])) {
+        konamiIdx++;
+        mgba_printf("Konami %d", konamiIdx);
+    } else {
+        for (int i = 0; i <= 9; i++) {
+            if (BUTTON_PRESSED(1 << i)) {
+                konamiIdx = 0;
+                mgba_printf("Konami reset %d", buttons);
+                break;
+            }
+        }
+    }
+    
+    if (konamiIdx == 11) {
+        cheater = 1;
+        battleAllies[0].numMoves = 5;
+        battleAllies[0].moves[3] = &MOVE_DEATHRAY;
+        battleAllies[0].moves[4] = &MOVE_BRUH;
+        battleAllies[0].maxHp = 99;
+        battleAllies[0].hp = 99;
+        strncpy(battleAllies[0].name, "CHEATER", NAME_LEN);
+        submarineHp = submarineMaxHp;
+
+        mgba_printf("Konami code confirmed");
+        konamiIdx = 0;
     }
 }
 
@@ -181,7 +221,7 @@ void initialize() {
     // BG2 contains the world. It's a 128x tile map so it uses the entire 3rd charblock for its map
     DMANow(3, &world1Tiles, &CHARBLOCK[0], DMA_32 | (world1TilesLen / 4));
     DMANow(3, &world1Map, &SCREENBLOCK[24], DMA_32 | (world1MapLen / 4));
-    REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_8BPP | BG_SIZE_LARGE | BG_WRAP;
+    REG_BG2CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(24) | BG_8BPP | BG_SIZE_LARGE | BG_WRAP | 2;
     *REG_BG2_AFFINE = bg_aff_default;
     // Move background back to its origin
     bg2xOff = 0;

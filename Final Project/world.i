@@ -984,6 +984,7 @@ extern MOVE MOVE_SHIELD1;
 extern MOVE MOVE_SHIELD2;
 extern MOVE MOVE_BLAST1;
 extern MOVE MOVE_BLAST2;
+extern MOVE MOVE_DEATHRAY;
 
 extern MOVE MOVE_NONE;
 # 5 "game.h" 2
@@ -1020,6 +1021,9 @@ extern COMBATANT CBT_NONE;
 # 49 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
+
+
+extern int cheater;
 
 
 void initGame();
@@ -1796,6 +1800,11 @@ void updatePlayer() {
     if (player.dx < -(slowMode ? 48 / 2 : 48)) player.dx = -(slowMode ? 48 / 2 : 48);
     if (player.dy > (slowMode ? 48 / 2 : 48)) player.dy = (slowMode ? 48 / 2 : 48);
     if (player.dy < -(slowMode ? 48 / 2 : 48)) player.dy = -(slowMode ? 48 / 2 : 48);
+
+    if (cheater && (~((*(volatile unsigned short *)0x04000130)) & ((1 << 9)))) {
+        player.dx *= 4;
+        player.dy *= 4;
+    }
 
 
     movePlayer();

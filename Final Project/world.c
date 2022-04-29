@@ -22,47 +22,47 @@ LEVEL levels[NUM_LEVELS] = {
     { // start 1st LEVEL constructor
         { // start ENEMY list 
             {.int_x=32*64, .int_y=160*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 1
-            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 2
-            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 3
-            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 4
-            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 5
-            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BOSS}, // 6
+            {.int_x=184*64, .int_y=176*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 2
+            {.int_x=64*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 3
+            {.int_x=256*64, .int_y=352*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 4
+            {.int_x=336*64, .int_y=336*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 5
+            {.int_x=416*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 6
             {.int_x=337*64, .int_y=128*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 7
             {.int_x=440*64, .int_y=72*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 8
             {.int_x=608*64, .int_y=88*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 9
-            {.int_x=624*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 10
+            {.int_x=624*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 10
             {.int_x=744*64, .int_y=120*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 11
-            {.int_x=832*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 12
+            {.int_x=832*64, .int_y=136*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 12
             {.int_x=705*64, .int_y=184*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 13
-            {.int_x=848*64, .int_y=312*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 14
+            {.int_x=848*64, .int_y=312*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 14
             {.int_x=648*64, .int_y=321*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 15
             {.int_x=776*64, .int_y=472*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 16
-            {.int_x=656*64, .int_y=512*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 17
-            {.int_x=753*64, .int_y=536*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 18
+            {.int_x=656*64, .int_y=512*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 17
+            {.int_x=753*64, .int_y=536*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 18
             {.int_x=648*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 19
-            {.int_x=817*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 20
+            {.int_x=817*64, .int_y=624*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 20
             {.int_x=704*64, .int_y=697*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 21
-            {.int_x=936*64, .int_y=672*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 22
+            {.int_x=936*64, .int_y=672*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 22
             {.int_x=976*64, .int_y=568*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 23
-            {.int_x=832*64, .int_y=760*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 24
-            {.int_x=776*64, .int_y=808*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 25
+            {.int_x=832*64, .int_y=760*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 24
+            {.int_x=776*64, .int_y=808*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 25
             {.int_x=880*64, .int_y=952*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 26
             {.int_x=544*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 27
             {.int_x=424*64, .int_y=960*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 28
             {.int_x=560*64, .int_y=664*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 29
             {.int_x=528*64, .int_y=496*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 30
             {.int_x=546*64, .int_y=400*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 31
-            {.int_x=392*64, .int_y=520*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 32
-            {.int_x=472*64, .int_y=553*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 33
-            {.int_x=449*64, .int_y=625*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 34
-            {.int_x=329*64, .int_y=569*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 35
-            {.int_x=360*64, .int_y=648*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 36
-            {.int_x=360*64, .int_y=696*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 37
-            {.int_x=272*64, .int_y=647*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 38
-            {.int_x=240*64, .int_y=584*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 39
-            {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 40
-            {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=FISH}, // 41
-            {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 42
+            {.int_x=392*64, .int_y=520*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 32
+            {.int_x=472*64, .int_y=553*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 33
+            {.int_x=449*64, .int_y=625*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 34
+            {.int_x=329*64, .int_y=569*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 35
+            {.int_x=360*64, .int_y=648*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 36
+            {.int_x=360*64, .int_y=696*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 37
+            {.int_x=272*64, .int_y=647*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=PUFFER}, // 38
+            {.int_x=240*64, .int_y=584*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=SHARK}, // 39
+            {.int_x=184*64, .int_y=544*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=ANGLER}, // 40
+            {.int_x=96*64, .int_y=600*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 41
+            {.int_x=32*64, .int_y=556*64, .width=16, .height=8, .active=1, .ai=PASSIVE, .type=BARRACUDA}, // 42
             {.int_x=168*64, .int_y=928*64, .width=32, .height=16, .active=1, .ai=PASSIVE, .type=BOSS}, // 43
             DISABLE_ENEMY, // 44
             DISABLE_ENEMY, // 45
@@ -603,6 +603,11 @@ void updatePlayer() {
     if (player.dx < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dx = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
     if (player.dy > (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = (slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
     if (player.dy < -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V)) player.dy = -(slowMode ? PLAYER_MAX_V / 2 : PLAYER_MAX_V);
+
+    if (cheater && BUTTON_HELD(BUTTON_L)) {
+        player.dx *= 4;
+        player.dy *= 4;
+    }
 
     // Move player
     movePlayer();

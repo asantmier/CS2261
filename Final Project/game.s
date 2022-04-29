@@ -79,22 +79,26 @@ initGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
+	mov	r2, #0
 	mov	r3, #100
-	mov	r1, #0
-	ldr	ip, .L7
-	ldr	r0, .L7+4
-	ldr	r2, .L7+8
-	str	r3, [ip]
+	str	lr, [sp, #-4]!
+	ldr	lr, .L8
+	ldr	ip, .L8+4
+	ldr	r0, .L8+8
+	ldr	r1, .L8+12
+	str	r2, [lr]
+	ldr	lr, [sp], #4
+	str	r2, [ip]
 	str	r3, [r0]
-	str	r1, [r2]
+	str	r3, [r1]
 	b	initParty
-.L8:
+.L9:
 	.align	2
-.L7:
+.L8:
+	.word	.LANCHOR1
+	.word	gameVictory
 	.word	submarineMaxHp
 	.word	submarineHp
-	.word	gameVictory
 	.size	initGame, .-initGame
 	.global	__aeabi_idiv
 	.align	2
@@ -112,14 +116,14 @@ tilesRed:
 	mov	r5, r1
 	mov	r0, r4
 	mov	r1, r3
-	ldr	r8, .L16
+	ldr	r8, .L17
 	mov	r6, r2
 	mov	r7, r3
 	mov	lr, pc
 	bx	r8
 	cmp	r0, r5
 	movge	r0, #0
-	bge	.L9
+	bge	.L10
 	add	r4, r4, r6
 	mov	r0, r4
 	mov	r1, r7
@@ -127,7 +131,7 @@ tilesRed:
 	bx	r8
 	cmp	r0, r5
 	movge	r0, #1
-	bge	.L9
+	bge	.L10
 	add	r4, r4, r6
 	mov	r0, r4
 	mov	r1, r7
@@ -135,7 +139,7 @@ tilesRed:
 	bx	r8
 	cmp	r0, r5
 	movge	r0, #2
-	bge	.L9
+	bge	.L10
 	mov	r1, r7
 	add	r0, r4, r6
 	mov	lr, pc
@@ -143,14 +147,15 @@ tilesRed:
 	cmp	r0, r5
 	movlt	r0, #4
 	movge	r0, #3
-.L9:
+.L10:
 	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
-.L17:
+.L18:
 	.align	2
-.L16:
+.L17:
 	.word	__aeabi_idiv
 	.size	tilesRed, .-tilesRed
+	.global	cheater
 	.comm	battleOpponents,224,4
 	.comm	battleAllies,224,4
 	.global	CBT_NONE
@@ -301,4 +306,11 @@ CBT_SHARK:
 	.word	MOVE_NONE
 	.word	MOVE_NONE
 	.word	704
+	.bss
+	.align	2
+	.set	.LANCHOR1,. + 0
+	.type	cheater, %object
+	.size	cheater, 4
+cheater:
+	.space	4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

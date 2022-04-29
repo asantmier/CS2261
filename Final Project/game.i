@@ -980,6 +980,7 @@ extern MOVE MOVE_SHIELD1;
 extern MOVE MOVE_SHIELD2;
 extern MOVE MOVE_BLAST1;
 extern MOVE MOVE_BLAST2;
+extern MOVE MOVE_DEATHRAY;
 
 extern MOVE MOVE_NONE;
 # 5 "game.h" 2
@@ -1016,6 +1017,9 @@ extern COMBATANT CBT_NONE;
 # 49 "game.h"
 extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
+
+
+extern int cheater;
 
 
 void initGame();
@@ -1092,8 +1096,11 @@ COMBATANT CBT_NONE = { "NONE", 0, 99, 0, 0, { &MOVE_NONE, &MOVE_NONE, &MOVE_NONE
 COMBATANT battleAllies[4];
 COMBATANT battleOpponents[4];
 
+int cheater = 0;
+
 
 void initGame() {
+    cheater = 0;
     submarineMaxHp = 100;
     submarineHp = submarineMaxHp;
     gameVictory = 0;

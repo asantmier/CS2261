@@ -11,6 +11,8 @@
 	.file	"moves.c"
 	.text
 	.global	MOVE_NONE
+	.global	MOVE_BRUH
+	.global	MOVE_DEATHRAY
 	.global	MOVE_BLAST2
 	.global	MOVE_BLAST1
 	.global	MOVE_SHIELD2
@@ -34,6 +36,30 @@
 	.global	MOVE_NIBBLE
 	.data
 	.align	2
+	.type	MOVE_BRUH, %object
+	.size	MOVE_BRUH, 88
+MOVE_BRUH:
+	.ascii	"BRUH\000"
+	.space	5
+	.ascii	"*VINE BOOM SFX*\000"
+	.space	45
+	.space	1
+	.word	30
+	.word	1
+	.word	0
+	.word	0
+	.type	MOVE_DEATHRAY, %object
+	.size	MOVE_DEATHRAY, 88
+MOVE_DEATHRAY:
+	.ascii	"DEATHRAY\000"
+	.space	1
+	.ascii	"%s\012ANNIHILATED\012%s!\000"
+	.space	42
+	.space	1
+	.word	99
+	.word	0
+	.word	0
+	.word	0
 	.type	MOVE_BLAST2, %object
 	.size	MOVE_BLAST2, 88
 MOVE_BLAST2:
@@ -87,8 +113,8 @@ MOVE_SHIELD1:
 MOVE_TORPEDO2:
 	.ascii	"TORPEDO+\000"
 	.space	1
-	.ascii	"%s FIRED A\012TORPEDO!\000"
-	.space	41
+	.ascii	"%s FIRED\012A TORPEDO AT\012%s!\000"
+	.space	35
 	.space	1
 	.word	8
 	.word	0
@@ -99,8 +125,8 @@ MOVE_TORPEDO2:
 MOVE_TORPEDO1:
 	.ascii	"TORPEDO\000"
 	.space	2
-	.ascii	"%s FIRED A\012TORPEDO!\000"
-	.space	41
+	.ascii	"%s FIRED\012A TORPEDO AT\012%s!\000"
+	.space	35
 	.space	1
 	.word	6
 	.word	0
