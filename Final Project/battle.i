@@ -1395,6 +1395,8 @@ extern MOVE MOVE_SHIELD1;
 extern MOVE MOVE_SHIELD2;
 extern MOVE MOVE_BLAST1;
 extern MOVE MOVE_BLAST2;
+extern MOVE MOVE_DEATHRAY;
+extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
 # 5 "game.h" 2
@@ -1433,6 +1435,9 @@ extern COMBATANT battleAllies[4];
 extern COMBATANT battleOpponents[4];
 
 
+extern int cheater;
+
+
 void initGame();
 void initParty();
 
@@ -1443,10 +1448,11 @@ int tilesRed(int tile1, int hp, int maxHp, int segments);
 extern const int text_tile_lkup[];
 
 
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
+enum { TURNINDICATOR = 0, ALLY1_B, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
  HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4,
- TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8, TEXT_IDX };
-# 104 "battle.h"
+ TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8,
+ TEXT_IDX };
+# 105 "battle.h"
 extern int lettersActive;
 void eraseAllText();
 void drawText(char* str, int textboxX, int textboxY, int textboxWidth, int textboxHeight);
@@ -1461,10 +1467,13 @@ extern int bossBattle;
 extern int waiting;
 extern int turnPoints;
 extern int nextTurnPoints;
+extern int fighterIdx;
+extern int nextFighterIdx;
 
 
 enum { PLAYERTURN, ENEMYTURN };
 extern int turn;
+extern int nextTurn;
 
 
 enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU, CAPTUREMENU, REPLACEMENU };
@@ -1623,6 +1632,8 @@ int fighterIdx;
 MOVE* move;
 int turnPoints;
 int nextTurnPoints;
+int nextFighterIdx;
+int nextTurn;
 COMBATANT* captured;
 
 int menu;
@@ -1653,14 +1664,14 @@ void initBattle(int opponentType) {
     fighter = &battleAllies[0];
     fighterIdx = 0;
     captured = 
-# 61 "battle.c" 3 4
+# 63 "battle.c" 3 4
               ((void *)0)
-# 61 "battle.c"
+# 63 "battle.c"
                   ;
     move = 
-# 62 "battle.c" 3 4
+# 64 "battle.c" 3 4
           ((void *)0)
-# 62 "battle.c"
+# 64 "battle.c"
               ;
     turnPoints = 0;
     for (int i = 0; i < 4; i++) {
@@ -1789,7 +1800,7 @@ void goToReplaceMenu() {
 
 void replaceMenu() {
     int realOpt = selOpt + 1;
-    sprintf(topBuf, "YOU CAPTURED %s! SELECT AN ALLY TO REPLACE", captured->name);
+    sprintf(topBuf, "YOU CAPTURED A\n%s! SELECT\nAN ALLY TO REPLACE.", captured->name);
     shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * realOpt) & 0xFF) | (0 << 8) | (2 << 14) | (1 << 13);
     shadowOAM[TARGETING_ARROW].attr1 = (40 & 0x1FF) | (0 << 14) | (1 << 12);
     shadowOAM[TARGETING_ARROW].attr2 = ((26)*32 + ((0)*2));
@@ -1797,14 +1808,14 @@ void replaceMenu() {
     if (leave) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
-        sprintf(topBuf, "YOU RELEASED %s", captured->name);
+        sprintf(topBuf, "YOU RELEASED\n%s.", captured->name);
         captured->exists = 0;
         finishTurn();
     } else if (enter) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = (2 << 8);
         botBuf[0] = '\0';
-        sprintf(topBuf, "%s REPLACED %s", captured->name, battleAllies[realOpt].name);
+        sprintf(topBuf, "%s REPLACED\n%s.", captured->name, battleAllies[realOpt].name);
         battleAllies[realOpt] = *captured;
         captured->exists = 0;
         finishTurn();
@@ -1836,7 +1847,7 @@ void captureMenu() {
                 captured = &battleOpponents[selOpt];
                 goToReplaceMenu();
             } else {
-                sprintf(topBuf, "YOU FAILED TO CAPTURE %s", battleOpponents[selOpt].name);
+                sprintf(topBuf, "YOU FAILED TO\nCAPTURE %s.", battleOpponents[selOpt].name);
                 finishTurn();
             }
         }
@@ -1875,7 +1886,7 @@ void frontMenu() {
             goToAttackMenu();
             break;
         case 1:
-            sprintf(topBuf, "%s PASSED", fighter->name);
+            sprintf(topBuf, "%s PASSED.", fighter->name);
             botBuf[0] = '\0';
             finishTurn();
             break;
@@ -2068,7 +2079,7 @@ void finishTurn() {
 
     if (turnPoints == 0) {
         if (turn == PLAYERTURN) {
-            turn = ENEMYTURN;
+            nextTurn = ENEMYTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                     nextTurnPoints++;
@@ -2079,13 +2090,13 @@ void finishTurn() {
             }
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
-                    fighterIdx = i;
+                    nextFighterIdx = i;
                     fighter = &battleOpponents[i];
                     break;
                 }
             }
         } else {
-            turn = PLAYERTURN;
+            nextTurn = PLAYERTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                     nextTurnPoints++;
@@ -2093,7 +2104,7 @@ void finishTurn() {
             }
             for (int i = 0; i < 4; i++) {
                 if (battleAllies[i].exists && battleAllies[i].hp > 0) {
-                    fighterIdx = i;
+                    nextFighterIdx = i;
                     fighter = &battleAllies[i];
                     break;
                 }
@@ -2103,16 +2114,16 @@ void finishTurn() {
         if (turn == PLAYERTURN) {
             for (int i = 1; i < 5; i++) {
                 if (battleAllies[(fighterIdx + i) % 4].exists && battleAllies[(fighterIdx + i) % 4].hp > 0) {
-                    fighterIdx = (fighterIdx + i) % 4;
-                    fighter = &battleAllies[fighterIdx];
+                    nextFighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleAllies[nextFighterIdx];
                     break;
                 }
             }
         } else {
             for (int i = 1; i < 5; i++) {
                 if (battleOpponents[(fighterIdx + i) % 4].exists && battleOpponents[(fighterIdx + i) % 4].hp > 0) {
-                    fighterIdx = (fighterIdx + i) % 4;
-                    fighter = &battleOpponents[fighterIdx];
+                    nextFighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleOpponents[nextFighterIdx];
                     break;
                 }
             }
@@ -2389,6 +2400,14 @@ void drawCombatants() {
         shadowOAM[TURNICON8 - i].attr1 = ((57 + 9 * i) & 0x1FF) | (0 << 14);
         shadowOAM[TURNICON8 - i].attr2 = ((26)*32 + ((1)*2));
     }
+
+    shadowOAM[TURNINDICATOR].attr0 = ((15 + (40 * fighterIdx)) & 0xFF) | (0 << 8) | (1 << 14) | (1 << 13);
+    if (turn == PLAYERTURN) {
+        shadowOAM[TURNINDICATOR].attr1 = (8 & 0x1FF) | (2 << 14);
+    } else {
+        shadowOAM[TURNINDICATOR].attr1 = (200 & 0x1FF) | (2 << 14);
+    }
+    shadowOAM[TURNINDICATOR].attr2 = ((16)*32 + ((4)*2));
 
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
         shadowOAM[ALLY1_B].attr0 = (15 & 0xFF) | (0 << 8) | (1 << 14) | (1 << 13);

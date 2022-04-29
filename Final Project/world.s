@@ -2292,7 +2292,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	1
+	.word	0
 	.word	4096
 	.word	21504
 	.space	16
@@ -2300,7 +2300,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	2
+	.word	0
 	.word	16384
 	.word	22528
 	.space	16
@@ -2308,7 +2308,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	3
+	.word	0
 	.word	21504
 	.word	21504
 	.space	16
@@ -2316,7 +2316,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	4
+	.word	1
 	.word	26624
 	.word	11776
 	.space	16
@@ -2324,7 +2324,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	5
+	.word	0
 	.word	21568
 	.word	8192
 	.space	16
@@ -2356,7 +2356,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	47616
 	.word	7680
 	.space	16
@@ -2372,7 +2372,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	45120
 	.word	11776
 	.space	16
@@ -2388,7 +2388,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	41472
 	.word	20544
 	.space	16
@@ -2412,7 +2412,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	48192
 	.word	34304
 	.space	16
@@ -2420,7 +2420,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	41472
 	.word	39936
 	.space	16
@@ -2436,7 +2436,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	4
 	.word	45056
 	.word	44608
 	.space	16
@@ -2452,7 +2452,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	62464
 	.word	36352
 	.space	16
@@ -2468,7 +2468,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	3
 	.word	49664
 	.word	51712
 	.space	16
@@ -2476,7 +2476,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	3
+	.word	2
 	.word	56320
 	.word	60928
 	.space	16
@@ -2532,7 +2532,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	30208
 	.word	35392
 	.space	16
@@ -2540,7 +2540,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	28736
 	.word	40000
 	.space	16
@@ -2548,7 +2548,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	2
 	.word	21056
 	.word	36416
 	.space	16
@@ -2556,7 +2556,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	23040
 	.word	41472
 	.space	16
@@ -2564,7 +2564,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	4
 	.word	23040
 	.word	44544
 	.space	16
@@ -2572,7 +2572,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	17408
 	.word	41408
 	.space	16
@@ -2580,7 +2580,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	3
 	.word	15360
 	.word	37376
 	.space	16
@@ -2588,7 +2588,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	1
 	.word	11776
 	.word	34816
 	.space	16
@@ -2596,7 +2596,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	2
 	.word	6144
 	.word	38400
 	.space	16
@@ -2604,7 +2604,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	0
+	.word	4
 	.word	2048
 	.word	35584
 	.space	16
@@ -2612,7 +2612,7 @@ levels:
 	.word	8
 	.word	1
 	.word	0
-	.word	3
+	.word	4
 	.word	10752
 	.word	59392
 	.space	16
@@ -3203,13 +3203,13 @@ doBattle:
 	.size	level, 4
 level:
 	.space	4
-	.type	frameCounter.5010, %object
-	.size	frameCounter.5010, 4
-frameCounter.5010:
+	.type	frameCounter.5011, %object
+	.size	frameCounter.5011, 4
+frameCounter.5011:
 	.space	4
-	.type	aniFrame.5011, %object
-	.size	aniFrame.5011, 4
-aniFrame.5011:
+	.type	aniFrame.5012, %object
+	.size	aniFrame.5012, 4
+aniFrame.5012:
 	.space	4
 	.type	drawnEnemies, %object
 	.size	drawnEnemies, 4

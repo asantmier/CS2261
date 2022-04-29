@@ -981,6 +981,7 @@ extern MOVE MOVE_SHIELD2;
 extern MOVE MOVE_BLAST1;
 extern MOVE MOVE_BLAST2;
 extern MOVE MOVE_DEATHRAY;
+extern MOVE MOVE_BRUH;
 
 extern MOVE MOVE_NONE;
 # 5 "game.h" 2

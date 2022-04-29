@@ -83,9 +83,10 @@
 extern const int text_tile_lkup[];
 
 // Sprite ID table
-enum { ALLY1_B = 0, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
+enum { TURNINDICATOR = 0, ALLY1_B, ALLY2_B, ALLY3_B, ALLY4_B, ENEMY1_B, ENEMY2_B, ENEMY3_B, ENEMY4_B, HB1, HB2, HB3,
  HB4, HB5, HB6, HB7, HB8, TARGETING_ARROW, TARGETING_ARROW2, TARGETING_ARROW3, TARGETING_ARROW4, 
- TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8, TEXT_IDX };
+ TURNICON1, TURNICON2, TURNICON3, TURNICON4, TURNICON5, TURNICON6, TURNICON7, TURNICON8,
+ TEXT_IDX };
 
 // Some constants
 // At 7 width text looks good. At 6 it looks kinda compressed with QWM#$& but it gives us 20 characters
@@ -115,10 +116,13 @@ extern int bossBattle;
 extern int waiting;
 extern int turnPoints;
 extern int nextTurnPoints;
+extern int fighterIdx;
+extern int nextFighterIdx;
 
 // Turn tracking
 enum { PLAYERTURN, ENEMYTURN };
 extern int turn;
+extern int nextTurn;
 
 // Menu tracking
 enum { FRONTMENU, ATTACKMENU, TARGETMENU, INSPECTMENU, CAPTUREMENU, REPLACEMENU };

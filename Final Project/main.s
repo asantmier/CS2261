@@ -32,12 +32,20 @@ interruptHandler:
 	tst	r3, #32
 	beq	.L2
 	mov	r3, #32
-	ldr	r1, .L8+8
-	ldr	r2, .L8+12
-	ldr	r0, [r1]
-	ldr	r1, .L8+16
+	ldr	r2, .L8+8
+	ldr	r1, .L8+12
+	ldr	ip, [r2]
+	ldr	r2, .L8+16
+	ldr	r1, [r1]
+	str	ip, [r2]
+	ldr	r0, .L8+20
+	ldr	r2, .L8+24
+	ldr	r0, [r0]
+	str	r1, [r2]
+	ldr	r2, .L8+28
+	ldr	r1, .L8+32
 	str	r0, [r2]
-	ldr	r2, .L8+20
+	ldr	r2, .L8+36
 	str	r5, [r1]
 	strh	r5, [r2, #10]	@ movhi
 	strh	r3, [r4, #2]	@ movhi
@@ -53,7 +61,11 @@ interruptHandler:
 	.word	67109376
 	.word	soundInterruptHandler
 	.word	nextTurnPoints
+	.word	nextFighterIdx
 	.word	turnPoints
+	.word	nextTurn
+	.word	fighterIdx
+	.word	turn
 	.word	waiting
 	.word	67109120
 	.size	interruptHandler, .-interruptHandler
@@ -1898,9 +1910,9 @@ main:
 	.section	.rodata
 	.align	2
 	.set	.LANCHOR1,. + 0
-	.type	konami.5702, %object
-	.size	konami.5702, 44
-konami.5702:
+	.type	konami.5706, %object
+	.size	konami.5706, 44
+konami.5706:
 	.word	64
 	.word	64
 	.word	128
@@ -1915,16 +1927,16 @@ konami.5702:
 	.bss
 	.align	2
 	.set	.LANCHOR0,. + 0
-	.type	konamiIdx.5703, %object
-	.size	konamiIdx.5703, 4
-konamiIdx.5703:
+	.type	konamiIdx.5707, %object
+	.size	konamiIdx.5707, 4
+konamiIdx.5707:
 	.space	4
-	.type	aniFrame.5806, %object
-	.size	aniFrame.5806, 4
-aniFrame.5806:
+	.type	aniFrame.5810, %object
+	.size	aniFrame.5810, 4
+aniFrame.5810:
 	.space	4
-	.type	frameCounter.5805, %object
-	.size	frameCounter.5805, 4
-frameCounter.5805:
+	.type	frameCounter.5809, %object
+	.size	frameCounter.5809, 4
+frameCounter.5809:
 	.space	4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

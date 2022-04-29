@@ -29,6 +29,8 @@ int fighterIdx;
 MOVE* move; // The move to be executed
 int turnPoints;
 int nextTurnPoints;
+int nextFighterIdx;
+int nextTurn;
 COMBATANT* captured;
 // Menu tracking
 int menu;
@@ -187,7 +189,7 @@ void goToReplaceMenu() {
 
 void replaceMenu() {
     int realOpt = selOpt + 1;
-    sprintf(topBuf, "YOU CAPTURED %s! SELECT AN ALLY TO REPLACE", captured->name);
+    sprintf(topBuf, "YOU CAPTURED A\n%s! SELECT\nAN ALLY TO REPLACE.", captured->name);
     shadowOAM[TARGETING_ARROW].attr0 = ((15 + 40 * realOpt) & ROWMASK) | ATTR0_REGULAR | ATTR0_TALL | ATTR0_8BPP;
     shadowOAM[TARGETING_ARROW].attr1 = (40 & COLMASK) | ATTR1_TINY | ATTR1_HFLIP;
     shadowOAM[TARGETING_ARROW].attr2 = ATTR2_TILEID64(0, 26);
@@ -195,14 +197,14 @@ void replaceMenu() {
     if (leave) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
-        sprintf(topBuf, "YOU RELEASED %s", captured->name);
+        sprintf(topBuf, "YOU RELEASED\n%s.", captured->name);
         captured->exists = 0;
         finishTurn();
     } else if (enter) {
         playSoundB(menuhighsfx_data, menuhighsfx_length, 0);
         shadowOAM[TARGETING_ARROW].attr0 = ATTR0_HIDE;
         botBuf[0] = '\0';
-        sprintf(topBuf, "%s REPLACED %s", captured->name, battleAllies[realOpt].name);
+        sprintf(topBuf, "%s REPLACED\n%s.", captured->name, battleAllies[realOpt].name);
         battleAllies[realOpt] = *captured; // Copy captured into battleAllies
         captured->exists = 0;
         finishTurn();
@@ -234,7 +236,7 @@ void captureMenu() {
                 captured = &battleOpponents[selOpt];
                 goToReplaceMenu();
             } else {
-                sprintf(topBuf, "YOU FAILED TO CAPTURE %s", battleOpponents[selOpt].name);
+                sprintf(topBuf, "YOU FAILED TO\nCAPTURE %s.", battleOpponents[selOpt].name);
                 finishTurn();
             }
         }
@@ -273,7 +275,7 @@ void frontMenu() {
             goToAttackMenu();
             break;
         case 1:
-            sprintf(topBuf, "%s PASSED", fighter->name);
+            sprintf(topBuf, "%s PASSED.", fighter->name);
             botBuf[0] = '\0';
             finishTurn();
             break;
@@ -466,7 +468,7 @@ void finishTurn() {
 
     if (turnPoints == 0) {  // Swap turns
         if (turn == PLAYERTURN) {
-            turn = ENEMYTURN;
+            nextTurn = ENEMYTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
                     nextTurnPoints++;
@@ -477,13 +479,13 @@ void finishTurn() {
             }
             for (int i = 0; i < 4; i++) {
                 if (battleOpponents[i].exists && battleOpponents[i].hp > 0) {
-                    fighterIdx = i;
+                    nextFighterIdx = i;
                     fighter = &battleOpponents[i];
                     break;
                 }
             }
         } else {
-            turn = PLAYERTURN;
+            nextTurn = PLAYERTURN;
             for (int i = 0; i < 4; i++) {
                 if (battleAllies[i].exists && battleAllies[i].hp > 0) {
                     nextTurnPoints++;
@@ -491,7 +493,7 @@ void finishTurn() {
             }
             for (int i = 0; i < 4; i++) {
                 if (battleAllies[i].exists && battleAllies[i].hp > 0) {
-                    fighterIdx = i;
+                    nextFighterIdx = i;
                     fighter = &battleAllies[i];
                     break;
                 }
@@ -501,16 +503,16 @@ void finishTurn() {
         if (turn == PLAYERTURN) {
             for (int i = 1; i < 5; i++) {
                 if (battleAllies[(fighterIdx + i) % 4].exists && battleAllies[(fighterIdx + i) % 4].hp > 0) {
-                    fighterIdx = (fighterIdx + i) % 4;
-                    fighter = &battleAllies[fighterIdx];
+                    nextFighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleAllies[nextFighterIdx];
                     break;
                 }
             }
         } else {
             for (int i = 1; i < 5; i++) {
                 if (battleOpponents[(fighterIdx + i) % 4].exists && battleOpponents[(fighterIdx + i) % 4].hp > 0) {
-                    fighterIdx = (fighterIdx + i) % 4;
-                    fighter = &battleOpponents[fighterIdx];
+                    nextFighterIdx = (fighterIdx + i) % 4;
+                    fighter = &battleOpponents[nextFighterIdx];
                     break;
                 }
             }
@@ -787,6 +789,14 @@ void drawCombatants() {
         shadowOAM[TURNICON8 - i].attr1 = ((57 + 9 * i) & COLMASK) | ATTR1_TINY;
         shadowOAM[TURNICON8 - i].attr2 = ATTR2_TILEID64(1, 26);
     }
+
+    shadowOAM[TURNINDICATOR].attr0 = ((15 + (40 * fighterIdx)) & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;
+    if (turn == PLAYERTURN) {
+        shadowOAM[TURNINDICATOR].attr1 = (8 & COLMASK) | ATTR1_MEDIUM;
+    } else {
+        shadowOAM[TURNINDICATOR].attr1 = (200 & COLMASK) | ATTR1_MEDIUM;
+    }
+    shadowOAM[TURNINDICATOR].attr2 = ATTR2_TILEID64(4, 16);
 
     if (battleAllies[0].exists && battleAllies[0].hp > 0) {
         shadowOAM[ALLY1_B].attr0 = (15 & ROWMASK) | ATTR0_REGULAR | ATTR0_WIDE | ATTR0_8BPP;

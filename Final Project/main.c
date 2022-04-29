@@ -3,9 +3,9 @@
  * All world exploration mechanics are in place, with the exception of items you can pick up to heal yourself.
  * The world design is also done. 
  * The combat system is also done to a satisfactory extent.
- * Enemies don't move around or follow the player right now. At the very least I want to make them move back and forth.
+ * There are a variety of enemies. It would be cool if they moved back and forth, but there were more important features to implement.
  * 
- * BUGS: 
+ * BUGS: None known
  * 
  * Not a bug, but for some reason, a loud burst of static plays at the end of all sound. Apparently the provided 
  *      functions are reading too far. As a solution, I manually added 1/25th of a second to all audio and subtracted 
@@ -23,8 +23,7 @@
  *     your team is full you will have to replace a teammate or hit B to just not use the captured enemy.
  * 
  * TO DO LIST:
- * MAKE ENEMIES MOVE AND ORIENT DEPENDING ON VELOCITY
- * PUT DIFFERENT TYPES OF ENEMIES AROUND
+ * PLAYTEST
 */
 
 #include <stdlib.h>
@@ -186,6 +185,8 @@ void interruptHandler() {
         // to the number of turn tokens the next team is going to need. When the wait timer finishes, we can then update turnPoints
         // and the game will display the number of tokens we want.
         turnPoints = nextTurnPoints;
+        fighterIdx = nextFighterIdx;
+        turn = nextTurn;
         REG_TM2CNT = TIMER_OFF;
 
 		REG_IF = INT_TM2;

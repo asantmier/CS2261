@@ -312,11 +312,11 @@ inspectMenu:
 	ldr	lr, .L65+28
 	ldr	r3, [r2, #20]
 	ldr	r1, .L65+32
-	strh	r0, [r4, #132]	@ movhi
+	strh	r0, [r4, #140]	@ movhi
 	ldr	r6, .L65+36
 	ldr	r0, .L65+40
-	strh	ip, [r4, #128]	@ movhi
-	strh	lr, [r4, #130]	@ movhi
+	strh	ip, [r4, #136]	@ movhi
+	strh	lr, [r4, #138]	@ movhi
 	mov	lr, pc
 	bx	r6
 	ldr	r3, .L65+44
@@ -340,10 +340,10 @@ inspectMenu:
 	ldr	r1, .L65+32
 	ldr	r3, [r2, #20]
 	ldr	r6, .L65+36
-	strh	r0, [r4, #130]	@ movhi
+	strh	r0, [r4, #138]	@ movhi
 	ldr	r0, .L65+40
-	strh	ip, [r4, #128]	@ movhi
-	strh	lr, [r4, #132]	@ movhi
+	strh	ip, [r4, #136]	@ movhi
+	strh	lr, [r4, #140]	@ movhi
 	mov	lr, pc
 	bx	r6
 	ldr	r3, .L65+44
@@ -363,7 +363,7 @@ inspectMenu:
 	mov	r1, #4
 	ldr	r0, .L65+64
 	ldr	r2, .L65+68
-	strh	ip, [r4, #128]	@ movhi
+	strh	ip, [r4, #136]	@ movhi
 	str	r3, [r5]
 	str	r3, [r0]
 	str	r1, [r2]
@@ -617,8 +617,8 @@ finishTurn:
 	str	r3, [r2]
 	str	r3, [r0]
 	bne	.L92
-	ldr	ip, .L149+28
-	ldr	r2, [ip]
+	ldr	r2, .L149+28
+	ldr	r2, [r2]
 	cmp	r2, #0
 	bne	.L93
 	ldr	r1, .L149+32
@@ -627,6 +627,7 @@ finishTurn:
 	mov	lr, r1
 	mov	r3, r1
 	mov	r6, r2
+	ldr	ip, .L149+36
 	str	r4, [ip]
 	add	r4, r1, #224
 .L95:
@@ -641,7 +642,7 @@ finishTurn:
 	add	r3, r3, #56
 	cmp	r4, r3
 	bne	.L95
-	ldr	r3, .L149+36
+	ldr	r3, .L149+40
 	cmp	r6, #0
 	ldr	r3, [r3]
 	strne	r5, [r0]
@@ -666,8 +667,8 @@ finishTurn:
 	mov	r0, #0
 	mov	r1, #32768
 	mov	r2, #195
-	ldr	r3, .L149+40
-	ldr	ip, .L149+44
+	ldr	r3, .L149+44
+	ldr	ip, .L149+48
 	str	lr, [ip]
 	strh	r0, [r3, #10]	@ movhi
 	pop	{r4, r5, r6, lr}
@@ -676,12 +677,12 @@ finishTurn:
 	bx	lr
 .L92:
 	ldr	r3, .L149+28
-	ldr	r3, [r3]
-	ldr	ip, .L149+48
-	cmp	r3, #0
-	ldr	r2, [ip]
+	ldr	r2, [r3]
+	ldr	r3, .L149+52
+	cmp	r2, #0
+	ldr	r2, [r3]
 	bne	.L107
-	ldr	lr, .L149+52
+	ldr	lr, .L149+56
 	add	r3, r2, #1
 	add	r0, r2, #5
 .L109:
@@ -691,12 +692,12 @@ finishTurn:
 	rsbpl	r2, r1, #0
 	rsb	r1, r2, r2, lsl #3
 	add	r1, lr, r1, lsl #3
-	ldr	r4, [r1, #12]
-	cmp	r4, #0
+	ldr	ip, [r1, #12]
+	cmp	ip, #0
 	add	r3, r3, #1
 	beq	.L108
-	ldr	r4, [r1, #20]
-	cmp	r4, #0
+	ldr	ip, [r1, #20]
+	cmp	ip, #0
 	bgt	.L146
 .L108:
 	cmp	r3, r0
@@ -713,23 +714,24 @@ finishTurn:
 	rsbpl	r2, r1, #0
 	rsb	r1, r2, r2, lsl #3
 	add	r1, lr, r1, lsl #3
-	ldr	r4, [r1, #12]
-	cmp	r4, #0
+	ldr	ip, [r1, #12]
+	cmp	ip, #0
 	add	r3, r3, #1
 	beq	.L110
-	ldr	r4, [r1, #20]
-	cmp	r4, #0
+	ldr	ip, [r1, #20]
+	cmp	ip, #0
 	bgt	.L146
 .L110:
 	cmp	r3, r0
 	bne	.L111
 	b	.L99
 .L93:
-	ldr	r1, .L149+52
+	ldr	r1, .L149+56
 	mov	r5, r3
 	mov	lr, r1
 	mov	r2, r1
 	mov	r6, r3
+	ldr	ip, .L149+36
 	str	r3, [ip]
 	add	r4, r1, #224
 .L102:
@@ -760,21 +762,22 @@ finishTurn:
 	bne	.L105
 	b	.L99
 .L146:
-	ldr	r3, .L149+56
-	str	r2, [ip]
+	ldr	r0, .L149+60
+	ldr	r3, .L149+64
+	str	r2, [r0]
 	str	r1, [r3]
 	b	.L99
 .L148:
-	ldr	r0, .L149+56
-	ldr	r1, .L149+48
+	ldr	r0, .L149+64
+	ldr	r1, .L149+60
 	rsb	r2, r3, r3, lsl #3
 	add	lr, lr, r2, lsl #3
 	str	lr, [r0]
 	str	r3, [r1]
 	b	.L99
 .L147:
-	ldr	r0, .L149+56
-	ldr	r1, .L149+48
+	ldr	r0, .L149+64
+	ldr	r1, .L149+60
 	rsb	r3, r2, r2, lsl #3
 	add	lr, lr, r3, lsl #3
 	str	lr, [r0]
@@ -792,23 +795,26 @@ finishTurn:
 	.word	nextTurnPoints
 	.word	turn
 	.word	battleOpponents
+	.word	nextTurn
 	.word	bossBattle
 	.word	67109120
 	.word	waiting
 	.word	fighterIdx
 	.word	battleAllies
+	.word	nextFighterIdx
 	.word	fighter
 	.size	finishTurn, .-finishTurn
 	.section	.rodata.str1.4
 	.align	2
 .LC5:
-	.ascii	"YOU CAPTURED %s! SELECT AN ALLY TO REPLACE\000"
+	.ascii	"YOU CAPTURED A\012%s! SELECT\012AN ALLY TO REPLACE."
+	.ascii	"\000"
 	.align	2
 .LC6:
-	.ascii	"YOU RELEASED %s\000"
+	.ascii	"YOU RELEASED\012%s.\000"
 	.align	2
 .LC7:
-	.ascii	"%s REPLACED %s\000"
+	.ascii	"%s REPLACED\012%s.\000"
 	.text
 	.align	2
 	.global	replaceMenu
@@ -848,11 +854,11 @@ replaceMenu:
 	orr	r1, r1, #40960
 	ldr	r3, [r4, #20]
 	mov	r2, r4
-	strh	r1, [r8, #128]	@ movhi
+	strh	r1, [r8, #136]	@ movhi
 	mov	r0, r7
-	strh	ip, [r8, #130]	@ movhi
+	strh	ip, [r8, #138]	@ movhi
 	ldr	r1, .L158+36
-	strh	lr, [r8, #132]	@ movhi
+	strh	lr, [r8, #140]	@ movhi
 	mov	lr, pc
 	bx	r5
 	ldr	r3, .L158+40
@@ -880,7 +886,7 @@ replaceMenu:
 	ldr	r2, [r6]
 	strb	r9, [r7]
 	ldr	r1, .L158+60
-	strh	ip, [r8, #128]	@ movhi
+	strh	ip, [r8, #136]	@ movhi
 	ldr	r0, .L158+16
 	mov	lr, pc
 	bx	r5
@@ -910,7 +916,7 @@ replaceMenu:
 	bx	r3
 	mov	r3, #512
 	ldr	r2, [r6]
-	strh	r3, [r8, #128]	@ movhi
+	strh	r3, [r8, #136]	@ movhi
 	ldr	r1, .L158+64
 	ldr	r0, .L158+16
 	mov	lr, pc
@@ -953,7 +959,7 @@ replaceMenu:
 	.global	__aeabi_idivmod
 	.align	2
 .LC10:
-	.ascii	"YOU FAILED TO CAPTURE %s\000"
+	.ascii	"YOU FAILED TO\012CAPTURE %s.\000"
 	.text
 	.align	2
 	.global	captureMenu
@@ -991,11 +997,11 @@ captureMenu:
 	orr	r1, r1, #40960
 	ldr	r3, [r2, #20]
 	mov	r0, r6
-	strh	r1, [r4, #128]	@ movhi
+	strh	r1, [r4, #136]	@ movhi
 	ldr	r9, .L172+28
 	ldr	r1, .L172+32
-	strh	lr, [r4, #130]	@ movhi
-	strh	ip, [r4, #132]	@ movhi
+	strh	lr, [r4, #138]	@ movhi
+	strh	ip, [r4, #140]	@ movhi
 	mov	lr, pc
 	bx	r9
 	ldr	r3, .L172+36
@@ -1024,7 +1030,7 @@ captureMenu:
 	ldr	r10, [r2]
 	cmp	r10, #0
 	strb	r8, [r6]
-	strh	r3, [r4, #128]	@ movhi
+	strh	r3, [r4, #136]	@ movhi
 	beq	.L163
 	mov	r2, #43
 	ldr	r1, .L172+60
@@ -1050,7 +1056,7 @@ captureMenu:
 	mov	r1, #4
 	ldr	r0, .L172+68
 	ldr	r2, .L172+72
-	strh	ip, [r4, #128]	@ movhi
+	strh	ip, [r4, #136]	@ movhi
 	str	r3, [r5]
 	str	r3, [r0]
 	str	r1, [r2]
@@ -1338,17 +1344,17 @@ targetMenu:
 	ble	.L216
 	mov	r2, #832
 	ldr	r4, .L267+48
-	strh	r2, [r4, #132]	@ movhi
+	strh	r2, [r4, #140]	@ movhi
 	ldr	r2, .L267+52
-	strh	r2, [r4, #130]	@ movhi
+	strh	r2, [r4, #138]	@ movhi
 	ldr	r2, [r3, #68]
 	ldr	r1, .L267+56
 	cmp	r2, #0
-	strh	r1, [r4, #128]	@ movhi
+	strh	r1, [r4, #136]	@ movhi
 	bne	.L261
 .L218:
 	mov	r2, #512
-	strh	r2, [r4, #136]	@ movhi
+	strh	r2, [r4, #144]	@ movhi
 	ldr	r2, [r3, #124]
 	cmp	r2, #0
 	beq	.L220
@@ -1357,17 +1363,17 @@ targetMenu:
 	cmp	r2, #0
 	ble	.L220
 	mov	r2, #832
-	strh	r2, [r4, #148]	@ movhi
+	strh	r2, [r4, #156]	@ movhi
 	ldr	r2, .L267+52
-	strh	r2, [r4, #146]	@ movhi
+	strh	r2, [r4, #154]	@ movhi
 	ldr	r2, [r3, #180]
 	ldr	r1, .L267+60
 	cmp	r2, #0
-	strh	r1, [r4, #144]	@ movhi
+	strh	r1, [r4, #152]	@ movhi
 	bne	.L262
 .L222:
 	mov	r3, #512
-	strh	r3, [r4, #152]	@ movhi
+	strh	r3, [r4, #160]	@ movhi
 .L223:
 	ldr	r2, [r5]
 	ldr	r3, .L267+64
@@ -1394,13 +1400,13 @@ targetMenu:
 	ldr	r0, [r2]
 	ldr	r2, .L267+96
 	ldr	r0, [r0, #24]
-	strh	r3, [r4, #128]	@ movhi
+	strh	r3, [r4, #136]	@ movhi
 	str	r0, [r2]
 	ldr	r0, .L267+100
 	ldr	r2, .L267+36
-	strh	r3, [r4, #136]	@ movhi
 	strh	r3, [r4, #144]	@ movhi
 	strh	r3, [r4, #152]	@ movhi
+	strh	r3, [r4, #160]	@ movhi
 	str	ip, [r0]
 	str	r1, [r2]
 	add	sp, sp, #12
@@ -1426,11 +1432,11 @@ targetMenu:
 	orr	r0, r0, #40960
 	ldr	r3, [r2, #20]
 	ldr	r1, .L267+104
-	strh	r0, [r4, #128]	@ movhi
+	strh	r0, [r4, #136]	@ movhi
 	ldr	r7, .L267+64
 	ldr	r0, .L267+72
-	strh	lr, [r4, #130]	@ movhi
-	strh	ip, [r4, #132]	@ movhi
+	strh	lr, [r4, #138]	@ movhi
+	strh	ip, [r4, #140]	@ movhi
 	mov	lr, pc
 	bx	r7
 .L214:
@@ -1450,7 +1456,7 @@ targetMenu:
 .L216:
 	mov	r2, #512
 	ldr	r4, .L267+48
-	strh	r2, [r4, #128]	@ movhi
+	strh	r2, [r4, #136]	@ movhi
 	ldr	r2, [r3, #68]
 	cmp	r2, #0
 	beq	.L218
@@ -1459,17 +1465,17 @@ targetMenu:
 	cmp	r2, #0
 	ble	.L218
 	mov	r2, #832
-	strh	r2, [r4, #140]	@ movhi
+	strh	r2, [r4, #148]	@ movhi
 	ldr	r2, .L267+52
-	strh	r2, [r4, #138]	@ movhi
+	strh	r2, [r4, #146]	@ movhi
 	ldr	r2, [r3, #124]
 	ldr	r1, .L267+112
 	cmp	r2, #0
-	strh	r1, [r4, #136]	@ movhi
+	strh	r1, [r4, #144]	@ movhi
 	bne	.L265
 .L220:
 	mov	r2, #512
-	strh	r2, [r4, #144]	@ movhi
+	strh	r2, [r4, #152]	@ movhi
 	ldr	r2, [r3, #180]
 	cmp	r2, #0
 	beq	.L222
@@ -1480,9 +1486,9 @@ targetMenu:
 	mov	r1, #832
 	ldr	r2, .L267+116
 	ldr	r3, .L267+52
-	strh	r1, [r4, #156]	@ movhi
-	strh	r2, [r4, #152]	@ movhi
-	strh	r3, [r4, #154]	@ movhi
+	strh	r1, [r4, #164]	@ movhi
+	strh	r2, [r4, #160]	@ movhi
+	strh	r3, [r4, #162]	@ movhi
 	b	.L223
 .L260:
 	cmp	r3, #0
@@ -1494,7 +1500,7 @@ targetMenu:
 .L206:
 	mov	r2, #512
 	ldr	r4, .L267+48
-	strh	r2, [r4, #128]	@ movhi
+	strh	r2, [r4, #136]	@ movhi
 .L207:
 	ldr	r2, [r3, #68]
 	cmp	r2, #0
@@ -1504,10 +1510,10 @@ targetMenu:
 	ble	.L208
 	mov	r2, #192
 	mov	r1, #832
-	strh	r2, [r4, #138]	@ movhi
+	strh	r2, [r4, #146]	@ movhi
 	ldr	r2, .L267+112
-	strh	r1, [r4, #140]	@ movhi
-	strh	r2, [r4, #136]	@ movhi
+	strh	r1, [r4, #148]	@ movhi
+	strh	r2, [r4, #144]	@ movhi
 .L209:
 	ldr	r2, [r3, #124]
 	cmp	r2, #0
@@ -1517,10 +1523,10 @@ targetMenu:
 	ble	.L210
 	mov	r2, #192
 	mov	r1, #832
-	strh	r2, [r4, #146]	@ movhi
+	strh	r2, [r4, #154]	@ movhi
 	ldr	r2, .L267+60
-	strh	r1, [r4, #148]	@ movhi
-	strh	r2, [r4, #144]	@ movhi
+	strh	r1, [r4, #156]	@ movhi
+	strh	r2, [r4, #152]	@ movhi
 .L211:
 	ldr	r2, [r3, #180]
 	cmp	r2, #0
@@ -1531,9 +1537,9 @@ targetMenu:
 	mov	r1, #192
 	mov	r2, #832
 	ldr	r3, .L267+116
-	strh	r1, [r4, #154]	@ movhi
-	strh	r2, [r4, #156]	@ movhi
-	strh	r3, [r4, #152]	@ movhi
+	strh	r1, [r4, #162]	@ movhi
+	strh	r2, [r4, #164]	@ movhi
+	strh	r3, [r4, #160]	@ movhi
 .L213:
 	ldr	r2, [r5]
 	ldr	r1, .L267+124
@@ -1551,10 +1557,10 @@ targetMenu:
 	bx	r3
 	mov	r3, #512
 	ldr	r2, [r6]
-	strh	r3, [r4, #128]	@ movhi
 	strh	r3, [r4, #136]	@ movhi
 	strh	r3, [r4, #144]	@ movhi
 	strh	r3, [r4, #152]	@ movhi
+	strh	r3, [r4, #160]	@ movhi
 	ldr	r3, .L267+36
 	cmp	r2, #1
 	ldr	r3, [r3]
@@ -1574,22 +1580,22 @@ targetMenu:
 	mov	r2, #192
 	mov	r1, #832
 	ldr	r4, .L267+48
-	strh	r2, [r4, #130]	@ movhi
+	strh	r2, [r4, #138]	@ movhi
 	ldr	r2, .L267+56
-	strh	r1, [r4, #132]	@ movhi
-	strh	r2, [r4, #128]	@ movhi
+	strh	r1, [r4, #140]	@ movhi
+	strh	r2, [r4, #136]	@ movhi
 	b	.L207
 .L212:
 	mov	r3, #512
-	strh	r3, [r4, #152]	@ movhi
+	strh	r3, [r4, #160]	@ movhi
 	b	.L213
 .L210:
 	mov	r2, #512
-	strh	r2, [r4, #144]	@ movhi
+	strh	r2, [r4, #152]	@ movhi
 	b	.L211
 .L208:
 	mov	r2, #512
-	strh	r2, [r4, #136]	@ movhi
+	strh	r2, [r4, #144]	@ movhi
 	b	.L209
 .L205:
 	ldr	r3, .L267+36
@@ -1651,7 +1657,7 @@ targetMenu:
 	.ascii	"%cATTACK   %cCAPTURE\012%cPASS\012%cINSPECT\000"
 	.align	2
 .LC17:
-	.ascii	"%s PASSED\000"
+	.ascii	"%s PASSED.\000"
 	.text
 	.align	2
 	.global	frontMenu
@@ -1990,12 +1996,11 @@ drawCombatants:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	mov	r3, #512
-	ldr	r2, .L389
+	ldr	r2, .L391
 	ldr	r2, [r2]
 	push	{r4, r5, r6, lr}
-	ldr	r4, .L389+4
+	ldr	r4, .L391+4
 	subs	r1, r2, #1
-	strh	r3, [r4, #160]	@ movhi
 	strh	r3, [r4, #168]	@ movhi
 	strh	r3, [r4, #176]	@ movhi
 	strh	r3, [r4, #184]	@ movhi
@@ -2003,11 +2008,12 @@ drawCombatants:
 	strh	r3, [r4, #200]	@ movhi
 	strh	r3, [r4, #208]	@ movhi
 	strh	r3, [r4, #216]	@ movhi
+	strh	r3, [r4, #224]	@ movhi
 	bmi	.L337
 	rsb	r2, r2, r2, lsl #29
-	ldr	lr, .L389+8
-	ldr	ip, .L389+12
-	ldr	r0, .L389+16
+	ldr	lr, .L391+8
+	ldr	ip, .L391+12
+	ldr	r0, .L391+16
 	add	r2, r4, r2, lsl #3
 .L338:
 	add	r3, r1, r1, lsl #3
@@ -2015,116 +2021,133 @@ drawCombatants:
 	sub	r1, r1, #1
 	and	r3, r3, ip
 	cmn	r1, #1
-	strh	lr, [r2, #224]	@ movhi
-	strh	r0, [r2, #228]	@ movhi
-	strh	r3, [r2, #226]	@ movhi
+	strh	lr, [r2, #232]	@ movhi
+	strh	r0, [r2, #236]	@ movhi
+	strh	r3, [r2, #234]	@ movhi
 	add	r2, r2, #8
 	bne	.L338
 .L337:
-	ldr	r5, .L389+20
-	ldr	r3, [r5, #12]
-	cmp	r3, #0
-	beq	.L339
+	ldr	r3, .L391+20
+	ldr	r1, [r3]
+	ldr	r3, .L391+24
+	cmp	r1, #0
+	ldr	r2, .L391+28
+	mov	r1, #520
+	movne	r2, r3
+	ldr	r3, .L391+32
+	ldr	r3, [r3]
+	ldr	r5, .L391+36
+	add	r3, r3, r3, lsl #2
+	lsl	r3, r3, #3
+	ldr	r0, [r5, #12]
+	add	r3, r3, #15
+	and	r3, r3, #255
+	orr	r3, r3, #24576
+	cmp	r0, #0
+	strh	r3, [r4]	@ movhi
+	strh	r2, [r4, #2]	@ movhi
+	strh	r1, [r4, #4]	@ movhi
+	beq	.L340
 	ldr	r1, [r5, #20]
 	cmp	r1, #0
-	bgt	.L381
-.L339:
-	mov	r3, #512
-	strh	r3, [r4]	@ movhi
-	strh	r3, [r4, #64]	@ movhi
+	bgt	.L383
 .L340:
-	ldr	r3, [r5, #68]
-	cmp	r3, #0
-	beq	.L341
-	ldr	r1, [r5, #76]
-	cmp	r1, #0
-	bgt	.L382
-.L341:
 	mov	r3, #512
 	strh	r3, [r4, #8]	@ movhi
 	strh	r3, [r4, #72]	@ movhi
-.L342:
-	ldr	r3, [r5, #124]
+.L341:
+	ldr	r3, [r5, #68]
 	cmp	r3, #0
-	beq	.L343
-	ldr	r1, [r5, #132]
+	beq	.L342
+	ldr	r1, [r5, #76]
 	cmp	r1, #0
-	bgt	.L383
-.L343:
+	bgt	.L384
+.L342:
 	mov	r3, #512
 	strh	r3, [r4, #16]	@ movhi
 	strh	r3, [r4, #80]	@ movhi
-.L344:
-	ldr	r3, [r5, #180]
+.L343:
+	ldr	r3, [r5, #124]
 	cmp	r3, #0
-	beq	.L345
-	ldr	r1, [r5, #188]
+	beq	.L344
+	ldr	r1, [r5, #132]
 	cmp	r1, #0
-	bgt	.L384
-.L345:
+	bgt	.L385
+.L344:
 	mov	r3, #512
 	strh	r3, [r4, #24]	@ movhi
 	strh	r3, [r4, #88]	@ movhi
-.L346:
-	ldr	r5, .L389+24
-	ldr	r3, [r5, #12]
+.L345:
+	ldr	r3, [r5, #180]
 	cmp	r3, #0
-	beq	.L347
-	ldr	r1, [r5, #20]
+	beq	.L346
+	ldr	r1, [r5, #188]
 	cmp	r1, #0
-	bgt	.L385
-.L347:
+	bgt	.L386
+.L346:
 	mov	r3, #512
 	strh	r3, [r4, #32]	@ movhi
 	strh	r3, [r4, #96]	@ movhi
-.L348:
-	ldr	r3, [r5, #68]
+.L347:
+	ldr	r5, .L391+40
+	ldr	r3, [r5, #12]
 	cmp	r3, #0
-	beq	.L349
-	ldr	r1, [r5, #76]
+	beq	.L348
+	ldr	r1, [r5, #20]
 	cmp	r1, #0
-	bgt	.L386
-.L349:
+	bgt	.L387
+.L348:
 	mov	r3, #512
 	strh	r3, [r4, #40]	@ movhi
 	strh	r3, [r4, #104]	@ movhi
-.L350:
-	ldr	r3, [r5, #124]
+.L349:
+	ldr	r3, [r5, #68]
 	cmp	r3, #0
-	beq	.L351
-	ldr	r1, [r5, #132]
+	beq	.L350
+	ldr	r1, [r5, #76]
 	cmp	r1, #0
-	bgt	.L387
-.L351:
+	bgt	.L388
+.L350:
 	mov	r3, #512
 	strh	r3, [r4, #48]	@ movhi
 	strh	r3, [r4, #112]	@ movhi
-.L352:
-	ldr	r3, [r5, #180]
+.L351:
+	ldr	r3, [r5, #124]
 	cmp	r3, #0
-	beq	.L353
-	ldr	r1, [r5, #188]
+	beq	.L352
+	ldr	r1, [r5, #132]
 	cmp	r1, #0
-	bgt	.L388
-.L353:
+	bgt	.L389
+.L352:
 	mov	r3, #512
 	strh	r3, [r4, #56]	@ movhi
 	strh	r3, [r4, #120]	@ movhi
+.L353:
+	ldr	r3, [r5, #180]
+	cmp	r3, #0
+	beq	.L354
+	ldr	r1, [r5, #188]
+	cmp	r1, #0
+	bgt	.L390
+.L354:
+	mov	r3, #512
+	strh	r3, [r4, #64]	@ movhi
+	strh	r3, [r4, #128]	@ movhi
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L388:
-	ldr	ip, .L389+28
+.L390:
+	ldr	ip, .L391+44
 	ldr	r0, [r5, #220]
 	ldr	r2, [r5, #184]
-	ldr	lr, .L389+32
-	strh	ip, [r4, #56]	@ movhi
-	ldr	r3, .L389+36
-	ldr	ip, .L389+40
-	strh	r3, [r4, #58]	@ movhi
-	strh	r0, [r4, #60]	@ movhi
-	strh	lr, [r4, #120]	@ movhi
-	ldr	r5, .L389+44
-	strh	ip, [r4, #122]	@ movhi
+	ldr	lr, .L391+48
+	strh	ip, [r4, #64]	@ movhi
+	ldr	r3, .L391+52
+	ldr	ip, .L391+56
+	strh	r3, [r4, #66]	@ movhi
+	strh	r0, [r4, #68]	@ movhi
+	strh	lr, [r4, #128]	@ movhi
+	ldr	r5, .L391+60
+	strh	ip, [r4, #130]	@ movhi
 	mov	r3, #4
 	mov	r0, #0
 	mov	lr, pc
@@ -2132,20 +2155,42 @@ drawCombatants:
 	rsb	r0, r0, #388
 	add	r0, r0, #1
 	lsl	r0, r0, #1
-	strh	r0, [r4, #124]	@ movhi
+	strh	r0, [r4, #132]	@ movhi
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L387:
+.L389:
 	ldr	r0, [r5, #164]
-	ldr	r3, .L389+48
-	ldr	r2, .L389+36
-	ldr	lr, .L389+52
-	ldr	ip, .L389+40
+	ldr	r3, .L391+64
+	ldr	r2, .L391+52
+	ldr	lr, .L391+68
+	ldr	ip, .L391+56
+	strh	r3, [r4, #56]	@ movhi
+	strh	r2, [r4, #58]	@ movhi
+	mov	r3, #4
+	ldr	r2, [r5, #128]
+	ldr	r6, .L391+60
+	strh	r0, [r4, #60]	@ movhi
+	mov	r0, #0
+	strh	lr, [r4, #120]	@ movhi
+	strh	ip, [r4, #122]	@ movhi
+	mov	lr, pc
+	bx	r6
+	rsb	r0, r0, #388
+	add	r0, r0, #1
+	lsl	r0, r0, #1
+	strh	r0, [r4, #124]	@ movhi
+	b	.L353
+.L388:
+	ldr	r0, [r5, #108]
+	ldr	r3, .L391+72
+	ldr	r2, .L391+52
+	ldr	lr, .L391+76
+	ldr	ip, .L391+56
 	strh	r3, [r4, #48]	@ movhi
 	strh	r2, [r4, #50]	@ movhi
 	mov	r3, #4
-	ldr	r2, [r5, #128]
-	ldr	r6, .L389+44
+	ldr	r2, [r5, #72]
+	ldr	r6, .L391+60
 	strh	r0, [r4, #52]	@ movhi
 	mov	r0, #0
 	strh	lr, [r4, #112]	@ movhi
@@ -2156,18 +2201,18 @@ drawCombatants:
 	add	r0, r0, #1
 	lsl	r0, r0, #1
 	strh	r0, [r4, #116]	@ movhi
-	b	.L352
-.L386:
-	ldr	r0, [r5, #108]
-	ldr	r3, .L389+56
-	ldr	r2, .L389+36
-	ldr	lr, .L389+60
-	ldr	ip, .L389+40
+	b	.L351
+.L387:
+	ldr	r0, [r5, #52]
+	ldr	r3, .L391+80
+	ldr	r2, .L391+52
+	ldr	lr, .L391+84
+	ldr	ip, .L391+56
 	strh	r3, [r4, #40]	@ movhi
 	strh	r2, [r4, #42]	@ movhi
 	mov	r3, #4
-	ldr	r2, [r5, #72]
-	ldr	r6, .L389+44
+	ldr	r2, [r5, #16]
+	ldr	r6, .L391+60
 	strh	r0, [r4, #44]	@ movhi
 	mov	r0, #0
 	strh	lr, [r4, #104]	@ movhi
@@ -2178,62 +2223,62 @@ drawCombatants:
 	add	r0, r0, #1
 	lsl	r0, r0, #1
 	strh	r0, [r4, #108]	@ movhi
-	b	.L350
-.L385:
-	ldr	r0, [r5, #52]
-	ldr	r3, .L389+64
-	ldr	r2, .L389+36
-	ldr	lr, .L389+68
-	ldr	ip, .L389+40
-	strh	r3, [r4, #32]	@ movhi
-	strh	r2, [r4, #34]	@ movhi
-	mov	r3, #4
-	ldr	r2, [r5, #16]
-	ldr	r6, .L389+44
-	strh	r0, [r4, #36]	@ movhi
-	mov	r0, #0
-	strh	lr, [r4, #96]	@ movhi
-	strh	ip, [r4, #98]	@ movhi
-	mov	lr, pc
-	bx	r6
-	rsb	r0, r0, #388
-	add	r0, r0, #1
-	lsl	r0, r0, #1
-	strh	r0, [r4, #100]	@ movhi
-	b	.L348
-.L384:
-	ldr	ip, .L389+28
+	b	.L349
+.L386:
+	ldr	ip, .L391+44
 	ldr	r0, [r5, #220]
 	ldr	r2, [r5, #184]
-	ldr	r3, .L389+72
-	ldr	lr, .L389+32
-	strh	ip, [r4, #24]	@ movhi
-	ldr	ip, .L389+76
-	strh	r3, [r4, #26]	@ movhi
-	strh	r0, [r4, #28]	@ movhi
+	ldr	r3, .L391+88
+	ldr	lr, .L391+48
+	strh	ip, [r4, #32]	@ movhi
+	ldr	ip, .L391+92
+	strh	r3, [r4, #34]	@ movhi
+	strh	r0, [r4, #36]	@ movhi
 	mov	r3, #4
 	mov	r0, #0
-	strh	lr, [r4, #88]	@ movhi
-	ldr	r5, .L389+44
-	strh	ip, [r4, #90]	@ movhi
+	strh	lr, [r4, #96]	@ movhi
+	ldr	r5, .L391+60
+	strh	ip, [r4, #98]	@ movhi
 	mov	lr, pc
 	bx	r5
 	rsb	r0, r0, #388
 	add	r0, r0, #1
 	lsl	r0, r0, #1
-	strh	r0, [r4, #92]	@ movhi
-	b	.L346
-.L383:
+	strh	r0, [r4, #100]	@ movhi
+	b	.L347
+.L385:
 	ldr	r0, [r5, #164]
-	ldr	r3, .L389+48
-	ldr	r2, .L389+72
-	ldr	lr, .L389+52
-	ldr	ip, .L389+76
+	ldr	r3, .L391+64
+	ldr	r2, .L391+88
+	ldr	lr, .L391+68
+	ldr	ip, .L391+92
+	strh	r3, [r4, #24]	@ movhi
+	strh	r2, [r4, #26]	@ movhi
+	mov	r3, #4
+	ldr	r2, [r5, #128]
+	ldr	r6, .L391+60
+	strh	r0, [r4, #28]	@ movhi
+	mov	r0, #0
+	strh	lr, [r4, #88]	@ movhi
+	strh	ip, [r4, #90]	@ movhi
+	mov	lr, pc
+	bx	r6
+	rsb	r0, r0, #388
+	add	r0, r0, #1
+	lsl	r0, r0, #1
+	strh	r0, [r4, #92]	@ movhi
+	b	.L345
+.L384:
+	ldr	r0, [r5, #108]
+	ldr	r3, .L391+72
+	ldr	r2, .L391+88
+	ldr	lr, .L391+76
+	ldr	ip, .L391+92
 	strh	r3, [r4, #16]	@ movhi
 	strh	r2, [r4, #18]	@ movhi
 	mov	r3, #4
-	ldr	r2, [r5, #128]
-	ldr	r6, .L389+44
+	ldr	r2, [r5, #72]
+	ldr	r6, .L391+60
 	strh	r0, [r4, #20]	@ movhi
 	mov	r0, #0
 	strh	lr, [r4, #80]	@ movhi
@@ -2244,18 +2289,18 @@ drawCombatants:
 	add	r0, r0, #1
 	lsl	r0, r0, #1
 	strh	r0, [r4, #84]	@ movhi
-	b	.L344
-.L382:
-	ldr	r0, [r5, #108]
-	ldr	r3, .L389+56
-	ldr	r2, .L389+72
-	ldr	lr, .L389+60
-	ldr	ip, .L389+76
+	b	.L343
+.L383:
+	ldr	r0, [r5, #52]
+	ldr	r3, .L391+80
+	ldr	r2, .L391+88
+	ldr	lr, .L391+84
+	ldr	ip, .L391+92
 	strh	r3, [r4, #8]	@ movhi
 	strh	r2, [r4, #10]	@ movhi
 	mov	r3, #4
-	ldr	r2, [r5, #72]
-	ldr	r6, .L389+44
+	ldr	r2, [r5, #16]
+	ldr	r6, .L391+60
 	strh	r0, [r4, #12]	@ movhi
 	mov	r0, #0
 	strh	lr, [r4, #72]	@ movhi
@@ -2266,37 +2311,19 @@ drawCombatants:
 	add	r0, r0, #1
 	lsl	r0, r0, #1
 	strh	r0, [r4, #76]	@ movhi
-	b	.L342
-.L381:
-	ldr	r0, [r5, #52]
-	ldr	r3, .L389+64
-	ldr	r2, .L389+72
-	ldr	lr, .L389+68
-	ldr	ip, .L389+76
-	strh	r3, [r4]	@ movhi
-	strh	r2, [r4, #2]	@ movhi
-	mov	r3, #4
-	ldr	r2, [r5, #16]
-	ldr	r6, .L389+44
-	strh	r0, [r4, #4]	@ movhi
-	mov	r0, #0
-	strh	lr, [r4, #64]	@ movhi
-	strh	ip, [r4, #66]	@ movhi
-	mov	lr, pc
-	bx	r6
-	rsb	r0, r0, #388
-	add	r0, r0, #1
-	lsl	r0, r0, #1
-	strh	r0, [r4, #68]	@ movhi
-	b	.L340
-.L390:
+	b	.L341
+.L392:
 	.align	2
-.L389:
+.L391:
 	.word	turnPoints
 	.word	shadowOAM
 	.word	8233
 	.word	511
 	.word	834
+	.word	turn
+	.word	32968
+	.word	32776
+	.word	fighterIdx
 	.word	battleAllies
 	.word	battleOpponents
 	.word	24711
@@ -2326,58 +2353,58 @@ initBattle:
 	mov	r2, #0
 	push	{r4, r5, r6, lr}
 	mov	r5, #4
-	ldr	r6, .L415
-	ldr	r4, .L415+4
+	ldr	r6, .L417
+	ldr	r4, .L417+4
 	str	r2, [r6]
 	str	r2, [r4]
-	ldr	r6, .L415+8
-	ldr	r4, .L415+12
+	ldr	r6, .L417+8
+	ldr	r4, .L417+12
 	str	r2, [r6]
 	str	r2, [r4]
-	ldr	r6, .L415+16
-	ldr	r4, .L415+20
+	ldr	r6, .L417+16
+	ldr	r4, .L417+20
 	str	r2, [r6]
 	str	r2, [r4]
-	ldr	r6, .L415+24
-	ldr	r4, .L415+28
+	ldr	r6, .L417+24
+	ldr	r4, .L417+28
 	str	r2, [r6]
 	strb	r2, [r4]
-	ldr	r6, .L415+32
-	ldr	r4, .L415+36
+	ldr	r6, .L417+32
+	ldr	r4, .L417+36
 	strb	r2, [r6]
 	str	r2, [r4]
-	ldr	r6, .L415+40
-	ldr	r4, .L415+44
+	ldr	r6, .L417+40
+	ldr	r4, .L417+44
 	str	r2, [r6]
 	str	r2, [r4]
-	ldr	r6, .L415+48
-	ldr	r4, .L415+52
+	ldr	r6, .L417+48
+	ldr	r4, .L417+52
 	str	r2, [r6]
 	mov	ip, r2
 	mov	lr, r2
 	str	r2, [r4]
-	ldr	r2, .L415+56
-	ldr	r1, .L415+60
-	ldr	r6, .L415+64
+	ldr	r2, .L417+56
+	ldr	r1, .L417+60
+	ldr	r6, .L417+64
 	str	r5, [r2]
 	mov	r3, r1
 	str	r1, [r6]
 	add	r1, r1, #224
-.L393:
+.L395:
 	ldr	r2, [r3, #12]
 	cmp	r2, #0
-	beq	.L392
+	beq	.L394
 	ldr	r2, [r3, #20]
 	cmp	r2, #0
 	movgt	ip, #1
 	addgt	lr, lr, ip
-.L392:
+.L394:
 	add	r3, r3, #56
 	cmp	r1, r3
-	bne	.L393
+	bne	.L395
 	mov	r3, #0
-	ldr	r2, .L415+68
-	ldr	r5, .L415+72
+	ldr	r2, .L417+68
+	ldr	r5, .L417+72
 	cmp	ip, #0
 	strne	lr, [r4]
 	str	r3, [r5]
@@ -2386,25 +2413,25 @@ initBattle:
 	str	r3, [r2, #180]
 	cmp	r0, #5
 	ldrls	pc, [pc, r0, asl #2]
-	b	.L395
-.L397:
+	b	.L397
+.L399:
+	.word	.L404
+	.word	.L403
 	.word	.L402
 	.word	.L401
 	.word	.L400
-	.word	.L399
 	.word	.L398
-	.word	.L396
-.L396:
+.L398:
 	mov	r6, #1
-	ldr	lr, .L415+76
-	ldr	ip, .L415+68
+	ldr	lr, .L417+76
+	ldr	ip, .L417+68
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
-	ldr	r4, .L415+80
+	ldr	r4, .L417+80
 	ldm	lr, {r0, r1}
 	str	r6, [r5]
 	stm	ip, {r0, r1}
@@ -2415,7 +2442,7 @@ initBattle:
 	stmia	lr!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	lr!, {r0, r1, r2, r3}
-	ldr	r5, .L415+84
+	ldr	r5, .L417+84
 	ldm	r4, {r0, r1}
 	stm	lr, {r0, r1}
 	ldmia	r5!, {r0, r1, r2, r3}
@@ -2425,8 +2452,8 @@ initBattle:
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
-	ldr	lr, .L415+88
-.L413:
+	ldr	lr, .L417+88
+.L415:
 	ldm	r5, {r0, r1}
 	stm	r4, {r0, r1}
 	ldmia	lr!, {r0, r1, r2, r3}
@@ -2440,9 +2467,9 @@ initBattle:
 	stm	ip, {r0, r1}
 	pop	{r4, r5, r6, lr}
 	b	drawCombatants
-.L402:
-	ldr	r4, .L415+92
-	ldr	ip, .L415+68
+.L404:
+	ldr	r4, .L417+92
+	ldr	ip, .L417+68
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
@@ -2461,15 +2488,15 @@ initBattle:
 	stmia	r5!, {r0, r1, r2, r3}
 	ldm	r4, {r0, r1}
 	stm	r5, {r0, r1}
-	ldr	lr, .L415+96
-.L414:
+	ldr	lr, .L417+96
+.L416:
 	ldmia	lr!, {r0, r1, r2, r3}
 	add	r4, ip, #64
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
-.L412:
+.L414:
 	stmia	r4!, {r0, r1, r2, r3}
 	ldm	lr, {r0, r1}
 	stm	r4, {r0, r1}
@@ -2485,9 +2512,9 @@ initBattle:
 	pop	{r4, r5, r6, lr}
 	stm	ip, {r0, r1}
 	b	drawCombatants
-.L401:
-	ldr	lr, .L415+88
-	ldr	ip, .L415+68
+.L403:
+	ldr	lr, .L417+88
+	ldr	ip, .L417+68
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
@@ -2504,7 +2531,7 @@ initBattle:
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
-	ldr	r5, .L415+92
+	ldr	r5, .L417+92
 	ldm	lr, {r0, r1}
 	stm	r4, {r0, r1}
 	ldmia	r5!, {r0, r1, r2, r3}
@@ -2513,19 +2540,19 @@ initBattle:
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
-	ldr	lr, .L415+96
+	ldr	lr, .L417+96
 	stmia	r4!, {r0, r1, r2, r3}
-	b	.L413
-.L400:
-	ldr	r4, .L415+100
-	ldr	ip, .L415+68
+	b	.L415
+.L402:
+	ldr	r4, .L417+100
+	ldr	ip, .L417+68
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
-	ldr	lr, .L415+88
+	ldr	lr, .L417+88
 	ldm	r4, {r0, r1}
 	stm	ip, {r0, r1}
 	ldmia	lr!, {r0, r1, r2, r3}
@@ -2545,7 +2572,7 @@ initBattle:
 	stmia	r5!, {r0, r1, r2, r3}
 	ldmia	r6!, {r0, r1, r2, r3}
 	stmia	r5!, {r0, r1, r2, r3}
-	ldr	r4, .L415+92
+	ldr	r4, .L417+92
 	ldm	lr, {r0, r1}
 	stm	r5, {r0, r1}
 	ldmia	r4!, {r0, r1, r2, r3}
@@ -2559,16 +2586,16 @@ initBattle:
 	pop	{r4, r5, r6, lr}
 	stm	ip, {r0, r1}
 	b	drawCombatants
-.L399:
-	ldr	lr, .L415+84
-	ldr	ip, .L415+68
+.L401:
+	ldr	lr, .L417+84
+	ldr	ip, .L417+68
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
-	ldr	r5, .L415+88
+	ldr	r5, .L417+88
 	ldm	lr, {r0, r1}
 	stm	ip, {r0, r1}
 	ldmia	r5!, {r0, r1, r2, r3}
@@ -2579,12 +2606,12 @@ initBattle:
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
 	ldm	r5, {r0, r1}
-	ldr	lr, .L415+92
+	ldr	lr, .L417+92
 	stm	r4, {r0, r1}
-	b	.L414
-.L398:
-	ldr	lr, .L415+80
-	ldr	ip, .L415+68
+	b	.L416
+.L400:
+	ldr	lr, .L417+80
+	ldr	ip, .L417+68
 	ldmia	lr!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	lr!, {r0, r1, r2, r3}
@@ -2601,7 +2628,7 @@ initBattle:
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
-	ldr	r5, .L415+88
+	ldr	r5, .L417+88
 	ldm	lr, {r0, r1}
 	stm	r4, {r0, r1}
 	ldmia	r5!, {r0, r1, r2, r3}
@@ -2610,19 +2637,19 @@ initBattle:
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
-	ldr	lr, .L415+92
+	ldr	lr, .L417+92
 	stmia	r4!, {r0, r1, r2, r3}
-	b	.L413
-.L395:
-	ldr	r4, .L415+92
-	ldr	ip, .L415+68
+	b	.L415
+.L397:
+	ldr	r4, .L417+92
+	ldr	ip, .L417+68
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
 	ldmia	r4!, {r0, r1, r2, r3}
 	stmia	ip!, {r0, r1, r2, r3}
-	ldr	lr, .L415+96
+	ldr	lr, .L417+96
 	ldm	r4, {r0, r1}
 	stm	ip, {r0, r1}
 	ldmia	lr!, {r0, r1, r2, r3}
@@ -2641,10 +2668,10 @@ initBattle:
 	ldmia	r5!, {r0, r1, r2, r3}
 	stmia	r4!, {r0, r1, r2, r3}
 	ldmia	r5!, {r0, r1, r2, r3}
-	b	.L412
-.L416:
+	b	.L414
+.L418:
 	.align	2
-.L415:
+.L417:
 	.word	battleStatus
 	.word	lettersActive
 	.word	menu
@@ -2684,20 +2711,20 @@ eraseAllText:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
 	mov	r1, #512
-	ldr	r3, .L420
-	add	r2, r3, #800
-.L418:
-	strh	r1, [r3, #224]	@ movhi
+	ldr	r3, .L422
+	add	r2, r3, #792
+.L420:
+	strh	r1, [r3, #232]	@ movhi
 	add	r3, r3, #8
 	cmp	r3, r2
-	bne	.L418
+	bne	.L420
 	mov	r2, #0
-	ldr	r3, .L420+4
+	ldr	r3, .L422+4
 	str	r2, [r3]
 	bx	lr
-.L421:
+.L423:
 	.align	2
-.L420:
+.L422:
 	.word	shadowOAM
 	.word	lettersActive
 	.size	eraseAllText, .-eraseAllText
@@ -2717,27 +2744,27 @@ drawText:
 	cmp	ip, #0
 	add	r3, r1, r3
 	add	r8, r2, r8
-	beq	.L422
+	beq	.L424
 	mov	lr, r1
-	ldr	r9, .L438
-	ldr	r10, .L438+4
-	b	.L428
-.L437:
+	ldr	r9, .L440
+	ldr	r10, .L440+4
+	b	.L430
+.L439:
 	ldrb	ip, [r0, #1]!	@ zero_extendqisi2
 	cmp	ip, #0
-	beq	.L422
-.L428:
+	beq	.L424
+.L430:
 	cmp	ip, #10
 	add	r5, lr, #12
 	addeq	r2, r2, #8
 	moveq	lr, r1
-	beq	.L425
+	beq	.L427
 	cmp	ip, #32
-	beq	.L426
+	beq	.L428
 	ldr	ip, [r9]
-	add	r4, ip, #28
+	add	r4, ip, #29
 	cmp	r4, #127
-	bgt	.L422
+	bgt	.L424
 	and	r7, r2, #255
 	lsl	r6, lr, #23
 	orr	r7, r7, #8192
@@ -2747,30 +2774,35 @@ drawText:
 	strh	r7, [r10, fp]	@ movhi
 	strh	r6, [r4, #2]	@ movhi
 	ldrb	r6, [r0]	@ zero_extendqisi2
-	ldr	r7, .L438+8
+	ldr	r7, .L440+8
 	sub	r6, r6, #33
 	ldr	r6, [r7, r6, lsl #2]
 	add	ip, ip, #1
 	str	ip, [r9]
 	strh	r6, [r4, #4]	@ movhi
-.L426:
+.L428:
 	cmp	r5, r3
 	movge	lr, r1
 	addlt	lr, lr, #6
 	addge	r2, r2, #8
-.L425:
+.L427:
 	cmp	r2, r8
-	blt	.L437
-.L422:
+	blt	.L439
+.L424:
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L439:
+.L441:
 	.align	2
-.L438:
+.L440:
 	.word	lettersActive
 	.word	shadowOAM
 	.word	.LANCHOR0
 	.size	drawText, .-drawText
+	.section	.rodata.str1.4
+	.align	2
+.LC18:
+	.ascii	"%s PASSED\000"
+	.text
 	.align	2
 	.global	updateBattle
 	.syntax unified
@@ -2781,207 +2813,207 @@ updateBattle:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L603
+	ldr	r3, .L605
 	ldr	r3, [r3]
 	cmp	r3, #0
 	bxne	lr
 	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	sub	sp, sp, #12
 	bl	checkBattleStatus
-	ldr	r3, .L603+4
+	ldr	r3, .L605+4
 	ldr	r4, [r3]
 	cmp	r4, #0
-	bne	.L440
-	ldr	r3, .L603+8
+	bne	.L442
+	ldr	r3, .L605+8
 	ldr	r6, [r3]
-	ldr	r8, .L603+12
-	ldr	r7, .L603+16
+	ldr	r8, .L605+12
+	ldr	r7, .L605+16
 	cmp	r6, #0
 	str	r4, [r8]
 	str	r4, [r7]
-	bne	.L444
-	ldr	r4, .L603+20
-	ldr	r5, .L603+24
+	bne	.L446
+	ldr	r4, .L605+20
+	ldr	r5, .L605+24
 	ldr	r3, [r4]
 	ldrh	r1, [r5]
 	cmp	r3, #5
 	and	r2, r1, #128
-	beq	.L594
+	beq	.L596
 	sub	r0, r3, #2
 	cmp	r0, #2
-	bhi	.L448
+	bhi	.L450
 	cmp	r2, #0
-	beq	.L449
-	ldr	r2, .L603+28
+	beq	.L451
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	tst	r2, #128
-	bne	.L449
-	ldr	r2, .L603+32
-	ldr	lr, .L603+36
+	bne	.L451
+	ldr	r2, .L605+32
+	ldr	lr, .L605+36
 	ldr	r2, [r2]
 	ldr	r0, [lr]
 	cmp	r2, #1
 	add	ip, r0, #1
-	beq	.L595
+	beq	.L597
 	cmp	ip, #3
-	bgt	.L451
-	ldr	r2, .L603+40
+	bgt	.L453
+	ldr	r2, .L605+40
 	rsb	r0, r0, r0, lsl #3
 	add	r2, r2, r0, lsl #3
-.L455:
+.L457:
 	ldr	r0, [r2, #68]
 	cmp	r0, #0
-	beq	.L454
+	beq	.L456
 	ldr	r0, [r2, #76]
 	cmp	r0, #0
-	bgt	.L590
-.L454:
+	bgt	.L592
+.L456:
 	add	ip, ip, #1
 	cmp	ip, #4
 	add	r2, r2, #56
-	bne	.L455
-.L451:
+	bne	.L457
+.L453:
 	cmp	r3, #3
-	beq	.L596
-.L447:
+	beq	.L598
+.L449:
 	tst	r1, #1
-	beq	.L473
-	ldr	r2, .L603+28
+	beq	.L475
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	tst	r2, #1
 	moveq	r2, #1
 	streq	r2, [r8]
-.L473:
+.L475:
 	tst	r1, #2
-	beq	.L474
-	ldr	r2, .L603+28
+	beq	.L476
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	tst	r2, #2
 	moveq	r2, #1
 	streq	r2, [r7]
-.L474:
+.L476:
 	cmp	r3, #5
 	ldrls	pc, [pc, r3, asl #2]
-	b	.L475
-.L477:
+	b	.L477
+.L479:
+	.word	.L484
+	.word	.L483
 	.word	.L482
 	.word	.L481
 	.word	.L480
-	.word	.L479
 	.word	.L478
-	.word	.L476
-.L440:
+.L442:
 	add	sp, sp, #12
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
-.L594:
+.L596:
 	cmp	r2, #0
-	beq	.L446
-	ldr	r2, .L603+28
+	beq	.L448
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	ands	r2, r2, #128
-	bne	.L446
-	ldr	r0, .L603+44
-	ldr	lr, .L603+36
+	bne	.L448
+	ldr	r0, .L605+44
+	ldr	lr, .L605+36
 	ldr	ip, [r0]
 	ldr	r0, [lr]
 	sub	ip, ip, #1
 	cmp	ip, r0
-	ble	.L447
-	ldr	r1, .L603+48
+	ble	.L449
+	ldr	r1, .L605+48
 	add	r3, r0, #1
 	ldr	r1, [r1]
 	str	r3, [lr]
-	ldr	r0, .L603+52
-	ldr	r3, .L603+56
+	ldr	r0, .L605+52
+	ldr	r3, .L605+56
 	mov	lr, pc
 	bx	r3
 	ldrh	r1, [r5]
 	ldr	r3, [r4]
-	b	.L447
-.L446:
+	b	.L449
+.L448:
 	tst	r1, #64
-	beq	.L447
-	ldr	r2, .L603+28
+	beq	.L449
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	ands	r2, r2, #64
-	bne	.L447
-	ldr	ip, .L603+36
+	bne	.L449
+	ldr	ip, .L605+36
 	ldr	r0, [ip]
 	cmp	r0, #0
-	beq	.L447
-	ldr	r1, .L603+48
+	beq	.L449
+	ldr	r1, .L605+48
 	sub	r3, r0, #1
-	b	.L593
-.L449:
+	b	.L595
+.L451:
 	tst	r1, #64
-	beq	.L451
-	ldr	r2, .L603+28
+	beq	.L453
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	tst	r2, #64
-	bne	.L451
-	ldr	r2, .L603+32
-	ldr	lr, .L603+36
+	bne	.L453
+	ldr	r2, .L605+32
+	ldr	lr, .L605+36
 	ldr	r2, [r2]
 	ldr	r0, [lr]
 	cmp	r2, #1
 	sub	ip, r0, #1
-	beq	.L597
+	beq	.L599
 	cmp	ip, #0
-	blt	.L451
-	ldr	r2, .L603+40
+	blt	.L453
+	ldr	r2, .L605+40
 	rsb	r0, r0, r0, lsl #3
 	add	r2, r2, r0, lsl #3
-.L460:
+.L462:
 	ldr	r0, [r2, #-44]
 	cmp	r0, #0
-	beq	.L459
+	beq	.L461
 	ldr	r0, [r2, #-36]
 	cmp	r0, #0
-	bgt	.L590
-.L459:
+	bgt	.L592
+.L461:
 	sub	ip, ip, #1
 	cmn	ip, #1
 	sub	r2, r2, #56
-	bne	.L460
-	b	.L451
-.L476:
+	bne	.L462
+	b	.L453
+.L478:
 	bl	replaceMenu
-.L475:
+.L477:
 	mov	r1, #512
-	ldr	r3, .L603+60
-	add	r2, r3, #800
-.L499:
-	strh	r1, [r3, #224]	@ movhi
+	ldr	r3, .L605+60
+	add	r2, r3, #792
+.L501:
+	strh	r1, [r3, #232]	@ movhi
 	add	r3, r3, #8
 	cmp	r3, r2
-	bne	.L499
+	bne	.L501
 	mov	ip, #0
 	mov	r4, #24
-	ldr	r0, .L603+64
+	ldr	r0, .L605+64
 	str	r4, [sp]
 	mov	r3, #121
 	str	ip, [r0]
 	mov	r2, #11
 	mov	r1, #59
-	ldr	r0, .L603+68
+	ldr	r0, .L605+68
 	bl	drawText
 	mov	r3, #121
 	mov	r2, #123
 	mov	r1, #59
 	str	r4, [sp]
-	ldr	r0, .L603+72
+	ldr	r0, .L605+72
 	bl	drawText
 	add	sp, sp, #12
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	b	drawCombatants
-.L444:
-	ldr	r6, .L603+76
+.L446:
+	ldr	r6, .L605+76
 	mov	lr, pc
 	bx	r6
-	ldr	r2, .L603+80
+	ldr	r2, .L605+80
 	smull	r3, r2, r0, r2
 	asr	r3, r0, #31
 	add	r2, r2, r0
@@ -2989,112 +3021,112 @@ updateBattle:
 	rsb	r3, r3, r3, lsl #3
 	sub	r0, r0, r3
 	cmp	r0, #6
-	beq	.L598
-	ldr	r5, .L603+84
-	ldr	r9, .L603+88
+	beq	.L600
+	ldr	r5, .L605+84
+	ldr	r9, .L605+88
 	ldr	r2, [r5]
 	ldr	r3, [r9]
 	cmp	r2, #0
 	ldr	r7, [r3, #24]
-	beq	.L484
-	ldr	r3, .L603+92
+	beq	.L486
+	ldr	r3, .L605+92
 	ldr	r3, [r3]
 	cmp	r3, #0
 	subeq	r7, r7, #1
-.L484:
+.L486:
 	mov	lr, pc
 	bx	r6
-	ldr	r8, .L603+96
+	ldr	r8, .L605+96
 	mov	r1, r7
 	mov	lr, pc
 	bx	r8
 	ldr	r3, [r5]
 	cmp	r3, #0
-	bne	.L485
+	bne	.L487
 	ldr	r3, [r9]
-.L486:
+.L488:
 	add	r7, r1, #6
 	add	r3, r3, r7, lsl #2
 	ldr	r3, [r3, #4]
 	ldr	r5, [r3, #80]
 	cmp	r5, #0
-	bne	.L487
-	ldr	r4, .L603+40
+	bne	.L489
+	ldr	r4, .L605+40
 	mov	fp, r5
 	mov	r10, r4
 	mov	r3, r4
-	ldr	r2, .L603+32
+	ldr	r2, .L605+32
 	str	r5, [r2]
 	add	r0, r4, #224
-.L489:
+.L491:
 	ldr	r2, [r3, #12]
 	cmp	r2, #0
-	beq	.L488
+	beq	.L490
 	ldr	r2, [r3, #20]
 	cmp	r2, #0
 	addgt	fp, fp, #1
-.L488:
+.L490:
 	add	r3, r3, #56
 	cmp	r3, r0
-	bne	.L489
+	bne	.L491
 	mov	lr, pc
 	bx	r6
 	mov	r1, fp
 	mov	lr, pc
 	bx	r8
 	mov	r2, r1
-.L492:
+.L494:
 	ldr	r3, [r4, #12]
 	cmp	r3, #0
-	beq	.L490
+	beq	.L492
 	ldr	r3, [r4, #20]
 	cmp	r3, #0
-	ble	.L490
+	ble	.L492
 	cmp	r2, #0
-	beq	.L599
+	beq	.L601
 	sub	r2, r2, #1
-.L490:
+.L492:
 	add	r5, r5, #1
 	cmp	r5, #4
 	add	r4, r4, #56
-	bne	.L492
-	b	.L475
-.L448:
+	bne	.L494
+	b	.L477
+.L450:
 	cmp	r2, #0
-	beq	.L466
-	ldr	r3, .L603+28
+	beq	.L468
+	ldr	r3, .L605+28
 	ldrh	r3, [r3]
 	ands	r2, r3, #128
-	bne	.L466
-	ldr	r3, .L603+44
-	ldr	ip, .L603+36
+	bne	.L468
+	ldr	r3, .L605+44
+	ldr	ip, .L605+36
 	ldr	r0, [r3]
 	ldr	r3, [ip]
 	sub	r0, r0, #1
 	cmp	r0, r3
-	ble	.L467
+	ble	.L469
 	cmp	r3, #2
 	cmpne	r3, #5
-	beq	.L467
-	ldr	r1, .L603+48
+	beq	.L469
+	ldr	r1, .L605+48
 	add	r3, r3, #1
-.L591:
+.L593:
 	ldr	r1, [r1]
 	str	r3, [ip]
-	ldr	r0, .L603+52
-	ldr	r3, .L603+56
+	ldr	r0, .L605+52
+	ldr	r3, .L605+56
 	mov	lr, pc
 	bx	r3
 	ldrh	r1, [r5]
-.L467:
+.L469:
 	tst	r1, #16
-	beq	.L468
-	ldr	r3, .L603+28
+	beq	.L470
+	ldr	r3, .L605+28
 	ldrh	r3, [r3]
 	ands	r2, r3, #16
-	bne	.L468
-	ldr	r3, .L603+44
-	ldr	ip, .L603+36
+	bne	.L470
+	ldr	r3, .L605+44
+	ldr	ip, .L605+36
 	ldr	r0, [r3]
 	ldr	r3, [ip]
 	sub	r0, r0, #3
@@ -3104,156 +3136,88 @@ updateBattle:
 	cmp	r3, #2
 	movgt	r0, #0
 	cmp	r0, #0
-	beq	.L592
-	ldr	r1, .L603+48
+	beq	.L594
+	ldr	r1, .L605+48
 	add	r3, r3, #3
-.L593:
+.L595:
 	ldr	r1, [r1]
 	str	r3, [ip]
-	ldr	r0, .L603+52
-	ldr	r3, .L603+56
+	ldr	r0, .L605+52
+	ldr	r3, .L605+56
 	mov	lr, pc
 	bx	r3
 	ldrh	r1, [r5]
-.L592:
+.L594:
 	ldr	r3, [r4]
-	b	.L447
-.L466:
+	b	.L449
+.L468:
 	tst	r1, #64
-	beq	.L467
-	ldr	r3, .L603+28
+	beq	.L469
+	ldr	r3, .L605+28
 	ldrh	r3, [r3]
 	ands	r2, r3, #64
-	bne	.L467
-	ldr	ip, .L603+36
+	bne	.L469
+	ldr	ip, .L605+36
 	ldr	r3, [ip]
 	cmp	r3, #0
 	cmpne	r3, #3
-	beq	.L467
-	ldr	r1, .L603+48
+	beq	.L469
+	ldr	r1, .L605+48
 	sub	r3, r3, #1
-	b	.L591
-.L468:
+	b	.L593
+.L470:
 	tst	r1, #32
-	beq	.L592
-	ldr	r3, .L603+28
+	beq	.L594
+	ldr	r3, .L605+28
 	ldrh	r3, [r3]
 	ands	r2, r3, #32
-	bne	.L592
-	ldr	ip, .L603+36
+	bne	.L594
+	ldr	ip, .L605+36
 	ldr	r3, [ip]
 	cmp	r3, #2
-	ble	.L592
-	ldr	r1, .L603+48
+	ble	.L594
+	ldr	r1, .L605+48
 	sub	r3, r3, #3
-	b	.L593
-.L485:
-	ldr	r3, .L603+92
+	b	.L595
+.L487:
+	ldr	r3, .L605+92
 	ldr	r3, [r3]
 	cmp	r3, #0
 	ldr	r3, [r9]
-	bne	.L486
+	bne	.L488
 	ldr	r2, [r3, #20]
 	cmp	r2, #9
 	movle	r1, #5
-	b	.L486
-.L478:
-	bl	captureMenu
-	b	.L475
-.L479:
-	bl	inspectMenu
-	b	.L475
+	b	.L488
 .L480:
-	bl	targetMenu
-	b	.L475
+	bl	captureMenu
+	b	.L477
 .L481:
-	bl	attackMenu
-	b	.L475
+	bl	inspectMenu
+	b	.L477
 .L482:
+	bl	targetMenu
+	b	.L477
+.L483:
+	bl	attackMenu
+	b	.L477
+.L484:
 	bl	frontMenu
-	b	.L475
-.L596:
+	b	.L477
+.L598:
 	tst	r1, #16
-	beq	.L461
-	ldr	r2, .L603+28
+	beq	.L463
+	ldr	r2, .L605+28
 	ldrh	r2, [r2]
 	tst	r2, #16
-	bne	.L461
-	ldr	r2, .L603+32
+	bne	.L463
+	ldr	r2, .L605+32
 	ldr	ip, [r2]
 	cmp	ip, #0
-	bne	.L461
+	bne	.L463
 	mov	r0, #1
 	str	r0, [r2]
-	ldr	r2, .L603+100
-.L463:
-	ldr	r0, [r2, #12]
-	cmp	r0, #0
-	beq	.L462
-	ldr	r0, [r2, #20]
-	cmp	r0, #0
-	bgt	.L600
-.L462:
-	add	ip, ip, #1
-	cmp	ip, #4
-	add	r2, r2, #56
-	bne	.L463
-	b	.L447
-.L487:
-	ldr	r5, .L603+100
-	mov	r1, #1
-	mov	fp, #0
-	mov	r10, r5
-	mov	r3, r5
-	ldr	r2, .L603+32
-	str	r1, [r2]
-	add	r0, r5, #224
-.L494:
-	ldr	r2, [r3, #12]
-	cmp	r2, #0
-	beq	.L493
-	ldr	r2, [r3, #20]
-	cmp	r2, #0
-	addgt	fp, fp, #1
-.L493:
-	add	r3, r3, #56
-	cmp	r3, r0
-	bne	.L494
-	mov	lr, pc
-	bx	r6
-	mov	r1, fp
-	mov	lr, pc
-	bx	r8
-	mov	r2, r1
-.L497:
-	ldr	r3, [r5, #12]
-	cmp	r3, #0
-	beq	.L495
-	ldr	r3, [r5, #20]
-	cmp	r3, #0
-	ble	.L495
-	cmp	r2, #0
-	beq	.L601
-	sub	r2, r2, #1
-.L495:
-	add	r4, r4, #1
-	cmp	r4, #4
-	add	r5, r5, #56
-	bne	.L497
-	b	.L475
-.L461:
-	tst	r1, #32
-	beq	.L447
-	ldr	r2, .L603+28
-	ldrh	r2, [r2]
-	ands	r2, r2, #32
-	bne	.L447
-	ldr	r0, .L603+32
-	ldr	ip, [r0]
-	cmp	ip, #1
-	bne	.L447
-	str	r2, [r0]
-	ldr	r2, .L603+40
+	ldr	r2, .L605+100
 .L465:
 	ldr	r0, [r2, #12]
 	cmp	r0, #0
@@ -3262,116 +3226,184 @@ updateBattle:
 	cmp	r0, #0
 	bgt	.L602
 .L464:
+	add	ip, ip, #1
+	cmp	ip, #4
+	add	r2, r2, #56
+	bne	.L465
+	b	.L449
+.L489:
+	ldr	r5, .L605+100
+	mov	r1, #1
+	mov	fp, #0
+	mov	r10, r5
+	mov	r3, r5
+	ldr	r2, .L605+32
+	str	r1, [r2]
+	add	r0, r5, #224
+.L496:
+	ldr	r2, [r3, #12]
+	cmp	r2, #0
+	beq	.L495
+	ldr	r2, [r3, #20]
+	cmp	r2, #0
+	addgt	fp, fp, #1
+.L495:
+	add	r3, r3, #56
+	cmp	r3, r0
+	bne	.L496
+	mov	lr, pc
+	bx	r6
+	mov	r1, fp
+	mov	lr, pc
+	bx	r8
+	mov	r2, r1
+.L499:
+	ldr	r3, [r5, #12]
+	cmp	r3, #0
+	beq	.L497
+	ldr	r3, [r5, #20]
+	cmp	r3, #0
+	ble	.L497
+	cmp	r2, #0
+	beq	.L603
+	sub	r2, r2, #1
+.L497:
+	add	r4, r4, #1
+	cmp	r4, #4
+	add	r5, r5, #56
+	bne	.L499
+	b	.L477
+.L463:
+	tst	r1, #32
+	beq	.L449
+	ldr	r2, .L605+28
+	ldrh	r2, [r2]
+	ands	r2, r2, #32
+	bne	.L449
+	ldr	r0, .L605+32
+	ldr	ip, [r0]
+	cmp	ip, #1
+	bne	.L449
+	str	r2, [r0]
+	ldr	r2, .L605+40
+.L467:
+	ldr	r0, [r2, #12]
+	cmp	r0, #0
+	beq	.L466
+	ldr	r0, [r2, #20]
+	cmp	r0, #0
+	bgt	.L604
+.L466:
 	add	r6, r6, #1
 	cmp	r6, #4
 	add	r2, r2, #56
-	bne	.L465
-	b	.L447
-.L598:
-	ldr	r3, .L603+88
-	ldr	r1, .L603+104
+	bne	.L467
+	b	.L449
+.L600:
+	ldr	r3, .L605+88
+	ldr	r1, .L605+104
 	ldr	r2, [r3]
-	ldr	r0, .L603+68
-	ldr	r3, .L603+108
+	ldr	r0, .L605+68
+	ldr	r3, .L605+108
 	mov	lr, pc
 	bx	r3
 	bl	finishTurn
-	b	.L475
-.L590:
-	ldr	r3, .L603+48
+	b	.L477
+.L592:
+	ldr	r3, .L605+48
 	mov	r2, #0
 	ldr	r1, [r3]
-	ldr	r0, .L603+52
-	ldr	r3, .L603+56
+	ldr	r0, .L605+52
+	ldr	r3, .L605+56
 	str	ip, [lr]
 	mov	lr, pc
 	bx	r3
 	ldr	r3, [r4]
 	ldrh	r1, [r5]
-	b	.L451
-.L595:
+	b	.L453
+.L597:
 	cmp	ip, #3
-	bgt	.L451
-	ldr	r2, .L603+100
+	bgt	.L453
+	ldr	r2, .L605+100
 	rsb	r0, r0, r0, lsl #3
 	add	r0, r2, r0, lsl #3
-.L453:
+.L455:
 	ldr	r2, [r0, #68]
 	cmp	r2, #0
-	beq	.L452
+	beq	.L454
 	ldr	r2, [r0, #76]
 	cmp	r2, #0
-	bgt	.L590
-.L452:
+	bgt	.L592
+.L454:
 	add	ip, ip, #1
 	cmp	ip, #4
 	add	r0, r0, #56
-	bne	.L453
-	b	.L451
-.L597:
+	bne	.L455
+	b	.L453
+.L599:
 	cmp	ip, #0
-	blt	.L451
-	ldr	r2, .L603+100
+	blt	.L453
+	ldr	r2, .L605+100
 	rsb	r0, r0, r0, lsl #3
 	add	r0, r2, r0, lsl #3
-.L458:
+.L460:
 	ldr	r2, [r0, #-44]
 	cmp	r2, #0
-	beq	.L457
+	beq	.L459
 	ldr	r2, [r0, #-36]
 	cmp	r2, #0
-	bgt	.L590
-.L457:
+	bgt	.L592
+.L459:
 	sub	ip, ip, #1
 	cmn	ip, #1
 	sub	r0, r0, #56
-	bne	.L458
-	b	.L451
-.L599:
+	bne	.L460
+	b	.L453
+.L601:
 	ldr	r3, [r9]
 	rsb	r5, r5, r5, lsl #3
 	add	r7, r3, r7, lsl #2
 	ldr	r0, [r7, #4]
 	add	r1, r10, r5, lsl #3
 	bl	executeMove
-	b	.L475
-.L601:
+	b	.L477
+.L603:
 	ldr	r3, [r9]
 	rsb	r4, r4, r4, lsl #3
 	add	r7, r3, r7, lsl #2
 	ldr	r0, [r7, #4]
 	add	r1, r10, r4, lsl #3
 	bl	executeMove
-	b	.L475
-.L600:
-	ldr	r2, .L603+48
-	ldr	r3, .L603+36
+	b	.L477
+.L602:
+	ldr	r2, .L605+48
+	ldr	r3, .L605+36
 	ldr	r1, [r2]
 	str	ip, [r3]
 	mov	r2, #0
-	ldr	r3, .L603+56
-	ldr	r0, .L603+52
+	ldr	r3, .L605+56
+	ldr	r0, .L605+52
 	mov	lr, pc
 	bx	r3
 	ldrh	r1, [r5]
 	ldr	r3, [r4]
-	b	.L447
-.L602:
-	ldr	r2, .L603+48
-	ldr	r3, .L603+36
+	b	.L449
+.L604:
+	ldr	r2, .L605+48
+	ldr	r3, .L605+36
 	ldr	r1, [r2]
 	str	r6, [r3]
 	mov	r2, #0
-	ldr	r3, .L603+56
-	ldr	r0, .L603+52
+	ldr	r3, .L605+56
+	ldr	r0, .L605+52
 	mov	lr, pc
 	bx	r3
 	ldrh	r1, [r5]
 	ldr	r3, [r4]
-	b	.L447
-.L604:
+	b	.L449
+.L606:
 	.align	2
-.L603:
+.L605:
 	.word	waiting
 	.word	battleStatus
 	.word	turn
@@ -3398,7 +3430,7 @@ updateBattle:
 	.word	fighterIdx
 	.word	__aeabi_idivmod
 	.word	battleOpponents
-	.word	.LC17
+	.word	.LC18
 	.word	sprintf
 	.size	updateBattle, .-updateBattle
 	.align	2
@@ -3457,6 +3489,8 @@ setBottomText:
 	.comm	selOpt,4,4
 	.comm	menu,4,4
 	.comm	captured,4,4
+	.comm	nextTurn,4,4
+	.comm	nextFighterIdx,4,4
 	.comm	nextTurnPoints,4,4
 	.comm	turnPoints,4,4
 	.comm	move,4,4
